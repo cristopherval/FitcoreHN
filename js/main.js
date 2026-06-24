@@ -17,15 +17,21 @@ document.addEventListener("DOMContentLoaded", () => {
   initAnioFooter();
   initFeatureSpot();
 
-  // Home: renderiza toda la vitrina. Otras páginas con UI: solo lo común.
-  // Las animaciones de entrada las maneja el sistema propio "reveal"
-  // (IntersectionObserver + CSS) dentro de UI; no se usan librerías externas.
-  if (typeof UI !== "undefined") {
-    if (document.getElementById("productos-grid")) {
-      UI.initHome();
-    } else {
-      UI.initCommon();
+  // Espera el catálogo (data.json) antes de pintar, así siempre se muestra
+  // lo más reciente publicado. Las animaciones de entrada las maneja el
+  // sistema propio "reveal" (IntersectionObserver + CSS).
+  const pintar = () => {
+    if (typeof UI !== "undefined") {
+      if (document.getElementById("productos-grid")) UI.initHome();
+      else UI.initCommon();
     }
+    if (typeof Cart !== "undefined") Cart.render();
+  };
+
+  if (typeof Store !== "undefined" && Store.ready && Store.ready.then) {
+    Store.ready.then(pintar);
+  } else {
+    pintar();
   }
 });
 

@@ -8,6 +8,7 @@
    ========================================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+  const run = () => {
   const esDedicada = !!document.body.dataset.cat;
   const params = new URLSearchParams(location.search);
   const catId = document.body.dataset.cat || params.get("cat");
@@ -47,4 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
       ? productos.map((p, i) => UI.tarjetaProducto(p, i)).join("")
       : `<p class="muted">Aún no hay productos en esta categoría. ¡Pronto agregaremos más!</p>`;
   }
+  };
+  (typeof Store !== "undefined" && Store.ready ? Store.ready : Promise.resolve()).then(run);
 });

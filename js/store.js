@@ -32,15 +32,37 @@ const Store = (() => {
     }
   };
 
-  /* Inicializa/actualiza las semillas.
-     Si la versión del catálogo de ejemplo cambió (DATA_VERSION), se vuelve a
-     cargar el catálogo de ejemplo para reflejar los nuevos cambios. */
   const init = () => {
-    // El catálogo público sale de data.js. Aquí solo aseguramos la contraseña.
     if (!localStorage.getItem(STORAGE_KEYS.adminPass)) {
-      escribir(STORAGE_KEYS.adminPass, "admin1234"); // contraseña inicial (cámbiala en el panel)
+      escribir(STORAGE_KEYS.adminPass, "admin1234"); // contraseña inicial
     }
   };
+
+  /* Catálogo PÚBLICO en memoria.
+     Empieza con los datos de respaldo de data.js y se sobreescribe con
+     data.json (la fuente real que subes a GitHub) en cuanto carga. */
+  const _pub = {
+    productos: clon(DEFAULT_PRODUCTOS),
+    categorias: clon(DEFAULT_CATEGORIAS),
+    testimonios: clon(TESTIMONIOS)
+  };
+
+  /* Carga data.json SIEMPRE fresco (sin caché) → al publicar, todos ven el
+     cambio de inmediato. Si falla (file:// o sin red), usa el respaldo. */
+  const cargar = async () => {
+    try {
+      const res = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
+      if (res.ok) {
+        const j = await res.json();
+        if (Array.isArray(j.productos))   _pub.productos = j.productos;
+        if (Array.isArray(j.categorias))  _pub.categorias = j.categorias;
+        if (Array.isArray(j.testimonios)) _pub.testimonios = j.testimonios;
+      }
+    } catch (e) {
+      console.info("data.json no disponible; usando catálogo de respaldo (data.js).");
+    }
+  };
+  const ready = cargar(); // promesa: las páginas esperan esto antes de renderizar
 
   /* ¿Sesión de administrador activa en ESTA pestaña? */
   const adminActivo = () => {
@@ -54,16 +76,16 @@ const Store = (() => {
      esos cambios NO se publican hasta editar data.js y hacer push. */
 
   /* --- Categorías --- */
-  const getCategorias = () => adminActivo() ? leer(STORAGE_KEYS.categorias, DEFAULT_CATEGORIAS) : DEFAULT_CATEGORIAS;
+  const getCategorias = () => adminActivo() ? leer(STORAGE_KEYS.categorias, _pub.categorias) : _pub.categorias;
   const setCategorias = (cats) => escribir(STORAGE_KEYS.categorias, cats);
 
   /* --- Productos --- */
-  const getProductos = () => adminActivo() ? leer(STORAGE_KEYS.productos, DEFAULT_PRODUCTOS) : DEFAULT_PRODUCTOS;
+  const getProductos = () => adminActivo() ? leer(STORAGE_KEYS.productos, _pub.productos) : _pub.productos;
   const setProductos = (prods) => escribir(STORAGE_KEYS.productos, prods);
   const getProducto = (id) => getProductos().find(p => p.id === id);
 
   /* --- Testimonios --- */
-  const getTestimonios = () => adminActivo() ? leer(STORAGE_KEYS.testimonios, TESTIMONIOS) : TESTIMONIOS;
+  const getTestimonios = () => adminActivo() ? leer(STORAGE_KEYS.testimonios, _pub.testimonios) : _pub.testimonios;
   const setTestimonios = (t) => escribir(STORAGE_KEYS.testimonios, t);
 
   /* Descarta los cambios locales de admin (vuelve a lo publicado en data.js). */
@@ -90,7 +112,7 @@ const Store = (() => {
   };
 
   return {
-    init,
+    init, ready,
     getCategorias, setCategorias,
     getProductos, setProductos, getProducto,
     getTestimonios, setTestimonios,

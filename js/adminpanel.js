@@ -32,13 +32,18 @@ const AdminPanel = (() => {
   };
 
   const mostrarPanel = () => {
-    document.getElementById("login-view").hidden = true;
-    document.getElementById("panel-view").hidden = false;
+    // display inline para ocultar el login con seguridad (su .admin-login usa
+    // display:grid, que ignoraría el atributo [hidden]).
+    document.getElementById("login-view").style.display = "none";
+    const panel = document.getElementById("panel-view");
+    panel.hidden = false;
+    panel.style.display = "block";
     document.getElementById("btn-add").onclick = () => abrirForm(null);
     document.getElementById("btn-copy").onclick = publicar;
     document.getElementById("btn-discard").onclick = descartar;
     document.getElementById("btn-logout").onclick = () => { sessionStorage.removeItem(SES); location.reload(); };
-    render();
+    // Espera a que cargue data.json antes de pintar la tabla.
+    (Store.ready || Promise.resolve()).then(render);
   };
 
   const nombreCat = (id) => {
@@ -60,12 +65,13 @@ const AdminPanel = (() => {
         <td>${nombreCat(p.categoria)}</td>
         <td>${fmt(normal)}</td>
         <td>${promo ? `<span class="promo-tag">${fmt(promo)}</span>` : "—"}</td>
+        <td>${p.destacado ? `<span class="promo-tag">Sí</span>` : "—"}</td>
         <td class="acciones">
           <button class="btn btn--ghost btn--xs" data-edit="${p.id}">Editar</button>
           <button class="btn btn--danger btn--xs" data-del="${p.id}">Eliminar</button>
         </td>
       </tr>`;
-    }).join("") : `<tr><td colspan="7" class="muted">No hay productos. Agrega uno con "Agregar producto".</td></tr>`;
+    }).join("") : `<tr><td colspan="8" class="muted">No hay productos. Agrega uno con "Agregar producto".</td></tr>`;
 
     body.querySelectorAll("[data-edit]").forEach(b => b.onclick = () => abrirForm(b.dataset.edit));
     body.querySelectorAll("[data-del]").forEach(b => b.onclick = () => eliminar(b.dataset.del));
@@ -159,14 +165,19 @@ const AdminPanel = (() => {
     toast("Producto eliminado.");
   };
 
-  /* ---------- Publicar (copiar a data.js) ---------- */
+  /* ---------- Publicar (copiar todo el data.json) ---------- */
   const publicar = async () => {
-    const txt = "const DEFAULT_PRODUCTOS = " + JSON.stringify(Store.getProductos(), null, 2) + ";";
+    const data = {
+      productos: Store.getProductos(),
+      categorias: Store.getCategorias(),
+      testimonios: Store.getTestimonios()
+    };
+    const txt = JSON.stringify(data, null, 2);
     try {
       await navigator.clipboard.writeText(txt);
-      toast("Copiado. Pégalo en js/data.js (reemplaza DEFAULT_PRODUCTOS) y sube a GitHub.");
+      toast("Copiado. Reemplaza TODO el contenido de data.json con esto y sube a GitHub.");
     } catch (e) {
-      window.prompt("Copia este texto y pégalo en js/data.js (reemplaza DEFAULT_PRODUCTOS):", txt);
+      window.prompt("Copia esto y reemplaza TODO el contenido de data.json:", txt);
     }
   };
 

@@ -1,16 +1,17 @@
 /* =========================================================================
-   data.js  —  Configuración global + CATÁLOGO (fuente de verdad)
+   data.js  —  Configuración global + catálogo de RESPALDO
    -------------------------------------------------------------------------
-   👉 ESTE ARCHIVO ES LO QUE VE EL PÚBLICO.
-   Para cambiar productos, categorías o comentarios del sitio publicado:
-     1) Edita los arreglos de abajo (DEFAULT_PRODUCTOS, DEFAULT_CATEGORIAS,
-        TESTIMONIOS) aquí en VS Code.
-     2) Guarda y haz commit + push a GitHub.
-     3) GitHub Pages actualiza el sitio y TODOS ven los cambios.
+   👉 La fuente de verdad del catálogo es el archivo  data.json  (en la raíz).
+   El sitio lo lee SIEMPRE fresco (sin caché), así al publicar todos ven el
+   cambio de inmediato.
 
-   El panel de administración (admin.html) sirve como VISTA PREVIA local:
-   sus cambios solo se guardan en tu navegador y NO se publican hasta que
-   los reflejes aquí y subas el código.
+   Para cambiar productos/categorías/comentarios del sitio publicado:
+     1) En el panel admin edita y pulsa "Publicar" (copia el data.json nuevo).
+     2) Pega ese contenido reemplazando TODO  data.json  en VS Code.
+     3) commit + push a GitHub → todos ven los cambios.
+
+   Los DEFAULT_* de abajo son solo un RESPALDO (si data.json no carga, p. ej.
+   al abrir con file://). Mantenerlos igual a data.json es opcional.
    ========================================================================= */
 
 /* Configuración del negocio: punto único de verdad para datos de contacto. */

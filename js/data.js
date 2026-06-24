@@ -1,10 +1,16 @@
 /* =========================================================================
-   data.js  —  Configuración global + catálogo por defecto (semilla)
+   data.js  —  Configuración global + CATÁLOGO (fuente de verdad)
    -------------------------------------------------------------------------
-   Estos datos solo se usan la PRIMERA vez (o si se limpia el almacenamiento).
-   Después, el catálogo real vive en localStorage y se gestiona desde el
-   panel de administración (admin.html). Cambiar precios/productos NO requiere
-   tocar este archivo una vez el sitio está en producción.
+   👉 ESTE ARCHIVO ES LO QUE VE EL PÚBLICO.
+   Para cambiar productos, categorías o comentarios del sitio publicado:
+     1) Edita los arreglos de abajo (DEFAULT_PRODUCTOS, DEFAULT_CATEGORIAS,
+        TESTIMONIOS) aquí en VS Code.
+     2) Guarda y haz commit + push a GitHub.
+     3) GitHub Pages actualiza el sitio y TODOS ven los cambios.
+
+   El panel de administración (admin.html) sirve como VISTA PREVIA local:
+   sus cambios solo se guardan en tu navegador y NO se publican hasta que
+   los reflejes aquí y subas el código.
    ========================================================================= */
 
 /* Configuración del negocio: punto único de verdad para datos de contacto. */

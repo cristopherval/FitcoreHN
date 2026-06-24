@@ -765,3 +765,18 @@ img, video { max-width: 100%; }
 .promo-tag { color: var(--accent); font-weight: 700; }
 /* El formulario (editar/agregar) debe aparecer ENCIMA de la tabla */
 .admin-modal { z-index: 120; }
+
+/* =========================================================================
+   31. PANEL ADMIN (página propia: barra superior + tabla de productos)
+   ========================================================================= */
+.admin-page { background: var(--bg-alt); min-height: 100vh; }
+.admin-topbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 30; box-shadow: var(--shadow-sm); }
+.admin-topbar__inner { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 64px; flex-wrap: wrap; padding: 10px 0; }
+.admin-topbar__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.admin-wrap { padding: 28px 20px 80px; }
+.admin-wrap__title { font-size: 1.8rem; margin-bottom: 6px; }
+.admin-wrap__hint { max-width: 780px; margin-bottom: 22px; font-size: .9rem; }
+.admin-wrap__hint code { color: var(--accent); background: var(--accent-soft); padding: 1px 6px; border-radius: 5px; }
+
+/* El modal de confirmación siempre va por encima de cualquier otro modal */
+.modal--confirm { z-index: 200; }

@@ -10,7 +10,7 @@ const Confirm = (() => {
 
   const construir = () => {
     el = document.createElement("div");
-    el.className = "modal";
+    el.className = "modal modal--confirm";
     el.setAttribute("role", "dialog");
     el.setAttribute("aria-modal", "true");
     el.innerHTML = `

@@ -4,27 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script>
-  /* Limpia service workers/cachés de OTROS proyectos que pudieran haber quedado
-     registrados en este puerto y "secuestran" la página mostrando otra app. */
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
-  }
+  /* Limpia service workers/cachés de otros proyectos en este puerto. */
+  if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); }); }
   if (window.caches && caches.keys) { caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }); }
-</script>
+  </script>
   <meta name="robots" content="noindex, nofollow">
-  <title>Acceso administrador · FITCORE HN</title>
+  <title>Administrador · FITCORE HN</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=20">
+  <link rel="stylesheet" href="css/styles.css?v=22">
 </head>
-<body class="admin-login-page">
+<body class="admin-page">
 
-  <section class="admin-login">
+  <!-- ===== LOGIN ===== -->
+  <section id="login-view" class="admin-login">
     <form id="login-form" class="admin-login__card">
-      <a href="index.html" class="logo logo--center">FIT<span class="logo__accent">CORE</span><small>HN</small></a>
+      <a href="index.html" class="logo logo--center">FIT<span class="logo__accent">CORE</span><small>ADMIN</small></a>
       <h1 class="admin-login__title">Acceso administrador</h1>
-      <p class="muted">Ingresa para activar el modo de edición sobre la tienda.</p>
+      <p class="muted">Ingresa para gestionar los productos.</p>
       <div class="form__row">
         <label for="login-pass">Contraseña</label>
         <input id="login-pass" type="password" required placeholder="••••••••" autocomplete="current-password" autofocus>
@@ -36,22 +34,42 @@
     </form>
   </section>
 
-  <script src="js/data.js?v=20"></script>
-  <script src="js/store.js?v=20"></script>
-  <script>
-    // Login: valida la contraseña, abre la sesión de admin y vuelve a la tienda.
-    document.getElementById("login-form").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const pass = document.getElementById("login-pass").value;
-      if (pass === Store.getPass()) {
-        sessionStorage.setItem("fitcore_admin_session", "1");
-        location.href = "index.html";
-      } else {
-        const err = document.getElementById("login-error");
-        err.textContent = "Contraseña incorrecta.";
-        err.classList.add("is-visible");
-      }
-    });
-  </script>
+  <!-- ===== PANEL (tabla de productos) ===== -->
+  <section id="panel-view" hidden>
+    <header class="admin-topbar">
+      <div class="container admin-topbar__inner">
+        <span class="logo">FIT<span class="logo__accent">CORE</span><small>ADMIN</small></span>
+        <div class="admin-topbar__actions">
+          <button class="btn btn--accent btn--sm" id="btn-add">Agregar producto</button>
+          <button class="btn btn--outline btn--sm" id="btn-copy">Publicar (copiar para data.js)</button>
+          <button class="btn btn--ghost btn--sm" id="btn-discard">Descartar cambios</button>
+          <a class="btn btn--ghost btn--sm" href="index.html">Ver tienda</a>
+          <button class="btn btn--ghost btn--sm" id="btn-logout">Salir</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container admin-wrap">
+      <h1 class="admin-wrap__title">Productos</h1>
+      <p class="muted admin-wrap__hint">Modifica los productos en la tabla. Para que los cambios los vean <strong>todos</strong> los visitantes: pulsa <strong>"Publicar"</strong>, pega el contenido en <code>js/data.js</code> y sube a GitHub.</p>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr><th>ID</th><th>Foto</th><th>Nombre</th><th>Categoría</th><th>Normal</th><th>Promo</th><th>Acciones</th></tr>
+          </thead>
+          <tbody id="tabla-body"></tbody>
+        </table>
+      </div>
+    </main>
+  </section>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="js/data.js?v=22"></script>
+  <script src="js/store.js?v=22"></script>
+  <script src="js/confirm.js?v=22"></script>
+  <script src="js/adminpanel.js?v=22"></script>
 </body>
 </html>

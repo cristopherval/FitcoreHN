@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  /* Limpia service workers/cachés de OTROS proyectos que pudieran haber quedado
+     registrados en este puerto y "secuestran" la página mostrando otra app. */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  }
+  if (window.caches && caches.keys) { caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }); }
+</script>
+  <meta name="theme-color" content="#0a0a0a">
+
+  <!-- ============ SEO ============ -->
+  <title>FITCORE HN | Suplementos Deportivos Premium en Talanga y Tegucigalpa</title>
+  <meta name="description" content="Tienda de suplementos deportivos de alta gama en Honduras. Creatinas, proteínas y pre-entrenos originales. Envíos en Talanga y Tegucigalpa. Compra fácil por WhatsApp.">
+  <meta name="keywords" content="suplementos Honduras, creatina Tegucigalpa, proteína Talanga, pre entreno, whey protein, monohidrato de creatina, FITCORE">
+  <meta name="author" content="FITCORE HN">
+  <link rel="canonical" href="https://fitcorehn.com/">
+
+  <!-- Open Graph / redes sociales -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FITCORE HN | Suplementos Deportivos Premium">
+  <meta property="og:description" content="Creatinas, proteínas y pre-entrenos originales. Envíos en Talanga y Tegucigalpa.">
+  <meta property="og:image" content="assets/hero-atleta.png">
+  <meta property="og:locale" content="es_HN">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Rendimiento de fuentes: preconnect + carga diferida -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="preload" as="image" href="assets/fondpprueba1.jpg">
+  <link rel="stylesheet" href="css/styles.css?v=17">
+
+  <!-- ============ Datos estructurados (Store) ============ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": "FITCORE HN",
+    "description": "Suplementos deportivos premium con envíos en Talanga y Tegucigalpa.",
+    "image": "https://fitcorehn.com/assets/hero-atleta.png",
+    "email": "cristopherval04@gmail.com",
+    "telephone": "+50433644559",
+    "areaServed": ["Talanga", "Tegucigalpa"],
+    "address": { "@type": "PostalAddress", "addressCountry": "HN", "addressRegion": "Francisco Morazán" }
+  }
+  </script>
+</head>
+<body>
+
+  <!-- ====================== NAVBAR SUPERIOR (STICKY) ====================== -->
+  <header class="navbar">
+    <div class="container navbar__inner">
+      <a href="index.html" class="logo" data-logo aria-label="FITCORE HN inicio">
+        FIT<span class="logo__accent">CORE</span><small>HN</small>
+      </a>
+
+      <nav class="navbar__links" aria-label="Navegación principal">
+        <a href="#inicio">Inicio</a>
+        <a href="#ofertas">Ofertas</a>
+        <a href="#categorias">Categorías</a>
+        <a href="#productos">Productos</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <button class="cart-btn" data-open-cart aria-label="Abrir carrito">
+          <span data-cart-icon class="cart-btn__icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg></span>
+          <span class="cart-btn__badge" data-cart-count>0</span>
+        </button>
+        <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- ====================== HERO ====================== -->
+    <section class="hero" id="inicio">
+      <div class="hero__bg" style="background-image:url('assets/fondpprueba1.jpg')" role="img" aria-label="Atleta entrenando"></div>
+      <div class="hero__veil"></div>
+      <div class="container hero__content">
+        <span class="hero__eyebrow reveal reveal--left">Suplementación de élite · Honduras</span>
+        <h1 class="hero__title reveal reveal--left">
+          <span class="hero__title-kicker">Tienda de creatinas, proteínas y pre-entrenos en Honduras</span>
+          Desata tu <span class="text-accent">máximo potencial</span>
+        </h1>
+        <p class="hero__sub reveal reveal--left">Creatinas, proteínas y pre-entrenos originales para quienes no aceptan límites. Calidad premium, entrega en Talanga y Tegucigalpa.</p>
+        <div class="hero__cta reveal reveal--left">
+          <a href="#productos" class="btn btn--accent btn--lg">Ver productos</a>
+          <a href="#categorias" class="btn btn--outline btn--lg">Explorar categorías</a>
+        </div>
+        <div class="hero__stats reveal reveal--left">
+          <div><strong>100%</strong><span>Originales</span></div>
+          <div><strong>+5</strong><span>Marcas top</span></div>
+          <div><strong>24/7</strong><span>Atención</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cinta de beneficios (marquee continuo, sin huecos) -->
+    <div class="benefits" aria-hidden="true">
+      <div class="benefits__track">
+        <span>FUERZA EXPLOSIVA</span><span>•</span><span>RECUPERACIÓN RÁPIDA</span><span>•</span><span>ENERGÍA LIMPIA</span><span>•</span><span>MÚSCULO DE CALIDAD</span><span>•</span><span>RENDIMIENTO MÁXIMO</span><span>•</span><span>FUERZA EXPLOSIVA</span><span>•</span><span>RECUPERACIÓN RÁPIDA</span><span>•</span><span>ENERGÍA LIMPIA</span><span>•</span><span>MÚSCULO DE CALIDAD</span><span>•</span><span>RENDIMIENTO MÁXIMO</span><span>•</span><span>FUERZA EXPLOSIVA</span><span>•</span><span>RECUPERACIÓN RÁPIDA</span><span>•</span><span>ENERGÍA LIMPIA</span><span>•</span><span>MÚSCULO DE CALIDAD</span><span>•</span><span>RENDIMIENTO MÁXIMO</span><span>•</span><span>FUERZA EXPLOSIVA</span><span>•</span><span>RECUPERACIÓN RÁPIDA</span><span>•</span><span>ENERGÍA LIMPIA</span><span>•</span><span>MÚSCULO DE CALIDAD</span><span>•</span><span>RENDIMIENTO MÁXIMO</span><span>•</span>
+      </div>
+    </div>
+
+    <!-- ====================== OFERTAS (CARRUSEL) ====================== -->
+    <section class="section" id="ofertas">
+      <div class="container">
+        <header class="section__head reveal">
+          <span class="section__eyebrow">Promociones</span>
+          <h2 class="section__title">Ofertas de la semana</h2>
+          <p class="section__lead">Aprovecha precios especiales por tiempo limitado.</p>
+        </header>
+
+        <div class="carousel">
+          <button class="carousel__arrow carousel__arrow--prev" id="carousel-prev" aria-label="Anterior">‹</button>
+          <div class="carousel__viewport">
+            <div class="carousel__track" id="carousel-track"><!-- JS --></div>
+          </div>
+          <button class="carousel__arrow carousel__arrow--next" id="carousel-next" aria-label="Siguiente">›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== CATEGORÍAS (EXPANDIBLES) ====================== -->
+    <section class="section section--dark" id="categorias">
+      <div class="container">
+        <header class="section__head reveal">
+          <span class="section__eyebrow">Compra por objetivo</span>
+          <h2 class="section__title">Nuestras categorías</h2>
+          <p class="section__lead">Toca una categoría para ver sus productos.</p>
+        </header>
+        <div class="cat-grid" id="categorias-grid"><!-- JS --></div>
+      </div>
+    </section>
+
+    <!-- ====================== DESTACADO: CREATINE (video) ====================== -->
+    <section class="section feature-spot" id="creatine-spot">
+      <div class="container">
+        <div class="feature-spot__head reveal reveal--left">
+          <span class="section__eyebrow">Producto estrella</span>
+          <h2 class="feature-spot__title">Construye más con <span class="text-accent">Creatine</span></h2>
+          <p class="feature-spot__lead">Creatina monohidratada pura: el suplemento más respaldado por la ciencia para fuerza, volumen y recuperación.</p>
+          <a href="creatinas.html" class="btn btn--accent">Ver creatinas →</a>
+        </div>
+
+        <div class="feature-spot__grid">
+          <ul class="feature-list" id="feature-list">
+            <li class="feature-item is-active" data-feature>
+              <h3 class="feature-item__title">Desarrolla músculo magro y tonificado</h3>
+              <p class="feature-item__desc">Estimula la síntesis de proteína para un físico firme, magro y definido.</p>
+            </li>
+            <li class="feature-item" data-feature>
+              <h3 class="feature-item__title">Piel, cabello y uñas más saludables</h3>
+              <p class="feature-item__desc">Sus beneficios van más allá del gym: te cuidan por dentro y por fuera.</p>
+            </li>
+            <li class="feature-item" data-feature>
+              <h3 class="feature-item__title">Más fuerza y rendimiento</h3>
+              <p class="feature-item__desc">Energía extra en cada serie para levantar más y rendir mejor en cada sesión.</p>
+            </li>
+            <li class="feature-item" data-feature>
+              <h3 class="feature-item__title">Favorece la función cognitiva</h3>
+              <p class="feature-item__desc">Apoya la concentración y la memoria, dentro y fuera del entrenamiento.</p>
+            </li>
+          </ul>
+
+          <div class="feature-spot__media reveal reveal--right">
+            <video class="feature-spot__video" autoplay muted loop playsinline preload="metadata" aria-label="Video de Creatine">
+              <source src="assets/creatine-2d.mp4" type="video/mp4">
+              Tu navegador no soporta video.
+            </video>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== PRODUCTOS + FILTRO ====================== -->
+    <section class="section" id="productos">
+      <div class="container">
+        <header class="section__head reveal">
+          <span class="section__eyebrow">Lo más pedido</span>
+          <h2 class="section__title">Nuestros más vendidos</h2>
+          <p class="section__lead">Los favoritos de nuestros clientes. Explora todo el catálogo en cada categoría.</p>
+        </header>
+        <div class="grid grid--products grid--bestsellers" id="productos-grid"><!-- JS --></div>
+        <div style="text-align:center; margin-top:36px;">
+          <a href="#categorias" class="btn btn--outline">Ver todas las categorías</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== TESTIMONIOS ====================== -->
+    <section class="section section--alt" id="testimonios">
+      <div class="container">
+        <header class="section__head reveal">
+          <span class="section__eyebrow">Clientes reales</span>
+          <h2 class="section__title">Lo que dicen de nosotros</h2>
+        </header>
+
+        <!-- Showcase tipo 3D de un producto destacado -->
+        <div class="showcase">
+          <div class="showcase__stage reveal reveal--zoom">
+            <div class="showcase__glow" aria-hidden="true"></div>
+            <img id="showcase-img" class="showcase__product" src="assets/creatina-on.jpg" alt="Suplemento destacado FITCORE HN" loading="lazy">
+            <div class="showcase__floor" aria-hidden="true"></div>
+          </div>
+          <div class="showcase__text reveal reveal--right">
+            <span class="section__eyebrow">Producto destacado</span>
+            <h3 class="showcase__title">Calidad que se siente</h3>
+            <p>Cada suplemento que enviamos es <strong>100% original</strong> y sellado de fábrica. Marcas líderes, resultados reales y la confianza de cientos de clientes en Talanga y Tegucigalpa.</p>
+            <a class="btn btn--accent" href="#productos">Ver catálogo</a>
+          </div>
+        </div>
+
+        <div class="testi-grid" id="testimonios-grid"><!-- JS --></div>
+      </div>
+    </section>
+
+    <!-- ====================== CTA FINAL ====================== -->
+    <section class="cta-final">
+      <div class="container cta-final__inner reveal">
+        <h2>¿Listo para llevar tu entrenamiento al siguiente nivel?</h2>
+        <p>Escríbenos y arma tu pedido en minutos.</p>
+        <a class="btn btn--accent btn--lg" href="https://wa.me/50433644559?text=Hola%20FITCORE%20HN,%20quiero%20más%20información" target="_blank" rel="noopener">Pedir por WhatsApp</a>
+      </div>
+    </section>
+  </main>
+
+  <!-- ====================== FOOTER ====================== -->
+  <footer class="footer" id="contacto-footer">
+    <div class="container footer__grid">
+      <div class="footer__col">
+        <a href="index.html" class="logo logo--footer">FIT<span class="logo__accent">CORE</span><small>HN</small></a>
+        <p class="footer__about">Suplementos deportivos premium. Calidad e ingredientes que rinden, con entrega en Talanga y Tegucigalpa.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Navegación</h4>
+        <a href="#inicio">Inicio</a>
+        <a href="#ofertas">Ofertas</a>
+        <a href="#categorias">Categorías</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div class="footer__col">
+        <h4>Contacto</h4>
+        <a href="mailto:cristopherval04@gmail.com">cristopherval04@gmail.com</a>
+        <a href="https://wa.me/50433644559" target="_blank" rel="noopener">+504 3364 4559</a>
+        <p class="footer__cities">Talanga &amp; Tegucigalpa</p>
+      </div>
+      <div class="footer__col">
+        <h4>Síguenos</h4>
+        <div class="footer__social">
+          <a href="https://instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+          <a href="https://facebook.com/" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
+          <a href="https://tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">TikTok</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© <span id="anio">2026</span> FITCORE HN. Todos los derechos reservados. · <a href="admin.html" class="footer__admin">Admin</a></p>
+    </div>
+  </footer>
+
+  <!-- ====================== CARRITO (DRAWER) ====================== -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Carrito de compras">
+    <header class="cart-drawer__head">
+      <h3>Tu carrito</h3>
+      <button class="cart-drawer__close" id="cart-close" aria-label="Cerrar carrito">✕</button>
+    </header>
+    <div class="cart-drawer__items" id="cart-items"><!-- JS --></div>
+    <footer class="cart-drawer__foot">
+      <div class="cart-drawer__total">
+        <span>Total</span>
+        <strong id="cart-total">L. 0</strong>
+      </div>
+      <button class="btn btn--accent btn--block" id="cart-checkout">Finalizar por WhatsApp</button>
+      <button class="btn btn--ghost btn--block btn--sm" id="cart-clear">Vaciar carrito</button>
+      <p class="cart-drawer__note">Te enviaremos a WhatsApp con el detalle de tu pedido.</p>
+    </footer>
+  </aside>
+
+  <!-- ====================== BOTÓN FLOTANTE WHATSAPP ====================== -->
+  <a class="whatsapp-float" href="https://wa.me/50433644559?text=Hola%20FITCORE%20HN,%20quiero%20hacer%20un%20pedido" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+    <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" fill="currentColor">
+      <path d="M16 .5C7.4.5.5 7.4.5 16c0 2.8.7 5.4 2 7.7L.5 31.5l8-2.1c2.2 1.2 4.8 1.9 7.5 1.9 8.6 0 15.5-6.9 15.5-15.5S24.6.5 16 .5zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.7 1.2 1.3-4.6-.3-.5c-1.3-2.1-2-4.5-2-6.9C2.4 8.5 8.5 2.4 16 2.4S29.6 8.5 29.6 16 23.5 28.8 16 28.8zm8.3-9.9c-.5-.2-2.7-1.3-3.1-1.5-.4-.2-.7-.2-1 .2-.3.5-1.1 1.5-1.4 1.7-.3.2-.5.3-1 .1-2.7-1.4-4.5-2.4-6.3-5.4-.5-.8.5-.8 1.3-2.5.1-.3.1-.5 0-.7-.1-.2-1-2.4-1.4-3.2-.4-.9-.7-.7-1-.8h-.8c-.3 0-.7.1-1.1.5C8.7 7.6 8 8.5 8 10.3s1.5 3.6 1.7 3.9c.2.3 2.9 4.4 7 6.1 3.7 1.6 3.7 1.1 4.4 1 .7-.1 2.2-.9 2.5-1.7.3-.9.3-1.6.2-1.7-.1-.2-.4-.3-.9-.5z"/>
+    </svg>
+  </a>
+
+  <!-- ====================== BARRA INFERIOR MÓVIL ====================== -->
+  <nav class="bottomnav" aria-label="Navegación móvil">
+    <a class="bottomnav__item is-active" href="#inicio" data-section="inicio">
+      <span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></span><span>Inicio</span>
+    </a>
+    <a class="bottomnav__item" href="#categorias" data-section="categorias">
+      <span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span>Categorías</span>
+    </a>
+    <a class="bottomnav__item" href="#ofertas" data-section="ofertas">
+      <span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg></span><span>Ofertas</span>
+    </a>
+    <button class="bottomnav__item" data-open-cart>
+      <span class="bottomnav__icon" data-cart-icon><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg><span class="bottomnav__badge" data-cart-count>0</span></span><span>Carrito</span>
+    </button>
+  </nav>
+
+  <!-- Scripts: orden importa (datos → store → carrito → ui → main) -->
+  <script src="js/data.js?v=17"></script>
+  <script src="js/store.js?v=17"></script>
+  <script src="js/confirm.js?v=17"></script>
+  <script src="js/cart.js?v=17"></script>
+  <script src="js/ui.js?v=17"></script>
+  <script src="js/adminmode.js?v=17"></script>
+  <script src="js/main.js?v=17"></script>
+</body>
+</html>

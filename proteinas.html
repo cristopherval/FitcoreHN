@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  /* Limpia service workers/cachés de OTROS proyectos que pudieran haber quedado
+     registrados en este puerto y "secuestran" la página mostrando otra app. */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  }
+  if (window.caches && caches.keys) { caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }); }
+</script>
+  <meta name="theme-color" content="#ffffff">
+  <title>Proteínas y Whey Protein en Honduras | FITCORE HN</title>
+  <meta name="description" content="Proteína whey original (Gold Standard, Nutrex) para construir y recuperar músculo. Envíos en Talanga y Tegucigalpa.">
+  <link rel="canonical" href="https://fitcorehn.com/proteínas.html">
+  <meta property="og:title" content="Proteínas y Whey Protein en Honduras | FITCORE HN">
+  <meta property="og:description" content="Proteína whey original (Gold Standard, Nutrex) para construir y recuperar músculo. Envíos en Talanga y Tegucigalpa.">
+  <meta property="og:image" content="assets/gym-proteínas.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=17">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"CollectionPage","name":"Proteínas","description":"Proteína whey original (Gold Standard, Nutrex) para construir y recuperar músculo. Envíos en Talanga y Tegucigalpa.","url":"https://fitcorehn.com/proteínas.html"}
+  </script>
+</head>
+<body data-cat="proteínas">
+
+  <header class="navbar is-scrolled">
+    <div class="container navbar__inner">
+      <a href="index.html" class="logo" data-logo aria-label="FITCORE HN inicio">
+        FIT<span class="logo__accent">CORE</span><small>HN</small>
+      </a>
+      <nav class="navbar__links" aria-label="Navegación principal">
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="index.html#productos">Productos</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <div class="navbar__actions">
+        <button class="cart-btn" data-open-cart aria-label="Abrir carrito">
+          <span data-cart-icon class="cart-btn__icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg></span>
+          <span class="cart-btn__badge" data-cart-count>0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="cat-hero">
+      <div class="cat-hero__bg" id="cat-hero-bg" style="background-image:url('assets/gym-proteínas.jpg')"></div>
+      <div class="cat-hero__veil"></div>
+      <div class="container cat-hero__content">
+        <nav class="breadcrumb" aria-label="Ruta">
+          <a href="index.html">Inicio</a><span>/</span>
+          <a href="index.html#categorias">Categorías</a><span>/</span>
+          <span id="cat-crumb" class="text-accent">Proteínas</span>
+        </nav>
+        <h1 class="cat-hero__title" id="cat-title">Proteínas y Whey</h1>
+        <p class="cat-hero__desc" id="cat-desc">Proteína de suero de alta calidad para construir y recuperar músculo. Sabores deliciosos y marcas líderes.</p>
+        <span class="cat-hero__count" id="cat-count"></span>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="grid grid--products" id="cat-grid"></div>
+        <div style="text-align:center; margin-top:36px;">
+          <a href="index.html#categorias" class="btn btn--outline">Ver otras categorias</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__col">
+        <a href="index.html" class="logo logo--footer">FIT<span class="logo__accent">CORE</span><small>HN</small></a>
+        <p class="footer__about">Suplementos deportivos premium con entrega en Talanga y Tegucigalpa.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Navegación</h4>
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div class="footer__col">
+        <h4>Contacto</h4>
+        <a href="mailto:cristopherval04@gmail.com">cristopherval04@gmail.com</a>
+        <a href="https://wa.me/50433644559" target="_blank" rel="noopener">+504 3364 4559</a>
+        <p class="footer__cities">Talanga &amp; Tegucigalpa</p>
+      </div>
+      <div class="footer__col">
+        <h4>Síguenos</h4>
+        <div class="footer__social">
+          <a href="https://instagram.com/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://facebook.com/" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://tiktok.com/" target="_blank" rel="noopener">TikTok</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© <span id="anio">2026</span> FITCORE HN. Todos los derechos reservados. - <a href="admin.html" class="footer__admin">Admin</a></p>
+    </div>
+  </footer>
+
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Carrito de compras">
+    <header class="cart-drawer__head">
+      <h3>Tu carrito</h3>
+      <button class="cart-drawer__close" id="cart-close" aria-label="Cerrar carrito">X</button>
+    </header>
+    <div class="cart-drawer__items" id="cart-items"></div>
+    <footer class="cart-drawer__foot">
+      <div class="cart-drawer__total"><span>Total</span><strong id="cart-total">L. 0</strong></div>
+      <button class="btn btn--accent btn--block" id="cart-checkout">Finalizar por WhatsApp</button>
+      <button class="btn btn--ghost btn--block btn--sm" id="cart-clear">Vaciar carrito</button>
+    </footer>
+  </aside>
+
+  <a class="whatsapp-float" href="https://wa.me/50433644559?text=Hola%20FITCORE%20HN" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" fill="currentColor"><path d="M16 .5C7.4.5.5 7.4.5 16c0 2.8.7 5.4 2 7.7L.5 31.5l8-2.1c2.2 1.2 4.8 1.9 7.5 1.9 8.6 0 15.5-6.9 15.5-15.5S24.6.5 16 .5zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.7 1.2 1.3-4.6-.3-.5c-1.3-2.1-2-4.5-2-6.9C2.4 8.5 8.5 2.4 16 2.4S29.6 8.5 29.6 16 23.5 28.8 16 28.8zm8.3-9.9c-.5-.2-2.7-1.3-3.1-1.5-.4-.2-.7-.2-1 .2-.3.5-1.1 1.5-1.4 1.7-.3.2-.5.3-1 .1-2.7-1.4-4.5-2.4-6.3-5.4-.5-.8.5-.8 1.3-2.5.1-.3.1-.5 0-.7-.1-.2-1-2.4-1.4-3.2-.4-.9-.7-.7-1-.8h-.8c-.3 0-.7.1-1.1.5C8.7 7.6 8 8.5 8 10.3s1.5 3.6 1.7 3.9c.2.3 2.9 4.4 7 6.1 3.7 1.6 3.7 1.1 4.4 1 .7-.1 2.2-.9 2.5-1.7.3-.9.3-1.6.2-1.7-.1-.2-.4-.3-.9-.5z"/></svg>
+  </a>
+
+  <nav class="bottomnav" aria-label="Navegación móvil">
+    <a class="bottomnav__item" href="index.html#inicio"><span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></span><span>Inicio</span></a>
+    <a class="bottomnav__item is-active" href="index.html#categorias"><span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span>Categorías</span></a>
+    <a class="bottomnav__item" href="index.html#ofertas"><span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg></span><span>Ofertas</span></a>
+    <button class="bottomnav__item" data-open-cart>
+      <span class="bottomnav__icon" data-cart-icon><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg><span class="bottomnav__badge" data-cart-count>0</span></span><span>Carrito</span>
+    </button>
+  </nav>
+
+  <script src="js/data.js?v=17"></script>
+  <script src="js/store.js?v=17"></script>
+  <script src="js/confirm.js?v=17"></script>
+  <script src="js/cart.js?v=17"></script>
+  <script src="js/ui.js?v=17"></script>
+  <script src="js/categoria.js?v=17"></script>
+  <script src="js/adminmode.js?v=17"></script>
+  <script src="js/main.js?v=17"></script>
+</body>
+</html>

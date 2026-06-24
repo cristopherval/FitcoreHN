@@ -1,0 +1,6 @@
+{
+  "//": "Puerto propio para FITCORE HN: evita el service worker de otros proyectos que quedó en el puerto 5500.",
+  "liveServer.settings.port": 5599,
+  "liveServer.settings.root": "/",
+  "liveServer.settings.NoBrowser": false
+}

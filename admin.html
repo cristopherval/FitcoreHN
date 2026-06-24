@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  /* Limpia service workers/cachés de OTROS proyectos que pudieran haber quedado
+     registrados en este puerto y "secuestran" la página mostrando otra app. */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  }
+  if (window.caches && caches.keys) { caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }); }
+</script>
+  <meta name="robots" content="noindex, nofollow">
+  <title>Acceso administrador · FITCORE HN</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=17">
+</head>
+<body class="admin-login-page">
+
+  <section class="admin-login">
+    <form id="login-form" class="admin-login__card">
+      <a href="index.html" class="logo logo--center">FIT<span class="logo__accent">CORE</span><small>HN</small></a>
+      <h1 class="admin-login__title">Acceso administrador</h1>
+      <p class="muted">Ingresa para activar el modo de edición sobre la tienda.</p>
+      <div class="form__row">
+        <label for="login-pass">Contraseña</label>
+        <input id="login-pass" type="password" required placeholder="••••••••" autocomplete="current-password" autofocus>
+      </div>
+      <p id="login-error" class="form__error"></p>
+      <button type="submit" class="btn btn--accent btn--block">Ingresar</button>
+      <p class="admin-login__hint">Contraseña inicial: <code>admin1234</code></p>
+      <a href="index.html" class="admin-login__back">← Volver a la tienda</a>
+    </form>
+  </section>
+
+  <script src="js/data.js?v=17"></script>
+  <script src="js/store.js?v=17"></script>
+  <script>
+    // Login: valida la contraseña, abre la sesión de admin y vuelve a la tienda.
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const pass = document.getElementById("login-pass").value;
+      if (pass === Store.getPass()) {
+        sessionStorage.setItem("fitcore_admin_session", "1");
+        location.href = "index.html";
+      } else {
+        const err = document.getElementById("login-error");
+        err.textContent = "Contraseña incorrecta.";
+        err.classList.add("is-visible");
+      }
+    });
+  </script>
+</body>
+</html>

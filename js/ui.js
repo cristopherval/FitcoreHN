@@ -150,8 +150,9 @@ const UI = (() => {
   const renderTestimonios = () => {
     const cont = document.getElementById("testimonios-grid");
     if (!cont) return;
-    cont.innerHTML = TESTIMONIOS.map((t, i) => `
+    cont.innerHTML = Store.getTestimonios().map((t, i) => `
       <blockquote class="testi reveal ${i % 2 === 0 ? "reveal--left" : "reveal--right"}" style="--rd:${i * 160}ms">
+        ${adminCtrl("testimonio", i)}
         <div class="testi__stars" aria-label="${t.estrellas} de 5 estrellas">${"★".repeat(t.estrellas)}</div>
         <p class="testi__text">"${t.texto}"</p>
         <footer class="testi__author">

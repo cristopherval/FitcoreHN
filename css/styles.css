@@ -711,3 +711,42 @@ body.admin-on .navbar { top: 48px; }
 /* Asegura que nada provoque scroll horizontal en ningún dispositivo */
 html, body { max-width: 100%; overflow-x: hidden; }
 img, video { max-width: 100%; }
+
+/* =========================================================================
+   29. AJUSTES VISTA MÓVIL (lote 2) + sección creatina mujer (rosa/salmón)
+   ========================================================================= */
+/* #3 — Nombre/!precio de la categoría legibles aunque la sección sea oscura
+   (antes heredaban el blanco de .section--dark sobre la tarjeta blanca) */
+.cat__name  { color: var(--text); }
+.cat__count { color: var(--text-dim); }
+
+/* Kicker del hero: línea pequeña de keywords, NO al tamaño del H1 */
+.hero__title-kicker {
+  display: block; font-family: var(--ff-body); font-weight: 600;
+  font-size: .82rem; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 12px;
+}
+
+/* #4 — Sección "Creatina para mujer": acentos en rosa/salmón */
+.feature-spot { --pink: #e85d8a; --pink-2: #cf436f; }
+.feature-spot .section__eyebrow,
+.feature-spot__title .text-accent { color: var(--pink); }
+.feature-spot .feature-item.is-active { border-left-color: var(--pink); }
+.btn--pink { background: var(--pink, #e85d8a); color: #fff; box-shadow: 0 8px 22px rgba(232,93,138,.30); }
+.btn--pink:hover { background: var(--pink-2, #cf436f); color: #fff; box-shadow: 0 10px 26px rgba(232,93,138,.42); transform: translateY(-2px); }
+
+@media (max-width: 600px) {
+  /* #1 — Hero con menos info y más aire */
+  .hero__stats { display: none; }
+  .hero__title-kicker { font-size: .74rem; margin-bottom: 10px; }
+  .hero__title { font-size: clamp(2.1rem, 11vw, 3rem); }
+  .hero__sub { font-size: .98rem; }
+  .hero__content { padding: 26px 4px; }
+  .container { padding-left: 24px; padding-right: 24px; }
+
+  /* #2 — Ofertas: sin flechas (se navega deslizando) y tarjeta menos alargada */
+  .carousel__arrow { display: none; }
+  .carousel { gap: 0; }
+  .slide__media { height: 200px; padding: 16px; }
+  .slide__info { padding: 20px 20px 22px; }
+}

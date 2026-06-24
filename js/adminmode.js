@@ -34,6 +34,7 @@ const AdminMode = (() => {
       <div class="admin-bar__actions">
         <button class="btn btn--accent btn--xs" data-admin-add="producto">+ Producto</button>
         <button class="btn btn--accent btn--xs" data-admin-add="categoria">+ Categoría</button>
+        <button class="btn btn--accent btn--xs" data-admin-add="testimonio">+ Comentario</button>
         <button class="btn btn--ghost btn--xs" data-admin-pass>Clave</button>
         <button class="btn btn--ghost btn--xs" data-admin-reset>Reset</button>
         <button class="btn btn--outline btn--xs" data-admin-exit>Salir</button>
@@ -170,6 +171,56 @@ const AdminMode = (() => {
     location.reload();
   };
 
+  /* ---- Testimonio (comentario) ---- */
+  const formTestimonio = (t) => `
+    <h3 class="modal__title">${t ? "Editar" : "Agregar"} comentario</h3>
+    <form id="af-testi" class="form form--grid">
+      <div class="form__row"><label>Nombre</label><input id="aft-nombre" required value="${esc(t && t.nombre)}"></div>
+      <div class="form__row"><label>Ciudad</label><input id="aft-ciudad" value="${esc(t && t.ciudad)}"></div>
+      <div class="form__row"><label>Estrellas</label>
+        <select id="aft-estrellas">${[5,4,3,2,1].map(n => `<option value="${n}" ${t && t.estrellas === n ? "selected" : ""}>${n} estrellas</option>`).join("")}</select>
+      </div>
+      <div class="form__row form__row--full"><label>Comentario</label><textarea id="aft-texto" rows="3" required>${esc(t && t.texto)}</textarea></div>
+      <div class="form__actions form__row--full">
+        <button type="submit" class="btn btn--accent">Guardar</button>
+        <button type="button" class="btn btn--ghost" data-admin-cancel>Cancelar</button>
+      </div>
+    </form>`;
+
+  const abrirTestimonio = (idx) => {
+    const lista = Store.getTestimonios();
+    const t = (idx != null && idx >= 0) ? lista[idx] : null;
+    abrir(formTestimonio(t));
+    document.querySelector("[data-admin-cancel]").onclick = cerrar;
+    document.getElementById("af-testi").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById("aft-nombre").value.trim();
+      const ciudad = document.getElementById("aft-ciudad").value.trim();
+      const estrellas = Number(document.getElementById("aft-estrellas").value);
+      const texto = document.getElementById("aft-texto").value.trim();
+      if (!nombre || !texto) { alert("Completa nombre y comentario."); return; }
+      const arr = Store.getTestimonios();
+      if (t) {
+        const ok = await Confirm.show("Guardar cambios", "¿Guardar los cambios de este comentario?", "Sí, guardar");
+        if (!ok) return;
+        arr[idx] = { nombre, ciudad, estrellas, texto };
+      } else {
+        arr.push({ nombre, ciudad, estrellas, texto });
+      }
+      Store.setTestimonios(arr);
+      location.reload();
+    });
+  };
+
+  const eliminarTestimonio = async (idx) => {
+    const ok = await Confirm.show("Eliminar comentario", "¿Eliminar este comentario? No se puede deshacer.", "Sí, eliminar");
+    if (!ok) return;
+    const arr = Store.getTestimonios();
+    arr.splice(idx, 1);
+    Store.setTestimonios(arr);
+    location.reload();
+  };
+
   /* ---- Clave y reset ---- */
   const cambiarClave = () => {
     const n = prompt("Nueva contraseña de administrador (mínimo 4 caracteres):");
@@ -193,9 +244,30 @@ const AdminMode = (() => {
       const add  = e.target.closest("[data-admin-add]");
       const edit = e.target.closest("[data-admin-edit]");
       const del  = e.target.closest("[data-admin-del]");
-      if (add)  { e.preventDefault(); add.dataset.adminAdd === "producto" ? abrirProducto(null) : abrirCategoria(null); return; }
-      if (edit) { e.preventDefault(); e.stopPropagation(); edit.dataset.adminEdit === "producto" ? abrirProducto(edit.dataset.id) : abrirCategoria(edit.dataset.id); return; }
-      if (del)  { e.preventDefault(); e.stopPropagation(); del.dataset.adminDel === "producto" ? eliminarProducto(del.dataset.id) : eliminarCategoria(del.dataset.id); return; }
+      if (add) {
+        e.preventDefault();
+        const t = add.dataset.adminAdd;
+        if (t === "producto") abrirProducto(null);
+        else if (t === "categoria") abrirCategoria(null);
+        else if (t === "testimonio") abrirTestimonio(null);
+        return;
+      }
+      if (edit) {
+        e.preventDefault(); e.stopPropagation();
+        const t = edit.dataset.adminEdit, id = edit.dataset.id;
+        if (t === "producto") abrirProducto(id);
+        else if (t === "categoria") abrirCategoria(id);
+        else if (t === "testimonio") abrirTestimonio(Number(id));
+        return;
+      }
+      if (del) {
+        e.preventDefault(); e.stopPropagation();
+        const t = del.dataset.adminDel, id = del.dataset.id;
+        if (t === "producto") eliminarProducto(id);
+        else if (t === "categoria") eliminarCategoria(id);
+        else if (t === "testimonio") eliminarTestimonio(Number(id));
+        return;
+      }
       if (e.target.closest("[data-admin-exit]"))  { e.preventDefault(); salir(); }
       if (e.target.closest("[data-admin-pass]"))  { e.preventDefault(); cambiarClave(); }
       if (e.target.closest("[data-admin-reset]")) { e.preventDefault(); resetCatalogo(); }

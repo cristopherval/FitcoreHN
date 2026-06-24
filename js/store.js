@@ -44,6 +44,10 @@ const Store = (() => {
       escribir(STORAGE_KEYS.productos, DEFAULT_PRODUCTOS);
       escribir(STORAGE_KEYS.version, DATA_VERSION);
     }
+    // Testimonios: se siembran si no existen (también para usuarios antiguos).
+    if (necesitaSemilla || !localStorage.getItem(STORAGE_KEYS.testimonios)) {
+      escribir(STORAGE_KEYS.testimonios, TESTIMONIOS);
+    }
     if (!localStorage.getItem(STORAGE_KEYS.adminPass)) {
       escribir(STORAGE_KEYS.adminPass, "admin1234"); // contraseña inicial (cámbiala en el panel)
     }
@@ -57,6 +61,10 @@ const Store = (() => {
   const getProductos = () => leer(STORAGE_KEYS.productos, DEFAULT_PRODUCTOS);
   const setProductos = (prods) => escribir(STORAGE_KEYS.productos, prods);
   const getProducto = (id) => getProductos().find(p => p.id === id);
+
+  /* --- Testimonios --- */
+  const getTestimonios = () => leer(STORAGE_KEYS.testimonios, TESTIMONIOS);
+  const setTestimonios = (t) => escribir(STORAGE_KEYS.testimonios, t);
 
   /* --- Carrito --- */
   const getCarrito = () => leer(STORAGE_KEYS.carrito, []);
@@ -78,6 +86,7 @@ const Store = (() => {
     init,
     getCategorias, setCategorias,
     getProductos, setProductos, getProducto,
+    getTestimonios, setTestimonios,
     getCarrito, setCarrito,
     getPass, setPass,
     nuevoId

@@ -153,7 +153,9 @@ const Cart = (() => {
     msg += `Por favor confírmenme disponibilidad y forma de entrega. ¡Gracias!`;
 
     const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-    window.open(url, "_blank", "noopener");
+    // Navegamos en la MISMA pestaña: en móvil abre la app de WhatsApp y el
+    // navegador conserva el sitio (sin dejar una pestaña en blanco).
+    window.location.href = url;
   };
 
   /* Conecta los listeners del drawer (delegación de eventos). */

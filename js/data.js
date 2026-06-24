@@ -27,6 +27,7 @@ const CONFIG = {
 const STORAGE_KEYS = {
   productos: "fitcore_productos",
   categorias: "fitcore_categorias",
+  testimonios: "fitcore_testimonios",
   carrito: "fitcore_carrito",
   adminPass: "fitcore_admin_pass",
   version: "fitcore_data_version"

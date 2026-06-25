@@ -81,7 +81,13 @@ const UI = (() => {
       const slide = track.querySelector(".slide");
       if (!slide) return;
       const ancho = slide.getBoundingClientRect().width + 20; // + gap
-      track.scrollBy({ left: dir * ancho, behavior: "smooth" });
+      const max = track.scrollWidth - track.clientWidth;  // desplazamiento máximo
+      const pos = track.scrollLeft;
+      let destino = pos + dir * ancho;
+      // Carrusel continuo: al pasar del final vuelve al inicio (y viceversa).
+      if (dir > 0 && pos >= max - 5) destino = 0;
+      else if (dir < 0 && pos <= 5) destino = max;
+      track.scrollTo({ left: destino, behavior: "smooth" });
     };
     prev.onclick = () => irA(-1);
     next.onclick = () => irA(1);

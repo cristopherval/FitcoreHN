@@ -147,7 +147,7 @@ const AdminPanel = (() => {
         if (nuevaImg) ref.imagen = nuevaImg;
         toast("Producto actualizado.");
       } else {
-        prods.push({ id: Store.nuevoId("p"), nombre, categoria, precio, precioAnterior, destacado, descripcion, imagen: nuevaImg || "assets/atleta-espalda.png" });
+        prods.push({ id: Store.proximoId("p", prods), nombre, categoria, precio, precioAnterior, destacado, descripcion, imagen: nuevaImg || "assets/atleta-espalda.png" });
         toast("Producto agregado.");
       }
       Store.setProductos(prods);

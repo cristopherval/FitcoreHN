@@ -111,6 +111,14 @@ const Store = (() => {
     return `${prefijo}_${base}_${_seq}`;
   };
 
+  /* ID limpio y secuencial: p6, p7, p8… (busca el primer número libre). */
+  const proximoId = (prefijo, lista) => {
+    const usados = new Set((lista || getProductos()).map(x => x.id));
+    let n = 1;
+    while (usados.has(prefijo + n)) n++;
+    return prefijo + n;
+  };
+
   return {
     init, ready,
     getCategorias, setCategorias,
@@ -119,7 +127,7 @@ const Store = (() => {
     descartarLocal,
     getCarrito, setCarrito,
     getPass, setPass,
-    nuevoId
+    nuevoId, proximoId
   };
 })();
 

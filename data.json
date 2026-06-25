@@ -91,28 +91,28 @@
   ],
   "testimonios": [
     {
-      "nombre": "Carlos M.",
-      "ciudad": "Tegucigalpa",
-      "estrellas": 5,
-      "texto": "Pedí mi creatina un martes y la tuve el mismo día. Producto original y precios justos. Mi nueva tienda fija."
-    },
-    {
-      "nombre": "Andrea R.",
+      "nombre": "Oscar G.",
       "ciudad": "Talanga",
       "estrellas": 5,
-      "texto": "Excelente atención por WhatsApp, me asesoraron con la proteína ideal para mi objetivo. 100% recomendados."
+      "texto": "Pedí mi creatina un martes y la tuve el mismo día. Producto original y precios justos. Full recomendada."
+    },
+    {
+      "nombre": "Andree R.",
+      "ciudad": "Talanga",
+      "estrellas": 5,
+      "texto": "Excelente atención por WhatsApp, me asesoraron con la proteína ideal para mi objetivo."
     },
     {
       "nombre": "José L.",
       "ciudad": "Tegucigalpa",
       "estrellas": 5,
-      "texto": "El pre-entreno Outrage es brutal, energía pura. Entrega rápida y todo sellado de fábrica."
+      "texto": "Entregaron en mi casa sin ningun problema."
     },
     {
-      "nombre": "María F.",
-      "ciudad": "Talanga",
+      "nombre": "Suzete V.",
+      "ciudad": "Tegucigalpa",
       "estrellas": 5,
-      "texto": "Compré la Gold Standard y llegó perfecta. Buen precio comparado con otras tiendas. Volveré a comprar."
+      "texto": "No sabia con que empezar y ellos me ayudaron a elegir la mejor opción para mis objetivos."
     }
   ]
 }

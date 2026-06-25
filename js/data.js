@@ -24,8 +24,8 @@ const CONFIG = {
   ciudades: ["Talanga", "Tegucigalpa"],
   moneda: "L.", // Lempira hondureño
   redes: {
-    instagram: "https://instagram.com/",
-    facebook: "https://facebook.com/",
+    instagram: "https://www.instagram.com/vale4_c?igsh=MWtja2Y2MWRsZHBzYw%3D%3D&utm_source=qr",
+    facebook: "https://www.facebook.com/share/18h41AgsuA/?mibextid=wwXIfr",
     tiktok: "https://tiktok.com/"
   }
 };

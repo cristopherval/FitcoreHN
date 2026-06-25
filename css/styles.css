@@ -790,3 +790,21 @@ img, video { max-width: 100%; }
 
 /* El modal de confirmación siempre va por encima de cualquier otro modal */
 .modal--confirm { z-index: 200; }
+
+/* =========================================================================
+   30. PREGUNTAS FRECUENTES (acordeón)
+   ========================================================================= */
+.faq { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+.faq__item { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); transition: border-color .25s, box-shadow .25s; }
+.faq__item:hover { box-shadow: var(--shadow); }
+.faq__item[open] { border-color: rgba(14,122,76,.4); box-shadow: var(--shadow); }
+.faq__q { list-style: none; cursor: pointer; padding: 18px 20px; font-family: var(--ff-display); text-transform: uppercase; letter-spacing: .5px; font-size: 1rem; color: var(--text); display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.faq__q::-webkit-details-marker { display: none; }
+.faq__q::after { content: "+"; font-size: 1.5rem; line-height: 1; color: var(--accent); transition: transform .3s var(--ease); flex: none; }
+.faq__item[open] .faq__q::after { transform: rotate(45deg); }
+.faq__q:hover { color: var(--accent); }
+/* Contenedor animado por JS (altura): despliegue suave */
+.faq__a { overflow: hidden; height: 0; transition: height .35s var(--ease); }
+.faq__item[open] .faq__a { height: auto; }   /* respaldo si el JS no corre */
+.faq__a p { padding: 2px 20px 18px; margin: 0; color: var(--text-dim); animation: fadeUp .45s var(--ease); }
+.faq__a a { color: var(--accent); font-weight: 700; text-decoration: underline; }

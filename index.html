@@ -34,7 +34,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="preload" as="image" href="assets/fondpprueba1.jpg">
-  <link rel="stylesheet" href="css/styles.css?v=27">
+  <link rel="stylesheet" href="css/styles.css?v=29">
 
   <!-- ============ Datos estructurados (Store) ============ -->
   <script type="application/ld+json">
@@ -50,6 +50,8 @@
     "address": { "@type": "PostalAddress", "addressCountry": "HN", "addressRegion": "Francisco Morazán" }
   }
   </script>
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
 <body>
 
@@ -120,6 +122,34 @@
             <div class="carousel__track" id="carousel-track"><!-- JS --></div>
           </div>
           <button class="carousel__arrow carousel__arrow--next" id="carousel-next" aria-label="Siguiente">›</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================== PREGUNTAS FRECUENTES ====================== -->
+    <section class="section section--alt" id="faq">
+      <div class="container">
+        <header class="section__head reveal">
+          <span class="section__eyebrow">¿Tienes dudas?</span>
+          <h2 class="section__title">Preguntas frecuentes</h2>
+        </header>
+        <div class="faq">
+          <details class="faq__item reveal" style="--rd:0ms">
+            <summary class="faq__q">¿Hacen entrega a domicilio?</summary>
+            <div class="faq__a"><p>Sí, entregamos en <strong>Talanga</strong> y <strong>Tegucigalpa</strong>.</p></div>
+          </details>
+          <details class="faq__item reveal" style="--rd:90ms">
+            <summary class="faq__q">¿Cómo es el pago?</summary>
+            <div class="faq__a"><p>Pagas al recibir tu pedido (contra entrega).</p></div>
+          </details>
+          <details class="faq__item reveal" style="--rd:180ms">
+            <summary class="faq__q">¿Puedo pagar con transferencia?</summary>
+            <div class="faq__a"><p>¡Claro! Aceptamos transferencia de cualquier banco.</p></div>
+          </details>
+          <details class="faq__item reveal" style="--rd:270ms">
+            <summary class="faq__q">¿Con qué suplemento empiezo?</summary>
+            <div class="faq__a"><p>Depende de tus objetivos. <a href="https://wa.me/50433644559?text=Hola%20FITCORE%20HN,%20quiero%20asesoria%20personalizada%20para%20empezar" target="_blank" rel="noopener">Da clic AQUÍ</a> para una atención personalizada por WhatsApp.</p></div>
+          </details>
         </div>
       </div>
     </section>
@@ -251,8 +281,8 @@
       <div class="footer__col">
         <h4>Síguenos</h4>
         <div class="footer__social">
-          <a href="https://instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
-          <a href="https://facebook.com/" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
+          <a href="https://www.instagram.com/vale4_c?igsh=MWtja2Y2MWRsZHBzYw%3D%3D&utm_source=qr" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+          <a href="https://www.facebook.com/share/18h41AgsuA/?mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
           <a href="https://tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">TikTok</a>
         </div>
       </div>
@@ -305,11 +335,11 @@
   </nav>
 
   <!-- Scripts: orden importa (datos → store → carrito → ui → main) -->
-  <script src="js/data.js?v=27"></script>
-  <script src="js/store.js?v=27"></script>
-  <script src="js/confirm.js?v=27"></script>
-  <script src="js/cart.js?v=27"></script>
-  <script src="js/ui.js?v=27"></script>
-  <script src="js/main.js?v=27"></script>
+  <script src="js/data.js?v=29"></script>
+  <script src="js/store.js?v=29"></script>
+  <script src="js/confirm.js?v=29"></script>
+  <script src="js/cart.js?v=29"></script>
+  <script src="js/ui.js?v=29"></script>
+  <script src="js/main.js?v=29"></script>
 </body>
 </html>

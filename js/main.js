@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAdminOculto();
   initAnioFooter();
   initFeatureSpot();
+  initFAQ();
 
   // Espera el catálogo (data.json) antes de pintar, así siempre se muestra
   // lo más reciente publicado. Las animaciones de entrada las maneja el
@@ -34,6 +35,51 @@ document.addEventListener("DOMContentLoaded", () => {
     pintar();
   }
 });
+
+/* Preguntas frecuentes: despliegue/colapso suave (anima la altura).
+   Mantiene el <details> nativo (accesible) pero con transición bonita.
+   Además cierra las demás al abrir una (estilo acordeón). */
+function initFAQ() {
+  const items = Array.from(document.querySelectorAll(".faq__item"));
+  if (!items.length) return;
+
+  const cerrar = (item) => {
+    const cont = item.querySelector(".faq__a");
+    if (!item.open) return;
+    cont.style.height = cont.scrollHeight + "px";
+    requestAnimationFrame(() => { cont.style.height = "0px"; });
+    cont.addEventListener("transitionend", function te() {
+      item.open = false;
+      cont.style.height = "";
+      cont.removeEventListener("transitionend", te);
+    }, { once: true });
+  };
+
+  const abrir = (item) => {
+    const cont = item.querySelector(".faq__a");
+    item.open = true;                       // hace visible el contenido
+    const h = cont.scrollHeight;
+    cont.style.height = "0px";
+    requestAnimationFrame(() => { cont.style.height = h + "px"; });
+    cont.addEventListener("transitionend", function te() {
+      cont.style.height = "auto";           // permite contenido flexible luego
+      cont.removeEventListener("transitionend", te);
+    }, { once: true });
+  };
+
+  items.forEach(item => {
+    const summary = item.querySelector(".faq__q");
+    summary.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (item.open) {
+        cerrar(item);
+      } else {
+        items.filter(o => o !== item && o.open).forEach(cerrar); // acordeón
+        abrir(item);
+      }
+    });
+  });
+}
 
 /* Lista de beneficios de la sección Creatine: resalta uno a la vez.
    En escritorio reacciona al pasar el mouse; en móvil, al tocar. */

@@ -808,3 +808,15 @@ img, video { max-width: 100%; }
 .faq__item[open] .faq__a { height: auto; }   /* respaldo si el JS no corre */
 .faq__a p { padding: 2px 20px 18px; margin: 0; color: var(--text-dim); animation: fadeUp .45s var(--ease); }
 .faq__a a { color: var(--accent); font-weight: 700; text-decoration: underline; }
+
+/* Entrada llamativa de cada pregunta (sube con un pequeño rebote, en cascada) */
+.faq__item.reveal { opacity: 0; transform: translateY(34px) scale(.97); transition: none; }
+.faq__item.reveal.is-visible { animation: faqIn .65s var(--ease) both; animation-delay: var(--rd, 0ms); }
+@keyframes faqIn {
+  0%   { opacity: 0; transform: translateY(34px) scale(.97); }
+  60%  { opacity: 1; transform: translateY(-5px) scale(1.01); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .faq__item.reveal.is-visible { animation: none; opacity: 1; transform: none; }
+}

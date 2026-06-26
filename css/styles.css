@@ -225,8 +225,8 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 .slide__old { color: var(--text-dim); text-decoration: line-through; font-size: 1rem; }
 
 /* Flechas sutiles: solo un chevron tenue que se ilumina al pasar el mouse */
-.carousel__arrow { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%; background: transparent; border: none; color: var(--text-dim); font-size: 1.8rem; line-height: 1; display: grid; place-items: center; transition: opacity .2s, color .2s, transform .2s; z-index: 2; box-shadow: none; opacity: .4; }
-.carousel__arrow:hover { opacity: 1; color: var(--accent); transform: scale(1.15); }
+.carousel__arrow { flex: 0 0 auto; width: 36px; height: 36px; border-radius: 50%; background: transparent; border: none; color: var(--text-dim); font-size: 1.8rem; line-height: 1; display: grid; place-items: center; transition: opacity .2s, color .2s; z-index: 2; box-shadow: none; opacity: .4; }
+.carousel__arrow:hover { opacity: 1; color: var(--accent); }
 
 /* ============ 10. CATEGORÍAS (mosaico de producto → página propia) ============ */
 .cat-grid { display: grid; gap: 22px; grid-template-columns: 1fr; }

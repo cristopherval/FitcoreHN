@@ -326,7 +326,7 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 .cart-drawer__note { font-size: .74rem; color: var(--text-dim); text-align: center; margin-top: 4px; }
 
 /* ============ 16. WHATSAPP FLOTANTE ============ */
-.whatsapp-float { position: fixed; right: 18px; bottom: 84px; z-index: 70; width: 56px; height: 56px; border-radius: 50%; background: #25d366; color: #fff; display: grid; place-items: center; box-shadow: 0 8px 24px rgba(37,211,102,.45); animation: pulseWa 2.4s infinite; transition: transform .2s; }
+.whatsapp-float { position: fixed; right: 18px; bottom: calc(90px + env(safe-area-inset-bottom)); z-index: 78; width: 56px; height: 56px; border-radius: 50%; background: #25d366; color: #fff; display: grid; place-items: center; box-shadow: 0 8px 24px rgba(37,211,102,.45); animation: pulseWa 2.4s infinite; transition: transform .2s; }
 .whatsapp-float:hover { transform: scale(1.08); }
 
 /* ============ 17. BOTTOM NAV MÓVIL ============ */
@@ -486,14 +486,16 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 .showcase__product { position: relative; z-index: 2; max-height: 300px; width: auto; object-fit: contain; mix-blend-mode: multiply; animation: float3d 5s ease-in-out infinite; will-change: transform; }
 .showcase__floor { position: absolute; bottom: 26px; width: 180px; height: 22px; background: rgba(17,19,24,.22); filter: blur(12px); border-radius: 50%; z-index: 1; animation: floorShadow 5s ease-in-out infinite; }
 
-/* Video del showcase: el fondo blanco se funde con el de la sección
-   (mix-blend-mode multiply) y el personaje flota suave, sin recuadro. */
+/* Video del showcase: la sección es BLANCA, igual que el fondo del video,
+   así su fondo desaparece siempre (sin depender de mix-blend en video).
+   Más grande y con flotación suave. */
 .showcase__video {
   position: relative; z-index: 2; display: block;
-  width: 100%; max-width: 440px; height: auto;
-  mix-blend-mode: multiply;
+  width: 100%; max-width: 560px; height: auto; margin: 0 auto;
   animation: floatSoft 4.5s ease-in-out infinite; will-change: transform;
 }
+/* En el showcase con video no usamos el resplandor/sombra (se verían en blanco) */
+.showcase__stage .showcase__glow, .showcase__stage .showcase__floor { display: none; }
 @keyframes floatSoft { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
 @media (prefers-reduced-motion: reduce) { .showcase__video { animation: none !important; } }
 .showcase__title { font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 8px 0 12px; }
@@ -831,4 +833,21 @@ img, video { max-width: 100%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .faq__item.reveal.is-visible { animation: none; opacity: 1; transform: none; }
+}
+
+/* =========================================================================
+   31. FAQ con imagen (layout de 2 columnas)
+   ========================================================================= */
+.faq-layout { display: grid; grid-template-columns: 1fr; gap: 26px; align-items: center; }
+.faq-media { border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); min-height: 220px; }
+.faq-media img { width: 100%; height: 100%; min-height: 220px; object-fit: cover; display: block; }
+.faq-head { text-align: center; margin: 0 auto 24px; }
+/* En 2 columnas el bloque .faq ocupa todo el ancho de su columna */
+.faq-content .faq { max-width: none; margin: 0; }
+
+@media (min-width: 900px) {
+  .faq-layout { grid-template-columns: 0.85fr 1.15fr; gap: 48px; align-items: stretch; }
+  .faq-media { order: 0; }
+  .faq-head { text-align: left; margin: 0 0 22px; }
+  .faq-head .section__title::after { margin-left: 0; }
 }

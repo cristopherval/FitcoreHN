@@ -485,6 +485,17 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 /* Sin filter: así mix-blend-mode funde el fondo blanco del JPG con el de la sección */
 .showcase__product { position: relative; z-index: 2; max-height: 300px; width: auto; object-fit: contain; mix-blend-mode: multiply; animation: float3d 5s ease-in-out infinite; will-change: transform; }
 .showcase__floor { position: absolute; bottom: 26px; width: 180px; height: 22px; background: rgba(17,19,24,.22); filter: blur(12px); border-radius: 50%; z-index: 1; animation: floorShadow 5s ease-in-out infinite; }
+
+/* Video del showcase: el fondo blanco se funde con el de la sección
+   (mix-blend-mode multiply) y el personaje flota suave, sin recuadro. */
+.showcase__video {
+  position: relative; z-index: 2; display: block;
+  width: 100%; max-width: 440px; height: auto;
+  mix-blend-mode: multiply;
+  animation: floatSoft 4.5s ease-in-out infinite; will-change: transform;
+}
+@keyframes floatSoft { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+@media (prefers-reduced-motion: reduce) { .showcase__video { animation: none !important; } }
 .showcase__title { font-size: clamp(1.6rem, 4vw, 2.4rem); margin: 8px 0 12px; }
 .showcase__text p { color: var(--text-dim); margin-bottom: 22px; max-width: 460px; }
 .showcase__text strong { color: var(--text); }

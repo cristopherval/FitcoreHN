@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAnioFooter();
   initFeatureSpot();
   initFAQ();
+  initVideos();
 
   // Espera el catálogo (data.json) antes de pintar, así siempre se muestra
   // lo más reciente publicado. Las animaciones de entrada las maneja el
@@ -79,6 +80,27 @@ function initFAQ() {
       }
     });
   });
+}
+
+/* Fuerza el autoplay de los videos en móvil (Brave/iOS suelen bloquearlo).
+   Se asegura de que estén silenciados + inline y reintenta al primer toque. */
+function initVideos() {
+  const vids = Array.from(document.querySelectorAll("video"));
+  if (!vids.length) return;
+  const reproducir = (v) => {
+    v.muted = true; v.defaultMuted = true; v.playsInline = true;
+    const p = v.play();
+    if (p && p.catch) p.catch(() => {});
+  };
+  vids.forEach(v => {
+    reproducir(v);
+    v.addEventListener("canplay", () => reproducir(v), { once: true });
+    v.addEventListener("loadeddata", () => reproducir(v), { once: true });
+  });
+  // Reintento tras la primera interacción del usuario (lo exigen algunos navegadores).
+  const patear = () => vids.forEach(reproducir);
+  ["touchstart", "click", "scroll", "pointerdown"].forEach(ev =>
+    window.addEventListener(ev, patear, { once: true, passive: true }));
 }
 
 /* Lista de beneficios de la sección Creatine: resalta uno a la vez.

@@ -851,3 +851,25 @@ img, video { max-width: 100%; }
   .faq-head { text-align: left; margin: 0 0 22px; }
   .faq-head .section__title::after { margin-left: 0; }
 }
+
+/* =========================================================================
+   32. ANTI-DESBORDE de imágenes en móvil (productos, categorías, ofertas)
+   ========================================================================= */
+.card__media, .slide__media, .cat__media { overflow: hidden; }
+.card__media img, .slide__media img, .cat__media img { max-width: 100%; }
+
+@media (max-width: 600px) {
+  /* Tamaños contenidos para que ninguna imagen (p. ej. Gold Standard) se salga */
+  .card__media img  { max-height: 210px; max-width: 100%; height: auto; width: auto; }
+  .slide__media     { padding: 14px; }
+  .slide__media img { max-height: 150px; max-width: 78%; height: auto; width: auto; object-fit: contain; }
+  .cat__media       { aspect-ratio: 16 / 11; }
+  .cat__media img   { max-height: 140px; max-width: 82%; height: auto; width: auto; object-fit: contain; }
+}
+
+/* En móvil el rino se ve al doble (el fondo blanco sobrante queda fuera de
+   pantalla y, al ser blanco como la sección, es invisible) */
+@media (max-width: 600px) {
+  .showcase__stage { overflow: visible; }
+  .showcase__video { width: 200%; max-width: 200%; margin: 0 0 0 -50%; }
+}

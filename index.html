@@ -18,15 +18,20 @@
   <meta name="description" content="Tienda de suplementos deportivos de alta gama en Honduras. Creatinas, proteínas y pre-entrenos originales. Envíos en Talanga y Tegucigalpa. Compra fácil por WhatsApp.">
   <meta name="keywords" content="suplementos Honduras, creatina Tegucigalpa, proteína Talanga, pre entreno, whey protein, monohidrato de creatina, FITCORE">
   <meta name="author" content="FITCORE HN">
-  <link rel="canonical" href="https://fitcorehn.com/">
+  <link rel="canonical" href="https://fitcore-hn.com/">
 
   <!-- Open Graph / redes sociales -->
   <meta property="og:type" content="website">
+  <meta property="og:site_name" content="FITCORE HN">
+  <meta property="og:url" content="https://fitcore-hn.com/">
   <meta property="og:title" content="FITCORE HN | Suplementos Deportivos Premium">
   <meta property="og:description" content="Creatinas, proteínas y pre-entrenos originales. Envíos en Talanga y Tegucigalpa.">
-  <meta property="og:image" content="assets/hero-atleta.png">
+  <meta property="og:image" content="https://fitcore-hn.com/assets/fondpprueba1.jpg">
   <meta property="og:locale" content="es_HN">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FITCORE HN | Suplementos Deportivos Premium">
+  <meta name="twitter:description" content="Creatinas, proteínas y pre-entrenos originales. Envíos en Talanga y Tegucigalpa.">
+  <meta name="twitter:image" content="https://fitcore-hn.com/assets/fondpprueba1.jpg">
 
   <!-- Rendimiento de fuentes: preconnect + carga diferida -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,20 +39,52 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="preload" as="image" href="assets/fondpprueba1.jpg">
-  <link rel="stylesheet" href="css/styles.css?v=39">
+  <link rel="stylesheet" href="css/styles.css?v=40">
 
-  <!-- ============ Datos estructurados (Store) ============ -->
+  <!-- Geo (SEO local) -->
+  <meta name="geo.region" content="HN-FM">
+  <meta name="geo.placename" content="Tegucigalpa, Talanga">
+
+  <!-- ============ Datos estructurados: Negocio local ============ -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "Store",
+    "@id": "https://fitcore-hn.com/#tienda",
     "name": "FITCORE HN",
-    "description": "Suplementos deportivos premium con envíos en Talanga y Tegucigalpa.",
-    "image": "https://fitcorehn.com/assets/hero-atleta.png",
+    "description": "Tienda de suplementos deportivos (creatinas, proteínas y pre-entrenos) con envíos en Talanga y Tegucigalpa, Honduras.",
+    "url": "https://fitcore-hn.com/",
+    "image": "https://fitcore-hn.com/assets/fondpprueba1.jpg",
+    "logo": "https://fitcore-hn.com/assets/favicon.png",
     "email": "cristopherval04@gmail.com",
     "telephone": "+50433644559",
-    "areaServed": ["Talanga", "Tegucigalpa"],
-    "address": { "@type": "PostalAddress", "addressCountry": "HN", "addressRegion": "Francisco Morazán" }
+    "priceRange": "L. 650 - L. 2200",
+    "currenciesAccepted": "HNL",
+    "paymentAccepted": "Efectivo, Transferencia bancaria",
+    "areaServed": [
+      { "@type": "City", "name": "Talanga" },
+      { "@type": "City", "name": "Tegucigalpa" }
+    ],
+    "address": { "@type": "PostalAddress", "addressCountry": "HN", "addressRegion": "Francisco Morazán", "addressLocality": "Tegucigalpa" },
+    "openingHours": "Mo-Su 08:00-20:00",
+    "sameAs": [
+      "https://www.instagram.com/vale4_c",
+      "https://www.facebook.com/share/18h41AgsuA/"
+    ]
+  }
+  </script>
+
+  <!-- ============ Datos estructurados: Preguntas frecuentes ============ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      { "@type": "Question", "name": "¿Hacen entrega a domicilio?", "acceptedAnswer": { "@type": "Answer", "text": "Sí, entregamos en Talanga y Tegucigalpa." } },
+      { "@type": "Question", "name": "¿Cómo es el pago?", "acceptedAnswer": { "@type": "Answer", "text": "Pagas al recibir tu pedido (contra entrega)." } },
+      { "@type": "Question", "name": "¿Puedo pagar con transferencia?", "acceptedAnswer": { "@type": "Answer", "text": "Sí, aceptamos transferencia de cualquier banco." } },
+      { "@type": "Question", "name": "¿Con qué suplemento empiezo?", "acceptedAnswer": { "@type": "Answer", "text": "Depende de tus objetivos. Escríbenos por WhatsApp y te damos una atención personalizada." } }
+    ]
   }
   </script>
   <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -342,11 +379,11 @@
   </nav>
 
   <!-- Scripts: orden importa (datos → store → carrito → ui → main) -->
-  <script src="js/data.js?v=39"></script>
-  <script src="js/store.js?v=39"></script>
-  <script src="js/confirm.js?v=39"></script>
-  <script src="js/cart.js?v=39"></script>
-  <script src="js/ui.js?v=39"></script>
-  <script src="js/main.js?v=39"></script>
+  <script src="js/data.js?v=40"></script>
+  <script src="js/store.js?v=40"></script>
+  <script src="js/confirm.js?v=40"></script>
+  <script src="js/cart.js?v=40"></script>
+  <script src="js/ui.js?v=40"></script>
+  <script src="js/main.js?v=40"></script>
 </body>
 </html>

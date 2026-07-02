@@ -89,14 +89,6 @@ const AdminPanel = (() => {
   };
   const cerrar = () => modal.classList.remove("is-open");
 
-  const leerImg = (input) => new Promise((res) => {
-    const f = input.files && input.files[0];
-    if (!f) return res(null);
-    const r = new FileReader();
-    r.onload = () => res(r.result);
-    r.readAsDataURL(f);
-  });
-
   const abrirForm = (id) => {
     ensureModal();
     const p = id ? Store.getProducto(id) : null;
@@ -112,7 +104,7 @@ const AdminPanel = (() => {
         <div class="form__row"><label>Precio promo (opcional)</label><input id="f-promo" type="number" min="0" value="${p && p.precioAnterior ? p.precio : ""}"></div>
         <div class="form__row form__row--check"><label><input id="f-dest" type="checkbox" ${p && p.destacado ? "checked" : ""}> Mostrar en "más vendidos"</label></div>
         <div class="form__row form__row--full"><label>Descripción</label><textarea id="f-desc" rows="2">${esc(p && p.descripcion)}</textarea></div>
-        <div class="form__row form__row--full"><label>Foto ${p ? "(vacío = conservar la actual)" : ""}</label><input id="f-img" type="file" accept="image/*"></div>
+        <div class="form__row form__row--full"><label>Imagen — nombre del archivo en assets/ ${p ? "(vacío = conservar la actual)" : ""}</label><input id="f-img" type="text" placeholder="ej. creatina-pink.jpg" value="${p ? esc((p.imagen || "").replace(/^assets\//, "")) : ""}"><small class="muted">Primero pon la foto en la carpeta <code>assets/</code> y aquí escribe solo su nombre (con la extensión .jpg / .png).</small></div>
         <div class="form__actions form__row--full">
           <button class="btn btn--accent" type="submit">Guardar</button>
           <button class="btn btn--ghost" type="button" id="f-cancel">Cancelar</button>
@@ -137,17 +129,21 @@ const AdminPanel = (() => {
       if (promo && promo < normal) { precio = promo; precioAnterior = normal; }
       else { precio = normal; precioAnterior = null; }
 
-      const nuevaImg = await leerImg(document.getElementById("f-img"));
+      // La imagen es un NOMBRE de archivo dentro de assets/ (ya no base64).
+      const imgRaw = document.getElementById("f-img").value.trim();
+      const imagen = imgRaw
+        ? (/^(assets\/|https?:|data:)/.test(imgRaw) ? imgRaw : "assets/" + imgRaw)
+        : null;
       const prods = Store.getProductos();
       if (p) {
         const ok = await Confirm.show("Guardar cambios", `¿Guardar los cambios de "${nombre}"?`, "Sí, guardar");
         if (!ok) return;
         const ref = prods.find(x => x.id === id);
         Object.assign(ref, { nombre, categoria, precio, precioAnterior, destacado, descripcion });
-        if (nuevaImg) ref.imagen = nuevaImg;
+        if (imagen) ref.imagen = imagen;
         toast("Producto actualizado.");
       } else {
-        prods.push({ id: Store.proximoId("p", prods), nombre, categoria, precio, precioAnterior, destacado, descripcion, imagen: nuevaImg || "assets/atleta-espalda.png" });
+        prods.push({ id: Store.proximoId("p", prods), nombre, categoria, precio, precioAnterior, destacado, descripcion, imagen: imagen || "assets/atleta-espalda.png" });
         toast("Producto agregado.");
       }
       Store.setProductos(prods);

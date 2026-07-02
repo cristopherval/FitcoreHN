@@ -33,8 +33,8 @@
     {
       "id": "p4",
       "nombre": "100% Whey Protein Nutrex",
-      "precio": 1397,
-      "precioAnterior": 1500,
+      "precio": 1197,
+      "precioAnterior": 1350,
       "categoria": "proteinas",
       "descripcion": "Lean Muscle Shake sabor chocolate. Recuperación y crecimiento. 2 lb · 26 servicios.",
       "imagen": "assets/proteina-nutrex.jpg",
@@ -52,25 +52,23 @@
     },
     {
       "id": "p6",
-      "nombre": "Creatina Nutrex Pink lemonade",
+      "nombre": "Creatina Nutrex 200 Servings",
       "categoria": "creatinas",
-      "precio": 1297,
-      "precioAnterior": 1500,
+      "precio": 1450,
+      "precioAnterior": 1600,
       "destacado": false,
-      "descripcion": "Desarrolla músculo magro y tonificado\nPromueve una piel, cabello y uñas más saludables\nMejora la fuerza y ​​el rendimiento en el entrenamiento",
-      "imagen": "assets/Creatina-Women-30-serv-Peach-loemanade.jpg"
-      
-    },
+      "descripcion": "Creatina que rinde, mas de 6 meses de producto de calidad!",
+      "imagen": "assets/creatinanutrex200-serv.jpg"
+      },
     {
       "id": "p7",
-      "nombre": "Creatina Nutrex Peach Mango",
-      "categoria": "creatinas",
-      "precio": 1297,
-      "precioAnterior": 1500,
+      "nombre": "Pre-entreno Total War",
+      "categoria": "preentrenos",
+      "precio": 1099,
+      "precioAnterior": 1200,
       "destacado": false,
-      "descripcion": "Desarrolla músculo magro y tonificado\nPromueve una piel, cabello y uñas más saludables\nMejora la fuerza y ​​el rendimiento en el entrenamiento",
-      "imagen": "assets/Creatina-Women-30-serv-Peach-Mango.jpg"
-    }
+      "descripcion": "Obten ese boost que tanto buscas, disponible en muchos sabores!",
+    "imagen": "assets/TOTAL-WAR-30-SERV-TIGER-BLOOD.jpg"    }
   ],
   "categorias": [
     {
@@ -91,28 +89,28 @@
   ],
   "testimonios": [
     {
-      "nombre": "Oscar G.",
-      "ciudad": "Talanga",
+      "nombre": "Carlos M.",
+      "ciudad": "Tegucigalpa",
       "estrellas": 5,
-      "texto": "Pedí mi creatina un martes y la tuve el mismo día. Producto original y precios justos. Full recomendada."
+      "texto": "Pedí mi creatina un martes y la tuve el mismo día. Producto original y precios justos. Mi nueva tienda fija."
     },
     {
-      "nombre": "Andree R.",
+      "nombre": "Andrea R.",
       "ciudad": "Talanga",
       "estrellas": 5,
-      "texto": "Excelente atención por WhatsApp, me asesoraron con la proteína ideal para mi objetivo."
+      "texto": "Excelente atención por WhatsApp, me asesoraron con la proteína ideal para mi objetivo. 100% recomendados."
     },
     {
       "nombre": "José L.",
       "ciudad": "Tegucigalpa",
       "estrellas": 5,
-      "texto": "Entregaron en mi casa sin ningun problema."
+      "texto": "El pre-entreno Outrage es brutal, energía pura. Entrega rápida y todo sellado de fábrica."
     },
     {
-      "nombre": "Suzete V.",
-      "ciudad": "Tegucigalpa",
+      "nombre": "María F.",
+      "ciudad": "Talanga",
       "estrellas": 5,
-      "texto": "No sabia con que empezar y ellos me ayudaron a elegir la mejor opción para mis objetivos."
+      "texto": "Compré la Gold Standard y llegó perfecta. Buen precio comparado con otras tiendas. Volveré a comprar."
     }
   ]
 }

@@ -33,8 +33,8 @@
     {
       "id": "p4",
       "nombre": "100% Whey Protein Nutrex",
-      "precio": 1197,
-      "precioAnterior": 1350,
+      "precio": 1397,
+      "precioAnterior": null,
       "categoria": "proteinas",
       "descripcion": "Lean Muscle Shake sabor chocolate. Recuperación y crecimiento. 2 lb · 26 servicios.",
       "imagen": "assets/proteina-nutrex.jpg",
@@ -58,7 +58,8 @@
       "precioAnterior": 1600,
       "destacado": false,
       "descripcion": "Creatina que rinde, mas de 6 meses de producto de calidad!",
-      "imagen": "assets/creatina-nutrex-200-serv.jpg"    },
+      "imagen": "assets/creatina-nutrex-200-serv.jpg"
+    },
     {
       "id": "p7",
       "nombre": "Pre-entreno Total War",
@@ -67,7 +68,8 @@
       "precioAnterior": 1200,
       "destacado": false,
       "descripcion": "Obten ese boost que tanto buscas, disponible en muchos sabores!",
-      "imagen": "assets/total-war-tiger-blood.jpg"    },
+      "imagen": "assets/total-war-tiger-blood.jpg"
+    },
     {
       "id": "p8",
       "nombre": "Creatina Nutrex Pink lemonade",
@@ -76,7 +78,8 @@
       "precioAnterior": 1399,
       "destacado": false,
       "descripcion": "Desarrolla músculo magro y tonificado\nPromueve una piel, cabello y uñas más saludables\nMejora la fuerza y ​​el rendimiento en el entrenamiento\nFavorece la función cognitiva",
-      "imagen": "assets/creatina-women-pink-lemonade.jpg"    },
+      "imagen": "assets/creatina-women-pink-lemonade.jpg"
+    },
     {
       "id": "p9",
       "nombre": "Creatina Nutrex Peach Mango",
@@ -85,8 +88,8 @@
       "precioAnterior": 1399,
       "destacado": false,
       "descripcion": "Desarrolla músculo magro y tonificado\nPromueve una piel, cabello y uñas más saludables\nMejora la fuerza y ​​el rendimiento en el entrenamiento\nFavorece la función cognitiva",
-      "imagen": "assets/creatina-women-peach-mango.jpg"    },
-      
+      "imagen": "assets/creatina-women-peach-mango.jpg"
+    },
     {
       "id": "p10",
       "nombre": "Creatina Sabor Ponche",
@@ -95,10 +98,8 @@
       "precioAnterior": 900,
       "destacado": false,
       "descripcion": "¿Te cuesta tomarte tu proteina? Esta creatina es la solución, con un sabor increíble y fácil de tomar.",
-      "imagen": "assets/creatina-nutrex-300g-sabor.jpg"    }  
-
-
-
+      "imagen": "assets/creatina-nutrex-300g-sabor.jpg"
+    }
   ],
   "categorias": [
     {

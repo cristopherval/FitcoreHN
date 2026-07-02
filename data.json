@@ -58,8 +58,7 @@
       "precioAnterior": 1600,
       "destacado": false,
       "descripcion": "Creatina que rinde, mas de 6 meses de producto de calidad!",
-      "imagen": "assets/creatinanutrex200-serv.jpg"
-      },
+      "imagen": "assets/creatina-Nutrex-200-serv.jpg"    },
     {
       "id": "p7",
       "nombre": "Pre-entreno Total War",
@@ -68,7 +67,25 @@
       "precioAnterior": 1200,
       "destacado": false,
       "descripcion": "Obten ese boost que tanto buscas, disponible en muchos sabores!",
-    "imagen": "assets/TOTAL-WAR-30-SERV-TIGER-BLOOD.jpg"    }
+      "imagen": "assets/TOTAL-WAR-30-SERV-TIGER-BLOOD.jpg"    },
+    {
+      "id": "p8",
+      "nombre": "Creatina Nutrex Pink lemonade",
+      "categoria": "creatinas",
+      "precio": 1267,
+      "precioAnterior": 1399,
+      "destacado": false,
+      "descripcion": "Desarrolla músculo magro y tonificado\nPromueve una piel, cabello y uñas más saludables\nMejora la fuerza y ​​el rendimiento en el entrenamiento\nFavorece la función cognitiva",
+      "imagen": "assets/creatina-Women-30-serv-Peach-loemanade.jpg"    },
+    {
+      "id": "p9",
+      "nombre": "Creatina Nutrex Peach Mango",
+      "categoria": "creatinas",
+      "precio": 1267,
+      "precioAnterior": 1399,
+      "destacado": false,
+      "descripcion": "Desarrolla músculo magro y tonificado\nPromueve una piel, cabello y uñas más saludables\nMejora la fuerza y ​​el rendimiento en el entrenamiento\nFavorece la función cognitiva",
+      "imagen": "assets/creatina-Women-30-serv-Peach-Mango.jpg"    }
   ],
   "categorias": [
     {

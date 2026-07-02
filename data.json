@@ -85,7 +85,20 @@
       "precioAnterior": 1399,
       "destacado": false,
       "descripcion": "Desarrolla músculo magro y tonificado\nPromueve una piel, cabello y uñas más saludables\nMejora la fuerza y ​​el rendimiento en el entrenamiento\nFavorece la función cognitiva",
-      "imagen": "assets/creatina-Women-30-serv-Peach-Mango.jpg"    }
+      "imagen": "assets/creatina-Women-30-serv-Peach-Mango.jpg"    },
+      
+    {
+      "id": "p10",
+      "nombre": "Creatina Sabor Ponche",
+      "categoria": "creatinas",
+      "precio": 850,
+      "precioAnterior": 900,
+      "destacado": false,
+      "descripcion": "¿Te cuesta tomarte tu proteina? Esta creatina es la solución, con un sabor increíble y fácil de tomar.",
+      "imagen": "assets/CREATINA-NUTREX-300G-SABOR.jpg"    }  
+
+
+
   ],
   "categorias": [
     {

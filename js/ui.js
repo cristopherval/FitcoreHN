@@ -45,12 +45,16 @@ const UI = (() => {
     return c ? c.nombre : "General";
   };
 
-  /* --- Carrusel de ofertas (productos con precioAnterior) --- */
+  /* --- Carrusel de ofertas ---
+     Muestra los productos marcados como "Ofertas de la semana" en el panel.
+     Si ninguno está marcado, cae en los que tienen precio promo. */
   const renderCarrusel = () => {
     const track = document.getElementById("carousel-track");
     if (!track) return;
-    const ofertas = Store.getProductos().filter(p => p.precioAnterior && p.precioAnterior > p.precio);
-    const lista = ofertas.length ? ofertas : Store.getProductos().filter(p => p.destacado);
+    const todos = Store.getProductos();
+    let lista = todos.filter(p => p.enOfertas);
+    if (!lista.length) lista = todos.filter(p => p.precioAnterior && p.precioAnterior > p.precio);
+    if (!lista.length) lista = todos.filter(p => p.destacado);
 
     track.innerHTML = lista.map(p => `
       <div class="slide">

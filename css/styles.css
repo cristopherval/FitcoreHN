@@ -873,3 +873,28 @@ img, video { max-width: 100%; }
   .showcase__stage { overflow: visible; }
   .showcase__video { width: 200%; max-width: 200%; margin: 0 0 0 -50%; }
 }
+
+/* =========================================================================
+   32. PANEL ADMIN (Supabase): secciones, pills y vista previa
+   ========================================================================= */
+.modal__box--wide { max-width: 620px; width: 100%; max-height: 90vh; overflow-y: auto; }
+
+/* Bloque "¿Dónde aparece?" */
+.admin-secciones { border: 1px solid var(--border-2); border-radius: var(--radius); padding: 16px 18px; display: flex; flex-direction: column; gap: 14px; }
+.admin-secciones legend { font-family: var(--ff-display); text-transform: uppercase; letter-spacing: 1px; font-size: .82rem; color: var(--accent); padding: 0 8px; }
+.admin-secciones__item { display: flex; flex-direction: column; gap: 6px; }
+.admin-secciones__item label { font-size: .82rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-family: var(--ff-display); }
+
+.admin-check { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); transition: border-color .2s, background .2s; }
+.admin-check:hover { border-color: var(--accent); background: var(--accent-soft); }
+.admin-check input { margin-top: 4px; flex: none; }
+.admin-check span { display: flex; flex-direction: column; }
+.admin-check small { font-size: .78rem; }
+
+/* Etiquetas de "dónde aparece" en la tabla */
+.pill { display: inline-block; font-size: .7rem; font-weight: 600; padding: 3px 9px; border-radius: 999px; background: var(--surface-2); color: var(--text-dim); margin: 2px 2px 2px 0; white-space: nowrap; }
+.pill--ok { background: var(--accent-soft); color: var(--accent); }
+.celda-secciones { min-width: 190px; }
+
+/* Vista previa de la foto en el formulario */
+.admin-preview { margin-top: 10px; max-height: 130px; width: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--media-bg); padding: 6px; }

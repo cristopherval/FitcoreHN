@@ -1,135 +1,96 @@
 /* =========================================================================
-   store.js  —  Capa de persistencia (localStorage)
+   store.js  —  Fuente de datos (Supabase) + carrito (localStorage)
    -------------------------------------------------------------------------
-   Único módulo que habla con localStorage. El resto del sitio llama a estas
-   funciones, de modo que migrar a una base de datos real más adelante solo
-   implica reescribir este archivo (misma firma de funciones).
+   · Productos y categorías se leen de Supabase (visibles para todos al
+     instante, sin publicar ni hacer push).
+   · Si Supabase no responde (sin internet, etc.) se usan los datos de
+     respaldo definidos en data.js, para que el sitio nunca se vea vacío.
+   · El carrito sigue en localStorage (es de cada visitante).
    ========================================================================= */
 
 const Store = (() => {
-  /* --- Utilidades internas --- */
-  // Devuelve una COPIA del valor por defecto para no mutar nunca los datos de data.js.
+  /* --- Utilidades --- */
   const clon = (x) => (x && typeof x === "object") ? JSON.parse(JSON.stringify(x)) : x;
+
   const leer = (clave, porDefecto) => {
     try {
       const v = localStorage.getItem(clave);
       return v ? JSON.parse(v) : clon(porDefecto);
-    } catch (e) {
-      console.warn("Error leyendo", clave, e);
-      return clon(porDefecto);
-    }
+    } catch (e) { return clon(porDefecto); }
   };
 
   const escribir = (clave, valor) => {
-    try {
-      localStorage.setItem(clave, JSON.stringify(valor));
-      return true;
-    } catch (e) {
-      // Suele ocurrir si las imágenes base64 superan la cuota del navegador.
-      console.error("No se pudo guardar (¿cuota llena?)", e);
-      alert("No se pudo guardar. Es posible que el almacenamiento esté lleno (imágenes muy pesadas).");
-      return false;
-    }
+    try { localStorage.setItem(clave, JSON.stringify(valor)); return true; }
+    catch (e) { console.error("No se pudo guardar en el navegador", e); return false; }
   };
 
-  const init = () => {
-    if (!localStorage.getItem(STORAGE_KEYS.adminPass)) {
-      escribir(STORAGE_KEYS.adminPass, "admin1234"); // contraseña inicial
-    }
-  };
-
-  /* Catálogo PÚBLICO en memoria.
-     Empieza con los datos de respaldo de data.js y se sobreescribe con
-     data.json (la fuente real que subes a GitHub) en cuanto carga. */
+  /* Catálogo en memoria. Arranca con el respaldo de data.js y se
+     reemplaza con lo que venga de Supabase. */
   const _pub = {
-    productos: clon(DEFAULT_PRODUCTOS),
-    categorias: clon(DEFAULT_CATEGORIAS),
-    testimonios: clon(TESTIMONIOS)
+    productos:   clon(typeof DEFAULT_PRODUCTOS  !== "undefined" ? DEFAULT_PRODUCTOS  : []),
+    categorias:  clon(typeof DEFAULT_CATEGORIAS !== "undefined" ? DEFAULT_CATEGORIAS : []),
+    testimonios: clon(typeof TESTIMONIOS        !== "undefined" ? TESTIMONIOS        : [])
   };
 
-  /* Carga data.json SIEMPRE fresco (sin caché) → al publicar, todos ven el
-     cambio de inmediato. Si falla (file:// o sin red), usa el respaldo. */
+  /* Traduce una fila de Supabase (snake_case) al formato que usa el sitio. */
+  const mapProducto = (r) => ({
+    id: r.id,
+    nombre: r.nombre,
+    descripcion: r.descripcion || "",
+    precio: Number(r.precio),
+    precioAnterior: (r.precio_anterior == null) ? null : Number(r.precio_anterior),
+    categoria: r.categoria_id,
+    imagen: r.imagen_url || "assets/atleta-espalda.png",
+    destacado: !!r.destacado,
+    enOfertas: !!r.en_ofertas
+  });
+
+  const mapCategoria = (c) => ({
+    id: c.id, nombre: c.nombre, descripcion: c.descripcion || ""
+  });
+
+  /* Carga el catálogo desde Supabase. */
   const cargar = async () => {
+    if (typeof sb === "undefined" || !sb) {
+      console.warn("Supabase no disponible: usando catálogo de respaldo (data.js).");
+      return;
+    }
     try {
-      const res = await fetch("data.json?t=" + Date.now(), { cache: "no-store" });
-      if (res.ok) {
-        const j = await res.json();
-        if (Array.isArray(j.productos))   _pub.productos = j.productos;
-        if (Array.isArray(j.categorias))  _pub.categorias = j.categorias;
-        if (Array.isArray(j.testimonios)) _pub.testimonios = j.testimonios;
-      }
+      const [cats, prods] = await Promise.all([
+        sb.from("categorias").select("*").order("orden", { ascending: true }),
+        sb.from("productos").select("*").order("orden", { ascending: true })
+      ]);
+
+      if (cats.error) console.error("Error leyendo categorías:", cats.error.message);
+      else if (Array.isArray(cats.data) && cats.data.length) _pub.categorias = cats.data.map(mapCategoria);
+
+      if (prods.error) console.error("Error leyendo productos:", prods.error.message);
+      else if (Array.isArray(prods.data)) _pub.productos = prods.data.map(mapProducto);
+
     } catch (e) {
-      console.info("data.json no disponible; usando catálogo de respaldo (data.js).");
+      console.error("Fallo al conectar con Supabase; usando respaldo.", e);
     }
   };
-  const ready = cargar(); // promesa: las páginas esperan esto antes de renderizar
 
-  /* ¿Sesión de administrador activa en ESTA pestaña? */
-  const adminActivo = () => {
-    try { return sessionStorage.getItem("fitcore_admin_session") === "1"; }
-    catch (e) { return false; }
-  };
+  /* Promesa que las páginas esperan antes de pintar. */
+  const ready = cargar();
 
-  /* IMPORTANTE — Fuente de verdad:
-     El PÚBLICO siempre ve el catálogo de data.js (lo que subes a GitHub).
-     En modo admin se usa una copia local (localStorage) SOLO como vista previa;
-     esos cambios NO se publican hasta editar data.js y hacer push. */
+  /* Vuelve a leer de Supabase (útil tras guardar en el panel admin). */
+  const recargar = () => cargar();
 
-  /* --- Categorías --- */
-  const getCategorias = () => adminActivo() ? leer(STORAGE_KEYS.categorias, _pub.categorias) : _pub.categorias;
-  const setCategorias = (cats) => escribir(STORAGE_KEYS.categorias, cats);
+  /* --- Lectura del catálogo --- */
+  const getCategorias  = () => _pub.categorias;
+  const getProductos   = () => _pub.productos;
+  const getProducto    = (id) => _pub.productos.find(p => String(p.id) === String(id));
+  const getTestimonios = () => _pub.testimonios;
 
-  /* --- Productos --- */
-  const getProductos = () => adminActivo() ? leer(STORAGE_KEYS.productos, _pub.productos) : _pub.productos;
-  const setProductos = (prods) => escribir(STORAGE_KEYS.productos, prods);
-  const getProducto = (id) => getProductos().find(p => p.id === id);
-
-  /* --- Testimonios --- */
-  const getTestimonios = () => adminActivo() ? leer(STORAGE_KEYS.testimonios, _pub.testimonios) : _pub.testimonios;
-  const setTestimonios = (t) => escribir(STORAGE_KEYS.testimonios, t);
-
-  /* Descarta los cambios locales de admin (vuelve a lo publicado en data.js). */
-  const descartarLocal = () => {
-    localStorage.removeItem(STORAGE_KEYS.productos);
-    localStorage.removeItem(STORAGE_KEYS.categorias);
-    localStorage.removeItem(STORAGE_KEYS.testimonios);
-  };
-
-  /* --- Carrito --- */
+  /* --- Carrito (localStorage) --- */
   const getCarrito = () => leer(STORAGE_KEYS.carrito, []);
   const setCarrito = (items) => escribir(STORAGE_KEYS.carrito, items);
 
-  /* --- Seguridad admin --- */
-  const getPass = () => leer(STORAGE_KEYS.adminPass, "admin1234");
-  const setPass = (p) => escribir(STORAGE_KEYS.adminPass, p);
-
-  /* Genera un id único sin depender de Date.now()/random globales. */
-  let _seq = 0;
-  const nuevoId = (prefijo = "id") => {
-    _seq += 1;
-    const base = (typeof performance !== "undefined" ? Math.floor(performance.now()) : 0);
-    return `${prefijo}_${base}_${_seq}`;
-  };
-
-  /* ID limpio y secuencial: p6, p7, p8… (busca el primer número libre). */
-  const proximoId = (prefijo, lista) => {
-    const usados = new Set((lista || getProductos()).map(x => x.id));
-    let n = 1;
-    while (usados.has(prefijo + n)) n++;
-    return prefijo + n;
-  };
-
   return {
-    init, ready,
-    getCategorias, setCategorias,
-    getProductos, setProductos, getProducto,
-    getTestimonios, setTestimonios,
-    descartarLocal,
-    getCarrito, setCarrito,
-    getPass, setPass,
-    nuevoId, proximoId
+    ready, recargar,
+    getCategorias, getProductos, getProducto, getTestimonios,
+    getCarrito, setCarrito
   };
 })();
-
-/* Arranca las semillas inmediatamente al cargar el script. */
-Store.init();

@@ -94,13 +94,13 @@ const Admin = (() => {
       if (p.en_ofertas) secciones.push(`<span class="pill pill--ok">Ofertas</span>`);
       return `
         <tr>
-          <td><img class="thumb" src="${p.imagen_url || ""}" alt="${p.nombre}"></td>
-          <td>${p.nombre}</td>
-          <td>${nombreCat(p.categoria_id)}</td>
-          <td>${fmt(p.precio_anterior || p.precio)}</td>
-          <td>${p.precio_anterior ? `<span class="promo-tag">${fmt(p.precio)}</span>` : "—"}</td>
-          <td class="celda-secciones">${secciones.join(" ")}</td>
-          <td class="acciones">
+          <td data-label="Foto"><img class="thumb" src="${p.imagen_url || ""}" alt="${p.nombre}"></td>
+          <td data-label="Nombre"><strong>${p.nombre}</strong></td>
+          <td data-label="Categoría">${nombreCat(p.categoria_id)}</td>
+          <td data-label="Normal">${fmt(p.precio_anterior || p.precio)}</td>
+          <td data-label="Promo">${p.precio_anterior ? `<span class="promo-tag">${fmt(p.precio)}</span>` : "—"}</td>
+          <td data-label="Dónde aparece" class="celda-secciones">${secciones.join(" ")}</td>
+          <td data-label="Acciones" class="acciones">
             <button class="btn btn--ghost btn--xs" data-edit="${p.id}">Editar</button>
             <button class="btn btn--danger btn--xs" data-del="${p.id}">Eliminar</button>
           </td>
@@ -151,8 +151,9 @@ const Admin = (() => {
   };
 
   const initForm = () => {
+    // El formulario SOLO se cierra con "Cancelar" (no al hacer clic fuera),
+    // para no perder lo que se está escribiendo por accidente.
     document.getElementById("btn-cancel").addEventListener("click", cerrarForm);
-    modal().addEventListener("click", (e) => { if (e.target === modal()) cerrarForm(); });
 
     // Vista previa al elegir foto
     document.getElementById("f-foto").addEventListener("change", (e) => {

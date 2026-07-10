@@ -179,6 +179,8 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 /* ============ 7. HERO ============ */
 .hero { position: relative; min-height: 86vh; display: flex; align-items: center; overflow: hidden; background: var(--dark); }
 .hero__bg { position: absolute; inset: 0; background-size: cover; background-position: right center; transform: scale(1.05); animation: slowZoom 18s ease-in-out infinite alternate; }
+/* Video de fondo del hero: cubre todo, centrado, detrás del velo y el texto */
+.hero__video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; z-index: 0; background: var(--dark); }
 /* Velo verde: izquierda oscura para que el texto se lea, se desvanece a la
    derecha para mostrar al atleta. Capa radial verde = acento vistoso. */
 .hero__veil {

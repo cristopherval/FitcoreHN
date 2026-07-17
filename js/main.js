@@ -19,9 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initFAQ();
   initVideos();
 
-  // Espera el catálogo (data.json) antes de pintar, así siempre se muestra
-  // lo más reciente publicado. Las animaciones de entrada las maneja el
-  // sistema propio "reveal" (IntersectionObserver + CSS).
+  // Espera el catálogo (Supabase) antes de pintar, así siempre se muestra
+  // lo más reciente. Las animaciones de entrada las maneja el sistema
+  // propio "reveal" (IntersectionObserver + CSS).
   const pintar = () => {
     if (typeof UI !== "undefined") {
       if (document.getElementById("productos-grid")) UI.initHome();

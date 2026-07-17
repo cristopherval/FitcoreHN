@@ -1,17 +1,13 @@
 /* =========================================================================
    data.js  —  Configuración global + catálogo de RESPALDO
    -------------------------------------------------------------------------
-   👉 La fuente de verdad del catálogo es el archivo  data.json  (en la raíz).
-   El sitio lo lee SIEMPRE fresco (sin caché), así al publicar todos ven el
-   cambio de inmediato.
+   👉 La fuente de verdad del catálogo es SUPABASE (ver store.js). Los cambios
+   hechos en el panel admin se guardan en la base de datos y todos los ven al
+   instante, sin publicar ni hacer push.
 
-   Para cambiar productos/categorías/comentarios del sitio publicado:
-     1) En el panel admin edita y pulsa "Publicar" (copia el data.json nuevo).
-     2) Pega ese contenido reemplazando TODO  data.json  en VS Code.
-     3) commit + push a GitHub → todos ven los cambios.
-
-   Los DEFAULT_* de abajo son solo un RESPALDO (si data.json no carga, p. ej.
-   al abrir con file://). Mantenerlos igual a data.json es opcional.
+   Los DEFAULT_* de abajo son solo un RESPALDO: si Supabase no responde
+   (sin internet, o al abrir el sitio con file://), store.js muestra estos
+   datos para que la tienda nunca se vea vacía. Mantenerlos al día es opcional.
    ========================================================================= */
 
 /* Configuración del negocio: punto único de verdad para datos de contacto. */
@@ -30,20 +26,11 @@ const CONFIG = {
   }
 };
 
-/* Claves de almacenamiento (centralizadas para evitar errores de tipeo). */
+/* Claves de almacenamiento en el navegador (localStorage).
+   Hoy solo se usa el carrito; el catálogo vive en Supabase. */
 const STORAGE_KEYS = {
-  productos: "fitcore_productos",
-  categorias: "fitcore_categorias",
-  testimonios: "fitcore_testimonios",
-  carrito: "fitcore_carrito",
-  adminPass: "fitcore_admin_pass",
-  version: "fitcore_data_version"
+  carrito: "fitcore_carrito"
 };
-
-/* Sube este número cuando cambies el catálogo de ejemplo (DEFAULT_*).
-   Al cambiar, el catálogo de ejemplo se vuelve a cargar automáticamente
-   (no afecta a una tienda en producción que ya no toque este valor). */
-const DATA_VERSION = 3;
 
 /* Página HTML dedicada para cada categoría (mejor SEO y enlaces limpios).
    Las categorías nuevas creadas en el panel usan categoria.html?cat=ID. */

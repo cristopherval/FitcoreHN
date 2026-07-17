@@ -10,15 +10,11 @@ const UI = (() => {
   const fmt = Cart.fmt;
 
   /* Crea el HTML de una tarjeta de producto reutilizable. */
-  const adminCtrl = (tipo, id) =>
-    (typeof AdminMode !== "undefined") ? AdminMode.controles(tipo, id) : "";
-
   const tarjetaProducto = (p, i = 0) => {
     const oferta = p.precioAnterior && p.precioAnterior > p.precio;
     const dcto = oferta ? Math.round((1 - p.precio / p.precioAnterior) * 100) : 0;
     return `
       <article class="card reveal ${i % 2 === 0 ? "reveal--left" : "reveal--right"}" data-cat="${p.categoria}" style="--rd:${(i % 4) * 120}ms">
-        ${adminCtrl("producto", p.id)}
         ${oferta ? `<span class="card__badge">-${dcto}%</span>` : ""}
         <div class="card__media">
           <img src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="300" height="300">
@@ -119,7 +115,6 @@ const UI = (() => {
         || `categoria.html?cat=${encodeURIComponent(c.id)}`;
       return `
         <a class="cat reveal ${i % 2 === 0 ? "reveal--left" : "reveal--right"}" href="${href}" style="--rd:${i * 160}ms" aria-label="Ver ${c.nombre}">
-          ${adminCtrl("categoria", c.id)}
           <div class="cat__media"><img src="${img}" alt="${prod ? prod.nombre : c.nombre}" loading="lazy"></div>
           <div class="cat__info">
             <h3 class="cat__name">${c.nombre}</h3>
@@ -144,11 +139,10 @@ const UI = (() => {
     const cont = document.getElementById("productos-grid");
     if (!cont) return;
     const todos = Store.getProductos();
-    const esAdmin = (typeof AdminMode !== "undefined") && AdminMode.activo();
     const destacados = todos.filter(p => p.destacado);
     const resto = todos.filter(p => !p.destacado);
-    // En modo admin se muestran TODOS (para gestionarlos); al público, 4.
-    const lista = esAdmin ? todos : [...destacados, ...resto].slice(0, 4);
+    // Prioriza los destacados y completa hasta 4 con el resto.
+    const lista = [...destacados, ...resto].slice(0, 4);
 
     cont.innerHTML = lista.length
       ? lista.map((p, i) => tarjetaProducto(p, i)).join("")
@@ -162,7 +156,6 @@ const UI = (() => {
     if (!cont) return;
     cont.innerHTML = Store.getTestimonios().map((t, i) => `
       <blockquote class="testi reveal ${i % 2 === 0 ? "reveal--left" : "reveal--right"}" style="--rd:${i * 160}ms">
-        ${adminCtrl("testimonio", i)}
         <div class="testi__stars" aria-label="${t.estrellas} de 5 estrellas">${"★".repeat(t.estrellas)}</div>
         <p class="testi__text">"${t.texto}"</p>
         <footer class="testi__author">

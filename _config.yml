@@ -1,0 +1,20 @@
+# =========================================================================
+# _config.yml  —  Configuracion de GitHub Pages (Jekyll)
+# -------------------------------------------------------------------------
+# Solo controla QUE ARCHIVOS PUBLICA el sitio (fitcore-hn.com).
+# NO es seguridad: cualquier frontend es visible. La proteccion real de los
+# datos vive en las politicas RLS de Supabase (ver supabase/schema.sql).
+#
+# Los archivos de "exclude" NO se copian al sitio publicado -> dan 404 en la URL.
+# "include: CNAME" garantiza que el dominio propio se siga sirviendo.
+# =========================================================================
+
+include:
+  - CNAME
+
+exclude:
+  - README.md
+  - supabase/
+  - .vscode/
+  - _config.yml
+  - .gitignore

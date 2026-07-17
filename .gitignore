@@ -1,0 +1,3 @@
+# Archivos internos que NO deben vivir en el repo publico.
+# Se conservan en tu disco local, pero no se suben a GitHub.
+/supabase/

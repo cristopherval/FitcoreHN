@@ -28,8 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // Hero (imagen de fondo). En las dedicadas también va escrito en el HTML.
-  const hero = (typeof HERO_POR_CATEGORIA !== "undefined" && HERO_POR_CATEGORIA[cat.id])
+  // Hero (imagen de fondo). Prioridad: imagen propia (panel) > mapa fijo > genérica.
+  const hero = cat.imagen
+    || (typeof HERO_POR_CATEGORIA !== "undefined" && HERO_POR_CATEGORIA[cat.id])
     || (typeof HERO_DEFAULT !== "undefined" ? HERO_DEFAULT : "assets/gym-amb2.jpg");
   if (heroBg) heroBg.style.backgroundImage = `url('${hero}')`;
 

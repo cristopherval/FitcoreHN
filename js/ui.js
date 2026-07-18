@@ -20,7 +20,7 @@ const UI = (() => {
           <img src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="300" height="300">
         </div>
         <div class="card__body">
-          <span class="card__cat">${nombreCategoria(p.categoria)}</span>
+          <span class="card__cat">${nombreMarca(p.marca) || nombreCategoria(p.categoria)}</span>
           <h3 class="card__title">${p.nombre}</h3>
           <p class="card__desc">${p.descripcion}</p>
           <div class="card__footer">
@@ -39,6 +39,12 @@ const UI = (() => {
   const nombreCategoria = (id) => {
     const c = Store.getCategorias().find(c => c.id === id);
     return c ? c.nombre : "General";
+  };
+
+  const nombreMarca = (id) => {
+    if (!id || !Store.getMarcas) return "";
+    const m = Store.getMarcas().find(m => m.id === id);
+    return m ? m.nombre : "";
   };
 
   /* --- Carrusel de ofertas ---
@@ -97,7 +103,9 @@ const UI = (() => {
   const renderCategorias = () => {
     const cont = document.getElementById("categorias-grid");
     if (!cont) return;
-    const cats = Store.getCategorias();
+    // El mosaico del inicio muestra SOLO las categorías principales (fijas).
+    const cats = Store.getCategorias().filter(c =>
+      (typeof CATEGORIAS_PRINCIPALES === "undefined") || CATEGORIAS_PRINCIPALES.includes(c.id));
     const productos = Store.getProductos();
 
     // Cada tarjeta muestra un PRODUCTO representativo de la categoría
@@ -106,9 +114,9 @@ const UI = (() => {
       const items = productos.filter(p => p.categoria === c.id);
       const prod = items[0];
       const heroFallback = (typeof HERO_POR_CATEGORIA !== "undefined" && HERO_POR_CATEGORIA[c.id]) || "assets/gym-amb2.jpg";
-      // Portada elegida a mano > primer producto > imagen genérica.
+      // Imagen propia de la categoría (panel) > portada fija > primer producto > genérica.
       const portada = (typeof PORTADA_CATEGORIA !== "undefined" && PORTADA_CATEGORIA[c.id]);
-      const img = portada || (prod ? prod.imagen : heroFallback);
+      const img = c.imagen || portada || (prod ? prod.imagen : heroFallback);
       const desde = items.length ? ` · desde ${fmt(Math.min(...items.map(p => p.precio)))}` : "";
       // Página dedicada por categoría (mejor SEO); si es nueva, usa la genérica.
       const href = (typeof CATEGORIA_PAGES !== "undefined" && CATEGORIA_PAGES[c.id])

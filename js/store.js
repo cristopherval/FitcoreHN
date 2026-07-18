@@ -29,7 +29,8 @@ const Store = (() => {
   const _pub = {
     productos:   clon(typeof DEFAULT_PRODUCTOS  !== "undefined" ? DEFAULT_PRODUCTOS  : []),
     categorias:  clon(typeof DEFAULT_CATEGORIAS !== "undefined" ? DEFAULT_CATEGORIAS : []),
-    testimonios: clon(typeof TESTIMONIOS        !== "undefined" ? TESTIMONIOS        : [])
+    testimonios: clon(typeof TESTIMONIOS        !== "undefined" ? TESTIMONIOS        : []),
+    marcas:      []
   };
 
   /* Traduce una fila de Supabase (snake_case) al formato que usa el sitio. */
@@ -40,14 +41,18 @@ const Store = (() => {
     precio: Number(r.precio),
     precioAnterior: (r.precio_anterior == null) ? null : Number(r.precio_anterior),
     categoria: r.categoria_id,
+    marca: r.marca_id || "",
     imagen: r.imagen_url || "assets/atleta-espalda.png",
     destacado: !!r.destacado,
     enOfertas: !!r.en_ofertas
   });
 
   const mapCategoria = (c) => ({
-    id: c.id, nombre: c.nombre, descripcion: c.descripcion || ""
+    id: c.id, nombre: c.nombre, descripcion: c.descripcion || "",
+    imagen: c.imagen_url || ""
   });
+
+  const mapMarca = (m) => ({ id: m.id, nombre: m.nombre });
 
   /* Carga el catálogo desde Supabase. */
   const cargar = async () => {
@@ -56,9 +61,10 @@ const Store = (() => {
       return;
     }
     try {
-      const [cats, prods] = await Promise.all([
+      const [cats, prods, mrcs] = await Promise.all([
         sb.from("categorias").select("*").order("orden", { ascending: true }),
-        sb.from("productos").select("*").order("orden", { ascending: true })
+        sb.from("productos").select("*").order("orden", { ascending: true }),
+        sb.from("marcas").select("*").order("orden", { ascending: true })
       ]);
 
       if (cats.error) console.error("Error leyendo categorías:", cats.error.message);
@@ -66,6 +72,10 @@ const Store = (() => {
 
       if (prods.error) console.error("Error leyendo productos:", prods.error.message);
       else if (Array.isArray(prods.data)) _pub.productos = prods.data.map(mapProducto);
+
+      // La tabla "marcas" es opcional: si aún no existe, se ignora sin romper nada.
+      if (mrcs.error) console.warn("Marcas no disponibles (¿falta la tabla?):", mrcs.error.message);
+      else if (Array.isArray(mrcs.data)) _pub.marcas = mrcs.data.map(mapMarca);
 
     } catch (e) {
       console.error("Fallo al conectar con Supabase; usando respaldo.", e);
@@ -83,6 +93,8 @@ const Store = (() => {
   const getProductos   = () => _pub.productos;
   const getProducto    = (id) => _pub.productos.find(p => String(p.id) === String(id));
   const getTestimonios = () => _pub.testimonios;
+  const getMarcas      = () => _pub.marcas;
+  const getMarca       = (id) => _pub.marcas.find(m => String(m.id) === String(id));
 
   /* --- Carrito (localStorage) --- */
   const getCarrito = () => leer(STORAGE_KEYS.carrito, []);
@@ -91,6 +103,7 @@ const Store = (() => {
   return {
     ready, recargar,
     getCategorias, getProductos, getProducto, getTestimonios,
+    getMarcas, getMarca,
     getCarrito, setCarrito
   };
 })();

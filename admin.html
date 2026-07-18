@@ -85,10 +85,32 @@
         <div class="table-wrap">
           <table class="table">
             <thead>
-              <tr><th>Nombre</th><th>Descripción</th><th>Productos</th><th>Acciones</th></tr>
+              <tr><th>Foto</th><th>Nombre</th><th>Descripción</th><th>Productos</th><th>Tipo</th><th>Acciones</th></tr>
             </thead>
             <tbody id="cat-tabla-body">
-              <tr><td colspan="4" class="muted">Cargando…</td></tr>
+              <tr><td colspan="6" class="muted">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== MARCAS ===== -->
+      <section class="admin-section">
+        <div class="admin-section__head">
+          <h2 class="admin-wrap__title">Marcas</h2>
+          <button class="btn btn--accent btn--sm" id="btn-add-marca">+ Agregar marca</button>
+        </div>
+        <p class="muted admin-wrap__hint">
+          Las marcas clasifican tus productos (ej. Nutrex, Optimum Nutrition) y el cliente puede buscarlas.
+        </p>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr><th>Nombre</th><th>Productos</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="marca-tabla-body">
+              <tr><td colspan="3" class="muted">Cargando…</td></tr>
             </tbody>
           </table>
         </div>
@@ -132,6 +154,12 @@
             <small class="muted">Aparecerá en la página de esa categoría.</small>
           </div>
 
+          <div class="admin-secciones__item">
+            <label for="f-marca">Marca (opcional)</label>
+            <select id="f-marca"><option value="">— Sin marca —</option></select>
+            <small class="muted">Ayuda a clasificar y a que el cliente la encuentre en la búsqueda.</small>
+          </div>
+
           <label class="admin-check">
             <input id="f-destacado" type="checkbox">
             <span><strong>Nuestros más vendidos</strong><small class="muted">Sección destacada del inicio</small></span>
@@ -172,9 +200,33 @@
           <label for="fc-desc">Descripción (opcional)</label>
           <textarea id="fc-desc" rows="2" placeholder="Frase corta que describe la categoría"></textarea>
         </div>
+        <div class="form__row">
+          <label for="fc-foto">Imagen de la categoría (opcional)</label>
+          <input id="fc-foto" type="file" accept="image/*">
+          <small class="muted">Se sube a la nube. Si la dejas vacía, se usa la foto del primer producto. Al editar, deja vacío para conservar la actual.</small>
+          <img id="fc-preview" class="admin-preview" alt="" hidden>
+        </div>
         <div class="form__actions">
           <button type="submit" class="btn btn--accent" id="btn-save-cat">Guardar categoría</button>
           <button type="button" class="btn btn--ghost" id="btn-cancel-cat">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== MODAL: formulario de marca ===== -->
+  <div class="modal" id="marca-modal">
+    <div class="modal__box">
+      <h3 class="modal__title" id="marca-modal-title">Agregar marca</h3>
+      <form id="marca-form" class="form">
+        <input type="hidden" id="fm-id">
+        <div class="form__row">
+          <label for="fm-nombre">Nombre de la marca</label>
+          <input id="fm-nombre" type="text" required maxlength="40" placeholder="Ej. Nutrex">
+        </div>
+        <div class="form__actions">
+          <button type="submit" class="btn btn--accent" id="btn-save-marca">Guardar marca</button>
+          <button type="button" class="btn btn--ghost" id="btn-cancel-marca">Cancelar</button>
         </div>
       </form>
     </div>

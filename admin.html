@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=44">
+  <link rel="stylesheet" href="css/styles.css?v=45">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -71,6 +71,28 @@
           </tbody>
         </table>
       </div>
+
+      <!-- ===== CATEGORÍAS ===== -->
+      <section class="admin-section">
+        <div class="admin-section__head">
+          <h2 class="admin-wrap__title">Categorías</h2>
+          <button class="btn btn--accent btn--sm" id="btn-add-cat">+ Agregar categoría</button>
+        </div>
+        <p class="muted admin-wrap__hint">
+          Las categorías agrupan tus productos. Cada una tiene su propia página en la tienda.
+        </p>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr><th>Nombre</th><th>Descripción</th><th>Productos</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="cat-tabla-body">
+              <tr><td colspan="4" class="muted">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </main>
   </section>
 
@@ -136,13 +158,35 @@
     </div>
   </div>
 
+  <!-- ===== MODAL: formulario de categoría ===== -->
+  <div class="modal" id="cat-modal">
+    <div class="modal__box">
+      <h3 class="modal__title" id="cat-modal-title">Agregar categoría</h3>
+      <form id="cat-form" class="form">
+        <input type="hidden" id="fc-id">
+        <div class="form__row">
+          <label for="fc-nombre">Nombre de la categoría</label>
+          <input id="fc-nombre" type="text" required maxlength="40" placeholder="Ej. Aminoácidos">
+        </div>
+        <div class="form__row">
+          <label for="fc-desc">Descripción (opcional)</label>
+          <textarea id="fc-desc" rows="2" placeholder="Frase corta que describe la categoría"></textarea>
+        </div>
+        <div class="form__actions">
+          <button type="submit" class="btn btn--accent" id="btn-save-cat">Guardar categoría</button>
+          <button type="button" class="btn btn--ghost" id="btn-cancel-cat">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/vendor/supabase.js?v=44"></script>
-  <script src="js/supabase-config.js?v=44"></script>
-  <script src="js/data.js?v=44"></script>
-  <script src="js/confirm.js?v=44"></script>
-  <script src="js/adminpanel.js?v=44"></script>
+  <script src="assets/vendor/supabase.js?v=45"></script>
+  <script src="js/supabase-config.js?v=45"></script>
+  <script src="js/data.js?v=45"></script>
+  <script src="js/confirm.js?v=45"></script>
+  <script src="js/adminpanel.js?v=45"></script>
 </body>
 </html>

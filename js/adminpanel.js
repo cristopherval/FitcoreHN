@@ -70,6 +70,7 @@ const Admin = (() => {
     categorias = c.data || [];
     productos = p.data || [];
     pintarTabla();
+    pintarTablaCategorias();
     pintarSelectCategorias();
   };
 
@@ -79,6 +80,112 @@ const Admin = (() => {
   };
 
   const nombreCat = (id) => (categorias.find(c => c.id === id) || {}).nombre || "—";
+
+  /* ---------- Categorías: tabla ---------- */
+  const pintarTablaCategorias = () => {
+    const body = document.getElementById("cat-tabla-body");
+    if (!body) return;
+    if (!categorias.length) {
+      body.innerHTML = `<tr><td colspan="4" class="muted">No hay categorías. Pulsa "+ Agregar categoría".</td></tr>`;
+      return;
+    }
+    body.innerHTML = categorias.map(c => {
+      const nProd = productos.filter(p => p.categoria_id === c.id).length;
+      return `
+        <tr>
+          <td data-label="Nombre"><strong>${c.nombre}</strong></td>
+          <td data-label="Descripción">${c.descripcion || "—"}</td>
+          <td data-label="Productos">${nProd}</td>
+          <td data-label="Acciones" class="acciones">
+            <button class="btn btn--ghost btn--xs" data-edit-cat="${c.id}">Editar</button>
+            <button class="btn btn--danger btn--xs" data-del-cat="${c.id}">Eliminar</button>
+          </td>
+        </tr>`;
+    }).join("");
+
+    body.querySelectorAll("[data-edit-cat]").forEach(b =>
+      b.addEventListener("click", () => abrirFormCat(b.dataset.editCat)));
+    body.querySelectorAll("[data-del-cat]").forEach(b =>
+      b.addEventListener("click", () => eliminarCategoria(b.dataset.delCat)));
+  };
+
+  /* Convierte un nombre en un id estable (slug): "Aminoácidos" -> "aminoacidos". */
+  const slugify = (s) => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
+  /* Genera un id único que no choque con las categorías existentes. */
+  const idUnico = (nombre) => {
+    const base = slugify(nombre) || "categoria";
+    let id = base, n = 2;
+    while (categorias.some(c => c.id === id)) id = `${base}-${n++}`;
+    return id;
+  };
+
+  /* ---------- Categorías: formulario ---------- */
+  const catModal = () => document.getElementById("cat-modal");
+
+  const abrirFormCat = (id) => {
+    const c = id ? categorias.find(x => x.id === id) : null;
+    document.getElementById("cat-modal-title").textContent = c ? "Editar categoría" : "Agregar categoría";
+    document.getElementById("fc-id").value = c ? c.id : "";
+    document.getElementById("fc-nombre").value = c ? c.nombre : "";
+    document.getElementById("fc-desc").value = c ? (c.descripcion || "") : "";
+    catModal().classList.add("is-open");
+  };
+
+  const cerrarFormCat = () => catModal().classList.remove("is-open");
+
+  const initFormCat = () => {
+    document.getElementById("btn-cancel-cat").addEventListener("click", cerrarFormCat);
+
+    document.getElementById("cat-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById("btn-save-cat");
+      const id = document.getElementById("fc-id").value;
+      const nombre = document.getElementById("fc-nombre").value.trim();
+      const descripcion = document.getElementById("fc-desc").value.trim();
+      if (!nombre) { toast("Escribe el nombre de la categoría."); return; }
+
+      btn.disabled = true; btn.textContent = "Guardando…";
+      try {
+        if (id) {
+          // El id (slug) es la clave que referencian los productos: NO se cambia.
+          const { error } = await sb.from("categorias")
+            .update({ nombre, descripcion }).eq("id", id);
+          if (error) throw error;
+          toast("Categoría actualizada.");
+        } else {
+          const { error } = await sb.from("categorias").insert({
+            id: idUnico(nombre), nombre, descripcion, orden: categorias.length
+          });
+          if (error) throw error;
+          toast("Categoría agregada. Ya está en la tienda.");
+        }
+        cerrarFormCat();
+        await cargarDatos();
+      } catch (err) {
+        toast("Error: " + (err.message || err));
+      } finally {
+        btn.disabled = false; btn.textContent = "Guardar categoría";
+      }
+    });
+  };
+
+  /* ---------- Categorías: eliminar ---------- */
+  const eliminarCategoria = async (id) => {
+    const c = categorias.find(x => x.id === id);
+    const nProd = productos.filter(p => p.categoria_id === id).length;
+    const aviso = nProd
+      ? ` Sus ${nProd} producto${nProd !== 1 ? "s" : ""} quedarán SIN categoría (no se borran, pero dejarán de aparecer en una página de categoría).`
+      : "";
+    const ok = await Confirm.show("Eliminar categoría",
+      `Esta acción no se puede deshacer. ¿Eliminar "${c ? c.nombre : ""}"?${aviso}`, "Sí, eliminar");
+    if (!ok) return;
+    const { error } = await sb.from("categorias").delete().eq("id", id);
+    if (error) { toast("Error al eliminar: " + error.message); return; }
+    toast("Categoría eliminada.");
+    await cargarDatos();
+  };
 
   /* ---------- Tabla ---------- */
   const pintarTabla = () => {
@@ -234,7 +341,9 @@ const Admin = (() => {
     if (!sb) { alert("No se pudo conectar con Supabase."); return; }
     initLogin();
     initForm();
+    initFormCat();
     document.getElementById("btn-add").addEventListener("click", () => abrirForm(null));
+    document.getElementById("btn-add-cat").addEventListener("click", () => abrirFormCat(null));
     document.getElementById("btn-logout").addEventListener("click", logout);
 
     // ¿Ya hay sesión iniciada?

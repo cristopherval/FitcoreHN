@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=45">
+  <link rel="stylesheet" href="css/styles.css?v=46">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -121,6 +121,7 @@
   <!-- ===== MODAL: formulario de producto ===== -->
   <div class="modal" id="prod-modal">
     <div class="modal__box modal__box--wide">
+      <button type="button" class="modal__close" id="prod-close" aria-label="Cerrar">✕</button>
       <h3 class="modal__title" id="prod-modal-title">Agregar producto</h3>
       <form id="prod-form" class="form form--grid">
         <input type="hidden" id="f-id">
@@ -189,6 +190,7 @@
   <!-- ===== MODAL: formulario de categoría ===== -->
   <div class="modal" id="cat-modal">
     <div class="modal__box">
+      <button type="button" class="modal__close" id="cat-close" aria-label="Cerrar">✕</button>
       <h3 class="modal__title" id="cat-modal-title">Agregar categoría</h3>
       <form id="cat-form" class="form">
         <input type="hidden" id="fc-id">
@@ -217,6 +219,7 @@
   <!-- ===== MODAL: formulario de marca ===== -->
   <div class="modal" id="marca-modal">
     <div class="modal__box">
+      <button type="button" class="modal__close" id="marca-close" aria-label="Cerrar">✕</button>
       <h3 class="modal__title" id="marca-modal-title">Agregar marca</h3>
       <form id="marca-form" class="form">
         <input type="hidden" id="fm-id">
@@ -235,10 +238,10 @@
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/vendor/supabase.js?v=45"></script>
-  <script src="js/supabase-config.js?v=45"></script>
-  <script src="js/data.js?v=45"></script>
-  <script src="js/confirm.js?v=45"></script>
-  <script src="js/adminpanel.js?v=45"></script>
+  <script src="assets/vendor/supabase.js?v=46"></script>
+  <script src="js/supabase-config.js?v=46"></script>
+  <script src="js/data.js?v=46"></script>
+  <script src="js/confirm.js?v=46"></script>
+  <script src="js/adminpanel.js?v=46"></script>
 </body>
 </html>

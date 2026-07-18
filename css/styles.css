@@ -394,7 +394,9 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 
 .modal { position: fixed; inset: 0; background: rgba(8,9,12,.5); backdrop-filter: blur(3px); display: grid; place-items: center; padding: 20px; z-index: 100; opacity: 0; visibility: hidden; transition: .25s; }
 .modal.is-open { opacity: 1; visibility: visible; }
-.modal__box { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; max-width: 420px; width: 100%; box-shadow: var(--shadow); transform: scale(.92); transition: transform .25s var(--ease); }
+.modal__box { position: relative; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px; max-width: 420px; width: 100%; box-shadow: var(--shadow); transform: scale(.92); transition: transform .25s var(--ease); }
+.modal__close { position: absolute; top: 12px; right: 12px; z-index: 2; background: none; border: none; color: var(--text-dim); font-size: 1.05rem; line-height: 1; cursor: pointer; padding: 6px 9px; border-radius: var(--radius-sm); }
+.modal__close:hover { color: var(--text); background: var(--accent-soft); }
 .modal.is-open .modal__box { transform: scale(1); }
 .modal__title { font-size: 1.3rem; margin-bottom: 10px; }
 .modal__message { color: var(--text-dim); margin-bottom: 22px; }
@@ -901,7 +903,7 @@ img, video { max-width: 100%; }
 .celda-secciones { min-width: 190px; }
 
 /* Vista previa de la foto en el formulario */
-.admin-preview { margin-top: 10px; max-height: 130px; width: auto; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--media-bg); padding: 6px; }
+.admin-preview { margin-top: 10px; display: block; width: 160px; height: 160px; max-width: 100%; object-fit: contain; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--media-bg); padding: 8px; }
 
 /* =========================================================================
    33. PANEL ADMIN RESPONSIVE (móvil) — sin zooms incómodos

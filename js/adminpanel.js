@@ -495,6 +495,11 @@ const Admin = (() => {
     document.getElementById("btn-add-marca").addEventListener("click", () => abrirFormMarca(null));
     document.getElementById("btn-logout").addEventListener("click", logout);
 
+    // Botones "✕" para cerrar cada modal.
+    document.getElementById("prod-close").addEventListener("click", cerrarForm);
+    document.getElementById("cat-close").addEventListener("click", cerrarFormCat);
+    document.getElementById("marca-close").addEventListener("click", cerrarFormMarca);
+
     // ¿Ya hay sesión iniciada?
     const { data } = await sb.auth.getSession();
     if (data && data.session) mostrarPanel();

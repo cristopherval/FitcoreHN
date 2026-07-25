@@ -49,6 +49,10 @@ document.addEventListener("DOMContentLoaded", () => {
       ? productos.map((p, i) => UI.tarjetaProducto(p, i)).join("")
       : `<p class="muted">Aún no hay productos en esta categoría. ¡Pronto agregaremos más!</p>`;
   }
+  // Datos estructurados de los productos de esta categoría (SEO).
+  if (typeof UI !== "undefined" && UI.injectProductsJsonLd) {
+    UI.injectProductsJsonLd(productos, cat.nombre);
+  }
   };
   (typeof Store !== "undefined" && Store.ready ? Store.ready : Promise.resolve()).then(run);
 });

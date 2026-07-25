@@ -215,6 +215,40 @@ const UI = (() => {
     initAgregar();
   };
 
+  /* --- Datos estructurados Product/ItemList (SEO: resultados enriquecidos) ---
+     Se generan desde el catálogo real y se inyectan en el <head>. */
+  let _jsonLdDone = false;
+  const absUrl = (u) => !u ? undefined : (/^https?:/.test(u) ? u : `${location.origin}/${String(u).replace(/^\//, "")}`);
+  const injectProductsJsonLd = (productos, listName) => {
+    if (_jsonLdDone || !productos || !productos.length) return;
+    _jsonLdDone = true;
+    const items = productos.map((p, i) => {
+      const item = {
+        "@type": "Product",
+        "name": p.nombre,
+        "image": absUrl(p.imagen),
+        "category": nombreCategoria(p.categoria),
+        "offers": {
+          "@type": "Offer",
+          "price": p.precio,
+          "priceCurrency": "HNL",
+          "availability": "https://schema.org/InStock"
+        }
+      };
+      if (p.descripcion) item.description = p.descripcion;
+      const marca = nombreMarca(p.marca);
+      if (marca) item.brand = { "@type": "Brand", "name": marca };
+      return { "@type": "ListItem", "position": i + 1, "item": item };
+    });
+    const s = document.createElement("script");
+    s.type = "application/ld+json";
+    s.textContent = JSON.stringify({
+      "@context": "https://schema.org", "@type": "ItemList",
+      "name": listName, "itemListElement": items
+    });
+    document.head.appendChild(s);
+  };
+
   /* Punto de entrada para la home. */
   const initHome = () => {
     renderCarrusel();
@@ -223,7 +257,8 @@ const UI = (() => {
     renderTestimonios();
     renderShowcase();
     initCommon();
+    injectProductsJsonLd(Store.getProductos(), "Catálogo FITCORE HN");
   };
 
-  return { initHome, initCommon, renderProductos, tarjetaProducto };
+  return { initHome, initCommon, renderProductos, tarjetaProducto, injectProductsJsonLd };
 })();

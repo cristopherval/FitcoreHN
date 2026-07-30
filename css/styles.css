@@ -982,3 +982,14 @@ img, video { max-width: 100%; }
 .sresult__name { font-weight: 600; font-size: .92rem; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .sresult__price { font-size: .85rem; color: var(--text-dim); }
 .sresult .btn { flex-shrink: 0; }
+
+/* ===== Contenido editorial (guías en páginas de categoría — SEO/GEO) ===== */
+.cat-article { max-width: 820px; margin: 0 auto; }
+.cat-article__lead { color: var(--text); font-size: 1.05rem; line-height: 1.7; margin-bottom: 8px; }
+.cat-article h2 { font-family: var(--ff-display); font-size: 1.5rem; margin: 34px 0 12px; }
+.cat-article h3 { font-size: 1.02rem; margin: 22px 0 6px; color: var(--text); }
+.cat-article p { color: var(--text-dim); line-height: 1.75; margin-bottom: 14px; }
+.cat-article ul { color: var(--text-dim); line-height: 1.7; margin: 0 0 14px 20px; list-style: disc; }
+.cat-article li { margin-bottom: 6px; }
+.cat-article strong { color: var(--text); }
+.cat-article__note { font-size: .85rem; color: var(--text-dim); border-left: 3px solid var(--accent); padding: 10px 14px; background: var(--accent-soft); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-top: 26px; }

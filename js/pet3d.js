@@ -14,7 +14,7 @@
 (() => {
   "use strict";
 
-  const V = "?v=50";
+  const V = "?v=52";
   const SPEED_PX_S = 260;   // velocidad constante de persecución (px/seg)
   const TARGET_H   = 120;   // alto del tigre en pantalla (px)
   const FOLLOW_OFFSET = 26; // se ubica un poco abajo-derecha del cursor
@@ -99,8 +99,14 @@
       mouse.x = e.clientX; mouse.y = e.clientY;
     }, { passive: true });
 
-    // Cargar el modelo del tigre.
-    new THREE.GLTFLoader().load("assets/models/tiger.glb" + V, (gltf) => {
+    // Cargar el modelo del tigre desde el base64 embebido (sin fetch → funciona en file://).
+    const b64 = window.__TIGER_GLB_B64__;
+    if (!b64) { console.warn("pet3d: el modelo embebido no se cargó."); return; }
+    const bin = atob(b64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+
+    new THREE.GLTFLoader().parse(bytes.buffer, "", (gltf) => {
       const modelo = gltf.scene;
       console.info("pet3d: 🐯 tigre cargado y listo.");
       // Centrar y escalar a TARGET_H píxeles de alto.
@@ -112,8 +118,8 @@
       pivot.scale.setScalar(escala);
       pivot.add(modelo);
       hayModelo = true;
-    }, undefined, (err) => {
-      console.warn("pet3d: no se pudo cargar el modelo del tigre.", err);
+    }, (err) => {
+      console.warn("pet3d: no se pudo interpretar el modelo.", err);
     });
 
     // Bucle de animación: persecución a VELOCIDAD CONSTANTE.
@@ -163,8 +169,9 @@
     console.info("pet3d: escritorio OK, cargando Three.js…");
     cargarScript("assets/vendor/three.min.js" + V)
       .then(() => cargarScript("assets/vendor/GLTFLoader.js" + V))
+      .then(() => cargarScript("assets/models/tiger.glb.b64.js" + V))
       .then(init)
-      .catch((e) => console.warn("pet3d: no se pudo cargar Three.js/GLTFLoader.", e));
+      .catch((e) => console.warn("pet3d: no se pudo cargar Three.js/modelo.", e));
   };
 
   if (document.readyState === "loading") {

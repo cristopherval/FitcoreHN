@@ -1,0 +1,42 @@
+# =========================================================================
+# Mantiene despierto Supabase (plan gratuito) y comprueba que la tienda
+# esté en línea. El plan gratis de Supabase se PAUSA tras 7 días sin
+# ninguna petición; este flujo consulta la base cada 2 días.
+#
+# Importante: abrir el sitio con curl NO ejecuta el JavaScript, así que la
+# consulta a Supabase se hace DIRECTA a su API (eso es lo que lo mantiene
+# activo). La clave "anon public" ya es pública en el sitio: sin riesgo.
+# =========================================================================
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    - cron: "0 12 */2 * *"   # cada 2 días, 12:00 UTC (~6:00 a.m. Honduras)
+  workflow_dispatch:          # botón para ejecutarlo a mano cuando quieras
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      # 1) Lo esencial: mantener Supabase despierto
+      - name: Mantener Supabase activo
+        run: |
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+            "https://hyjooucwhbvonveadtsa.supabase.co/rest/v1/categorias?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh5am9vdWN3aGJ2b252ZWFkdHNhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM2MjcyMjQsImV4cCI6MjA5OTIwMzIyNH0.tNX9KSV85PXI1IpqUnylU16Gf9J8r1t7k7vtJD40T3Y")
+          echo "Supabase respondió: HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::error::Supabase no respondió 200 (respuesta: $CODE)"; exit 1
+          fi
+          echo "Supabase activo ✅"
+
+      # 2) Bonus: confirmar que la tienda está en línea
+      - name: Comprobar que la tienda está en línea
+        run: |
+          CODE=$(curl -s -o /dev/null -w "%{http_code}" -L "https://fitcore-hn.com/")
+          echo "fitcore-hn.com respondió: HTTP $CODE"
+          if [ "$CODE" != "200" ]; then
+            echo "::warning::La tienda no respondió 200 (respuesta: $CODE)"
+          else
+            echo "Tienda en línea ✅"
+          fi

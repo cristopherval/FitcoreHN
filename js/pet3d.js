@@ -14,7 +14,7 @@
 (() => {
   "use strict";
 
-  const V = "?v=52";
+  const V = "?v=54";
   const SPEED_PX_S = 260;   // velocidad constante de persecución (px/seg)
   const TARGET_H   = 120;   // alto del tigre en pantalla (px)
   const FOLLOW_OFFSET = 26; // se ubica un poco abajo-derecha del cursor
@@ -24,13 +24,14 @@
      híbrida con mouse SÍ es PC. --- */
   const esEscritorio = () => {
     try {
-      const finePointer = window.matchMedia("(pointer: fine)").matches;
-      const canHover = window.matchMedia("(hover: hover)").matches;
+      // any-pointer:fine detecta que EXISTE un mouse aunque el primario sea touch
+      // (típico en laptops Windows con pantalla táctil).
+      const tieneMouse = window.matchMedia("(any-pointer: fine)").matches;
       const anchoOk = window.innerWidth >= 1024;
       const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const ok = finePointer && canHover && anchoOk && !reduce;
-      if (!ok) console.info("pet3d desactivado → pointer:fine=%s hover:hover=%s ancho>=1024=%s reduce=%s",
-        finePointer, canHover, anchoOk, reduce);
+      const ok = tieneMouse && anchoOk && !reduce;
+      if (!ok) console.info("pet3d desactivado → any-pointer:fine=%s ancho>=1024=%s reduce=%s",
+        tieneMouse, anchoOk, reduce);
       return ok;
     } catch (e) { return false; }
   };

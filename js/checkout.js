@@ -84,6 +84,31 @@ const Checkout = (() => {
     monto.classList.toggle("is-incompleto", !zona);
   };
 
+  /* ---------- Forma de pago ---------- */
+  const metodo = () => {
+    const r = document.querySelector('input[name="metodo"]:checked');
+    return r ? r.value : "transferencia";
+  };
+
+  /* Solo la transferencia necesita monto, cuentas y comprobante. */
+  const ajustarMetodo = () => {
+    const esTransfer = metodo() === "transferencia";
+    document.getElementById("co-transfer").hidden = !esTransfer;
+    document.getElementById("co-wa-aviso").hidden = esTransfer;
+    document.getElementById("co-submit").textContent =
+      esTransfer ? "Realizar pedido" : "Enviar pedido";
+    // Si cambia a WhatsApp, soltamos el archivo que hubiera elegido.
+    if (!esTransfer) {
+      archivo = null;
+      const inp = document.getElementById("co-file");
+      if (inp) inp.value = "";
+      document.getElementById("co-preview").hidden = true;
+      document.getElementById("co-drop-txt").textContent =
+        "Tocá para elegir la foto del comprobante";
+    }
+    mostrarError("");
+  };
+
   /* ---------- Cuentas bancarias ---------- */
   const pintarCuentas = () => {
     const cont = document.getElementById("co-cuentas");
@@ -286,11 +311,16 @@ const Checkout = (() => {
 
     const zona = zonaSeleccionada();
     if (!zona) { mostrarError("Elegí dónde querés recibir tu pedido."); return; }
-    if (!archivo) { mostrarError("Adjuntá la foto del comprobante de tu transferencia."); return; }
+    const esTransfer = metodo() === "transferencia";
+    if (esTransfer && !archivo) {
+      mostrarError("Adjuntá la foto del comprobante de tu transferencia.");
+      return;
+    }
 
     const btn = document.getElementById("co-submit");
     btn.disabled = true;
     btn.textContent = "Enviando tu pedido…";
+    const textoBtn = esTransfer ? "Realizar pedido" : "Enviar pedido";
 
     const otro = document.getElementById("co-otro").checked;
 
@@ -305,7 +335,7 @@ const Checkout = (() => {
       p_identidad:     document.getElementById("co-ident").value,
       p_direccion:     document.getElementById("co-dir").value,
       p_notas:         document.getElementById("co-notas").value,
-      p_metodo:        "transferencia",
+      p_metodo:        metodo(),
       p_envio_a_otro:  otro,
       p_dest_nombre:   otro ? document.getElementById("co-dest-nombre").value : null,
       p_dest_telefono: otro ? telCompleto(document.getElementById("co-dest-tel")) : null
@@ -313,7 +343,7 @@ const Checkout = (() => {
 
     if (error) {
       btn.disabled = false;
-      btn.textContent = "Realizar pedido";
+      btn.textContent = textoBtn;
       mostrarError(traducirError(error.message));
       return;
     }
@@ -323,17 +353,18 @@ const Checkout = (() => {
     recordarPedido(data.token, data.numero);
     Store.setCarrito([]);
 
-    // 2. Subir el comprobante a la carpeta del pedido
-    btn.textContent = "Subiendo tu comprobante…";
-    const ext = (archivo.name.split(".").pop() || "jpg").toLowerCase().slice(0, 5);
-    const ruta = `${data.token}/voucher-${Date.now()}.${ext}`;
+    // 2 y 3. Subir el comprobante y adjuntarlo (solo si pagó por transferencia)
+    if (esTransfer && archivo) {
+      btn.textContent = "Subiendo tu comprobante…";
+      const ext = (archivo.name.split(".").pop() || "jpg").toLowerCase().slice(0, 5);
+      const ruta = `${data.token}/voucher-${Date.now()}.${ext}`;
 
-    const { error: errUp } = await sb.storage
-      .from("vouchers").upload(ruta, archivo, { cacheControl: "3600", upsert: false });
+      const { error: errUp } = await sb.storage
+        .from("vouchers").upload(ruta, archivo, { cacheControl: "3600", upsert: false });
 
-    // 3. Adjuntarlo al pedido
-    if (!errUp) {
-      await sb.rpc("registrar_voucher", { p_token: data.token, p_path: ruta });
+      if (!errUp) {
+        await sb.rpc("registrar_voucher", { p_token: data.token, p_path: ruta });
+      }
     }
 
     window.location.href = `pedido.html?t=${encodeURIComponent(data.token)}`;
@@ -348,11 +379,24 @@ const Checkout = (() => {
     }
     document.getElementById("co-contenido").hidden = false;
 
-    // Aviso de tarjeta: aparece solo cuando la actives en data.js.
+    // La tarjeta se habilita sola cuando pongas tarjetaActiva: true en data.js.
     if (typeof PAGOS !== "undefined" && PAGOS.tarjetaActiva) {
-      const av = document.getElementById("co-tarjeta-aviso");
-      av.hidden = false;
-      av.textContent = "¿Preferís pagar con tarjeta? Escribinos por WhatsApp y te pasamos el enlace de pago.";
+      const op = document.querySelector('input[name="metodo"][value="tarjeta"]');
+      if (op) {
+        op.disabled = false;
+        op.closest(".co-pago").classList.remove("is-disabled");
+        document.getElementById("co-tarjeta-txt").textContent =
+          "Pagá en línea con Visa, Mastercard o American Express.";
+      }
+    }
+    // Si desactivás la transferencia, la opción deja de ofrecerse.
+    if (typeof PAGOS !== "undefined" && PAGOS.transferenciaActiva === false) {
+      const op = document.querySelector('input[name="metodo"][value="transferencia"]');
+      if (op) {
+        op.closest(".co-pago").hidden = true;
+        op.checked = false;
+        document.querySelector('input[name="metodo"][value="whatsapp"]').checked = true;
+      }
     }
 
     await cargarZonas();
@@ -367,6 +411,10 @@ const Checkout = (() => {
       if (e.target !== input) { e.preventDefault(); input.click(); }
     });
     input.addEventListener("change", () => elegirArchivo(input.files[0]));
+
+    document.querySelectorAll('input[name="metodo"]').forEach(r =>
+      r.addEventListener("change", ajustarMetodo));
+    ajustarMetodo();
 
     document.getElementById("co-otro").addEventListener("change", ajustarOtro);
     document.getElementById("co-form").addEventListener("submit", enviar);

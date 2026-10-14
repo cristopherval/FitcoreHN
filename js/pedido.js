@@ -90,14 +90,18 @@ const Pedido = (() => {
     badge.textContent = est.etiqueta;
     badge.className = `pd-badge ${est.clase}`;
 
-    // Falta el comprobante: es el único caso en que le pedimos algo más.
-    const faltaVoucher = pedido.estado === "nueva" && !pedido.tiene_voucher;
+    // Solo le pedimos el comprobante a quien eligió transferencia. Si eligió
+    // coordinar por chat, que no haya comprobante es lo esperado.
+    const porChat = pedido.metodo_pago === "whatsapp";
+    const faltaVoucher = pedido.estado === "nueva" && !porChat && !pedido.tiene_voucher;
 
     const aviso = document.getElementById("pd-aviso");
     aviso.className = `pd-aviso ${faltaVoucher ? "is-pendiente" : est.clase}`;
     aviso.innerHTML = faltaVoucher
       ? `<p>Registramos tu pedido, pero <strong>no nos llegó el comprobante</strong>. Si ya transferiste, adjuntalo acá abajo para que podamos despachar.</p>`
-      : `<p>${est.aviso}</p>`;
+      : (porChat && pedido.estado === "nueva")
+        ? `<p>Tu pedido quedó registrado. <strong>Escribinos por WhatsApp</strong> para arreglar el pago y coordinar la entrega.</p>`
+        : `<p>${est.aviso}</p>`;
 
     // Detalle
     document.getElementById("pd-lineas").innerHTML = (pedido.items || []).map(l => `

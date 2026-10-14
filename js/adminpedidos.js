@@ -67,7 +67,8 @@ const AdminPedidos = (() => {
     if (filtro === "") return pedidos;
     // Las que entraron sin comprobante: el cliente no completó el pago.
     if (filtro === "sin_comprobante")
-      return pedidos.filter(p => p.estado === "nueva" && !p.voucher_path);
+      return pedidos.filter(p => p.estado === "nueva"
+        && p.metodo_pago === "transferencia" && !p.voucher_path);
     return pedidos.filter(p => p.estado === filtro);
   };
 
@@ -94,8 +95,10 @@ const AdminPedidos = (() => {
           <td><strong>${fmt(p.total)}</strong></td>
           <td>
             <span class="pd-badge ${e.clase}">${e.txt}</span>
-            ${(p.estado === "nueva" && !p.voucher_path)
+            ${(p.estado === "nueva" && p.metodo_pago === "transferencia" && !p.voucher_path)
                 ? '<br><span class="pd-badge is-error ped-sincomp">Sin comprobante</span>' : ""}
+            ${p.metodo_pago === "whatsapp"
+                ? '<br><span class="pd-badge ped-sincomp">Por WhatsApp</span>' : ""}
           </td>
           <td>
             <button class="btn btn--ghost btn--sm" data-ver="${p.id}">Ver</button>
@@ -123,6 +126,9 @@ const AdminPedidos = (() => {
     document.getElementById("pm-zona").textContent   = actual.zona_nombre || "—";
     document.getElementById("pm-dir").textContent    = actual.cliente_direccion || "Retiro en punto acordado";
     document.getElementById("pm-notas").textContent  = actual.cliente_notas || "—";
+    document.getElementById("pm-metodo").textContent =
+      actual.metodo_pago === "whatsapp" ? "Coordinar por WhatsApp (sin comprobante)"
+      : actual.metodo_pago === "tarjeta" ? "Tarjeta" : "Transferencia bancaria";
 
     // La identidad solo se pide en retiros: mostrala únicamente si está.
     const identRow = document.getElementById("pm-ident-row");
@@ -177,7 +183,9 @@ const AdminPedidos = (() => {
     const wrap = document.getElementById("pm-voucher-wrap");
 
     if (!actual.voucher_path) {
-      wrap.innerHTML = `<p class="muted">Todavía no subió comprobante.</p>`;
+      wrap.innerHTML = actual.metodo_pago === "whatsapp"
+        ? `<p class="muted">Eligió coordinar por WhatsApp: todavía no hay comprobante. Escribile para arreglar el pago.</p>`
+        : `<p class="muted">Todavía no subió comprobante. Puede que no haya completado el pago.</p>`;
       return;
     }
 

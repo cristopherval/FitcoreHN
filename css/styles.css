@@ -69,6 +69,12 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 img { max-width: 100%; display: block; height: auto; }
+
+/* El atributo "hidden" lo oculta el navegador con display:none, pero la regla
+   de arriba (img{display:block}) le gana por ser nuestra. Sin esto, un
+   <img hidden> sin src se ve igual, con el icono de imagen rota. Vale para
+   cualquier elemento, asi que resuelve tambien los <img hidden> del panel. */
+[hidden] { display: none !important; }
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; border: 0; background: none; color: inherit; }
 ul { list-style: none; }
@@ -1184,3 +1190,9 @@ img, video { max-width: 100%; }
 .pd-monto.is-incompleto { opacity: .45; }
 .co-tarjeta-aviso { font-size: .84rem; color: var(--text-dim); background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 13px; margin-top: 10px; }
 .ped-sincomp { margin-top: 5px; font-size: .68rem; }
+
+/* ---- Selector de forma de pago dentro del paso 3 ---- */
+.co-metodos { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.co-metodos .co-pago { margin-bottom: 0; }
+.co-metodos .co-pago:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.co-wa-aviso { font-size: .88rem; line-height: 1.6; color: var(--text-dim); background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; }

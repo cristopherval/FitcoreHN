@@ -177,6 +177,42 @@
           <fieldset class="co-card">
             <legend class="co-card__title"><span class="co-step">3</span> Pagá tu pedido</legend>
 
+            <div class="co-metodos" role="radiogroup" aria-label="Forma de pago">
+              <label class="co-pago">
+                <input type="radio" name="metodo" value="transferencia" checked>
+                <span class="co-pago__body">
+                  <strong>Transferencia bancaria</strong>
+                  <small>Transferís, adjuntás el comprobante y listo. Es la vía más rápida.</small>
+                </span>
+              </label>
+
+              <label class="co-pago">
+                <input type="radio" name="metodo" value="whatsapp">
+                <span class="co-pago__body">
+                  <strong>Coordinar por WhatsApp</strong>
+                  <small>Guardamos tu pedido y arreglamos el pago por chat.</small>
+                </span>
+              </label>
+
+              <!-- Se habilita sola cuando pongas tarjetaActiva: true en data.js -->
+              <label class="co-pago is-disabled">
+                <input type="radio" name="metodo" value="tarjeta" disabled>
+                <span class="co-pago__body">
+                  <strong>Tarjeta de crédito o débito</strong>
+                  <small id="co-tarjeta-txt">Próximamente.</small>
+                </span>
+              </label>
+            </div>
+
+            <!-- Aviso cuando elige coordinar por chat -->
+            <p class="co-wa-aviso" id="co-wa-aviso" hidden>
+              Registramos tu pedido y te escribimos por WhatsApp para arreglar el pago
+              y la entrega. No necesitás adjuntar nada ahora.
+            </p>
+
+            <!-- Todo lo de transferencia: se oculta si elige otra forma -->
+            <div id="co-transfer">
+
             <p class="pd-monto-label">Monto exacto a transferir</p>
             <!-- Se actualiza solo al cambiar la zona de entrega. -->
             <p class="pd-monto" id="co-monto">L. 0</p>
@@ -187,9 +223,6 @@
             </p>
 
             <div id="co-cuentas"></div>
-
-            <!-- Aparece sola cuando actives la pasarela de tarjeta en data.js -->
-            <p class="co-tarjeta-aviso" id="co-tarjeta-aviso" hidden></p>
 
             <h3 class="co-sub">Adjuntá tu comprobante *</h3>
             <p class="muted pd-upload-intro">
@@ -206,6 +239,8 @@
             </label>
 
             <img id="co-preview" class="pd-preview" hidden alt="Vista previa del comprobante">
+
+            </div><!-- /co-transfer -->
           </fieldset>
 
           <p class="form__error" id="co-error" role="alert"></p>

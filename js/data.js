@@ -17,7 +17,10 @@ const CONFIG = {
   whatsapp: "50433644559",
   whatsappVisible: "+504 3364 4559",
   email: "cristopherval04@gmail.com",
-  ciudades: ["Talanga", "Tegucigalpa"],
+  // Cobertura: se envía a todo el país. Las ciudades de abajo son las que
+  // tienen página propia y entrega local destacada (ver *.html de ciudad).
+  cobertura: "todo Honduras",
+  ciudades: ["Talanga", "Tegucigalpa", "San Pedro Sula"],
   moneda: "L.", // Lempira hondureño
   redes: {
     instagram: "https://www.instagram.com/vale4_c?igsh=MWtja2Y2MWRsZHBzYw%3D%3D&utm_source=qr",

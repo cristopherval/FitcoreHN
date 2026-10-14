@@ -2,6 +2,8 @@ User-agent: *
 Allow: /
 Disallow: /admin.html
 Disallow: /categoria.html
+# Contiene los datos de un pedido concreto. Ademas lleva noindex.
+Disallow: /pedido.html
 
 # Crawlers / asistentes de IA — permitidos para leer y CITAR a FITCORE HN
 # (para aparecer en respuestas de ChatGPT, Perplexity, Gemini, Copilot, etc.)

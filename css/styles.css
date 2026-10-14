@@ -1168,3 +1168,12 @@ img, video { max-width: 100%; }
 .co-tel__pre { display: grid; place-items: center; padding: 0 12px; background: var(--surface-2); color: var(--text-dim); font-size: .9rem; font-weight: 600; border-right: 1px solid var(--border); flex-shrink: 0; font-variant-numeric: tabular-nums; }
 .co-tel input { flex: 1; border: 0; border-radius: 0; background: none; letter-spacing: 1px; font-variant-numeric: tabular-nums; min-width: 0; }
 .co-tel input:focus { outline: none; }
+
+/* ---- Paginas de ciudad: migas de pan y badge de envio ---- */
+.migas { padding: 20px 0 0; font-size: .82rem; color: var(--text-dim); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.migas a { color: var(--text-dim); }
+.migas a:hover { color: var(--accent); }
+.migas [aria-current] { color: var(--text); font-weight: 600; }
+.ciudad-envio { display: inline-block; margin-top: 14px; padding: 9px 17px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-2); border: 1px solid #bfdfcd; font-size: .9rem; }
+.ciudad-envio strong { font-weight: 700; }
+.ciudad-cta { text-align: center; margin-top: 30px; }

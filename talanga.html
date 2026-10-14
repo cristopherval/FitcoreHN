@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  /* Limpia service workers/cachés de OTROS proyectos que pudieran haber quedado
+     registrados en este puerto y "secuestran" la página mostrando otra app. */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  }
+  if (window.caches && caches.keys) { caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }); }
+</script>
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Suplementos en Talanga | Creatina, Proteína y Pre-entreno — FITCORE HN</title>
+  <meta name="description" content="Creatina, proteína whey y pre-entrenos originales en Talanga con envío GRATIS. Marcas Nutrex y Optimum Nutrition. Pago por transferencia y entrega coordinada por WhatsApp.">
+  <link rel="canonical" href="https://fitcore-hn.com/talanga.html">
+  <meta name="geo.region" content="HN-FM">
+  <meta name="geo.placename" content="Talanga">
+  <meta name="geo.position" content="14.4039;-87.0786">
+  <meta name="ICBM" content="14.4039, -87.0786">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://fitcore-hn.com/talanga.html">
+  <meta property="og:title" content="Suplementos en Talanga | Creatina, Proteína y Pre-entreno — FITCORE HN">
+  <meta property="og:description" content="Creatina, proteína whey y pre-entrenos originales en Talanga con envío GRATIS. Marcas Nutrex y Optimum Nutrition. Pago por transferencia y entrega coordinada por WhatsApp.">
+  <meta property="og:image" content="https://fitcore-hn.com/assets/fondpprueba1.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Suplementos en Talanga | Creatina, Proteína y Pre-entreno — FITCORE HN">
+  <meta name="twitter:description" content="Creatina, proteína whey y pre-entrenos originales en Talanga con envío GRATIS. Marcas Nutrex y Optimum Nutrition. Pago por transferencia y entrega coordinada por WhatsApp.">
+  <meta name="twitter:image" content="https://fitcore-hn.com/assets/fondpprueba1.jpg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=60">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "@id": "https://fitcore-hn.com/talanga.html#tienda",
+  "name": "FITCORE HN — Talanga",
+  "description": "Suplementos deportivos originales con entrega en Talanga, Honduras.",
+  "url": "https://fitcore-hn.com/talanga.html",
+  "image": "https://fitcore-hn.com/assets/fondpprueba1.jpg",
+  "telephone": "+50433644559",
+  "email": "cristopherval04@gmail.com",
+  "priceRange": "L. 650 - L. 2200",
+  "currenciesAccepted": "HNL",
+  "paymentAccepted": "Transferencia bancaria",
+  "areaServed": {
+    "@type": "City",
+    "name": "Talanga"
+  },
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "HN",
+    "addressLocality": "Talanga"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": 14.4039,
+    "longitude": -87.0786
+  },
+  "parentOrganization": {
+    "@id": "https://fitcore-hn.com/#tienda"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "¿Cuánto cuesta el envío a Talanga?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Nada. El envío dentro de Talanga es gratis y no tiene monto mínimo de compra."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cuánto tarda la entrega en Talanga?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Talanga es nuestra base, así que es la entrega más rápida. La coordinamos por WhatsApp apenas verificamos tu pago."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Los suplementos son originales?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Sí. Todo llega sellado de fábrica. Trabajamos marcas como Optimum Nutrition y Nutrex."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "¿Cómo pago mi pedido en Talanga?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Por transferencia bancaria. Te mostramos el monto y la cuenta, transferís y subís la foto del comprobante en el sitio."
+      }
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Inicio",
+      "item": "https://fitcore-hn.com/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Suplementos en Talanga",
+      "item": "https://fitcore-hn.com/talanga.html"
+    }
+  ]
+}
+  </script>
+</head>
+<body>
+
+  <header class="navbar is-scrolled">
+    <div class="container navbar__inner">
+      <a href="index.html" class="logo" data-logo aria-label="FITCORE HN inicio">
+        FIT<span class="logo__accent">CORE</span><small>HN</small>
+      </a>
+      <nav class="navbar__links" aria-label="Navegación principal">
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="index.html#productos">Productos</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <div class="navbar__actions">
+        <button class="cart-btn" data-open-cart aria-label="Abrir carrito">
+          <span data-cart-icon class="cart-btn__icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg></span>
+          <span class="cart-btn__badge" data-cart-count>0</span>
+        </button>
+        <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Migas de pan (coinciden con el BreadcrumbList del head) -->
+    <nav class="migas container" aria-label="Ruta de navegación">
+      <a href="index.html">Inicio</a> <span aria-hidden="true">›</span>
+      <span aria-current="page">Suplementos en Talanga</span>
+    </nav>
+
+    <section class="page-hero page-hero--tight">
+      <div class="container">
+        <span class="section__eyebrow">Talanga, Honduras</span>
+        <h1 class="page-hero__title">Suplementos deportivos en Talanga</h1>
+        <p class="page-hero__lead">Talanga es nuestra casa. Acá el envío no te cuesta nada y la entrega es la más rápida de toda nuestra cobertura.</p>
+        <p class="ciudad-envio">Envío <strong>gratis</strong>, sin monto mínimo</p>
+      </div>
+    </section>
+
+    <!-- Productos: los rellena ui.js desde el catálogo real -->
+    <section class="section" id="productos">
+      <div class="container">
+        <span class="section__eyebrow">Lo más pedido</span>
+        <h2 class="section__title">Disponible para Talanga</h2>
+        <div class="grid grid--products grid--bestsellers" id="productos-grid"><!-- JS --></div>
+        <div class="ciudad-cta">
+          <a href="index.html#categorias" class="btn btn--accent">Ver todo el catálogo</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Guía local (contenido propio de esta ciudad) -->
+    <section class="section section--alt">
+      <div class="container">
+        <article class="cat-article">
+        <p class="cat-article__lead">FITCORE HN nació en Talanga, y es la ciudad donde mejor podemos atender. Si vivís acá, tu pedido no paga envío sin importar cuánto compres: ni una creatina suelta ni un pedido de varios productos.</p>
+
+        <h2>Envío gratis en Talanga, sin mínimo</h2>
+        <p>No hay letra chica ni monto mínimo para que aplique. Armás tu pedido en el sitio, elegís <strong>Talanga</strong> como zona de entrega y el costo de envío aparece en cero. Coordinamos la entrega por WhatsApp apenas verificamos tu pago.</p>
+
+        <h2>Por qué comprar acá y no encargarlo de la capital</h2>
+        <p>Mucha gente en Talanga termina pidiendo suplementos a Tegucigalpa y pagando envío, o esperando a que alguien se los traiga. No hace falta: tenemos el mismo producto original y sellado de fábrica, al mismo precio, sin costo de envío y sin esperar el viaje de nadie.</p>
+        <p>Trabajamos marcas que se reconocen solas —<strong>Optimum Nutrition</strong> y <strong>Nutrex</strong> entre ellas— y cada producto llega sellado. Si te llega algo que no está perfecto, lo resolvemos.</p>
+
+        <h2>Qué podés pedir</h2>
+        <ul>
+          <li><a href="creatinas.html">Creatina monohidratada</a>: lo primero que recomendamos a quien quiere fuerza y recuperación. Es el suplemento más estudiado que existe.</li>
+          <li><a href="proteinas.html">Proteína whey</a>: para completar tu proteína diaria cuando la comida no alcanza.</li>
+          <li><a href="preentrenos.html">Pre-entrenos</a>: energía y enfoque para los días en que entrenar cuesta.</li>
+        </ul>
+
+        <h2>Cómo se paga</h2>
+        <p>Por transferencia bancaria a Banco Atlántida, Davivienda, BAC Credomatic o Ficohsa. Al finalizar la compra te mostramos el monto exacto y la cuenta; transferís, subís la foto del comprobante en el mismo sitio y, cuando lo verificamos, coordinamos la entrega.</p>
+
+        <p class="cat-article__note">¿Vivís en otra ciudad? Enviamos a <a href="tegucigalpa.html">Tegucigalpa</a>, <a href="san-pedro-sula.html">San Pedro Sula</a> y al resto del país.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Preguntas frecuentes (coinciden con el FAQPage del head) -->
+    <section class="section">
+      <div class="container">
+        <span class="section__eyebrow">Dudas comunes</span>
+        <h2 class="section__title">Preguntas sobre Talanga</h2>
+        <div class="faq">
+          <details class="faq__item">
+            <summary>¿Cuánto cuesta el envío a Talanga?</summary>
+            <p>Nada. El envío dentro de Talanga es gratis y no tiene monto mínimo de compra.</p>
+          </details>
+          <details class="faq__item">
+            <summary>¿Cuánto tarda la entrega en Talanga?</summary>
+            <p>Talanga es nuestra base, así que es la entrega más rápida. La coordinamos por WhatsApp apenas verificamos tu pago.</p>
+          </details>
+          <details class="faq__item">
+            <summary>¿Los suplementos son originales?</summary>
+            <p>Sí. Todo llega sellado de fábrica. Trabajamos marcas como Optimum Nutrition y Nutrex.</p>
+          </details>
+          <details class="faq__item">
+            <summary>¿Cómo pago mi pedido en Talanga?</summary>
+            <p>Por transferencia bancaria. Te mostramos el monto y la cuenta, transferís y subís la foto del comprobante en el sitio.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__col">
+        <a href="index.html" class="logo">FIT<span class="logo__accent">CORE</span><small>HN</small></a>
+        <p class="footer__text">Suplementos originales con envío a todo Honduras.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Tienda</h4>
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div class="footer__col">
+        <h4>Envíos</h4>
+        <a href="talanga.html">Suplementos en Talanga</a>
+        <a href="tegucigalpa.html">Suplementos en Tegucigalpa</a>
+        <a href="san-pedro-sula.html">Suplementos en San Pedro Sula</a>
+      </div>
+      <div class="footer__col">
+        <h4>Contacto</h4>
+        <a href="mailto:cristopherval04@gmail.com">cristopherval04@gmail.com</a>
+        <a href="https://wa.me/50433644559" target="_blank" rel="noopener">+504 3364 4559</a>
+        <div class="footer__social">
+          <a href="https://www.instagram.com/vale4_c?igsh=MWtja2Y2MWRsZHBzYw%3D%3D&utm_source=qr" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.facebook.com/share/18h41AgsuA/?mibextid=wwXIfr" target="_blank" rel="noopener">Facebook</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© <span id="anio">2026</span> FITCORE HN</p>
+    </div>
+  </footer>
+
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Carrito de compras">
+    <header class="cart-drawer__head">
+      <h3>Tu carrito</h3>
+      <button class="cart-drawer__close" id="cart-close" aria-label="Cerrar carrito">✕</button>
+    </header>
+    <div class="cart-drawer__items" id="cart-items"></div>
+    <footer class="cart-drawer__foot">
+      <div class="cart-drawer__total"><span>Total</span><strong id="cart-total">L. 0</strong></div>
+      <button class="btn btn--accent btn--block" id="cart-checkout">Finalizar compra</button>
+      <button class="btn btn--ghost btn--block btn--sm" id="cart-clear">Vaciar carrito</button>
+    </footer>
+  </aside>
+
+  <a class="whatsapp-float" href="https://wa.me/50433644559?text=Hola%20FITCORE%20HN" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+    <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" fill="currentColor">
+      <path d="M16 .5C7.4.5.5 7.4.5 16c0 2.8.7 5.4 2 7.7L.5 31.5l8-2.1c2.2 1.2 4.8 1.9 7.5 1.9 8.6 0 15.5-6.9 15.5-15.5S24.6.5 16 .5zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.7 1.2 1.3-4.6-.3-.5c-1.3-2.1-2-4.5-2-6.9C2.4 8.5 8.5 2.4 16 2.4S29.6 8.5 29.6 16 23.5 28.8 16 28.8zm8.3-9.9c-.5-.2-2.7-1.3-3.1-1.5-.4-.2-.7-.2-1 .2-.3.5-1.1 1.5-1.4 1.7-.3.2-.5.3-1 .1-2.7-1.4-4.5-2.4-6.3-5.4-.5-.8.5-.8 1.3-2.5.1-.3.1-.5 0-.7-.1-.2-1-2.4-1.4-3.2-.4-.9-.7-.7-1-.8h-.8c-.3 0-.7.1-1.1.5C8.7 7.6 8 8.5 8 10.3s1.5 3.6 1.7 3.9c.2.3 2.9 4.4 7 6.1 3.7 1.6 3.7 1.1 4.4 1 .7-.1 2.2-.9 2.5-1.7.3-.9.3-1.6.2-1.7-.1-.2-.4-.3-.9-.5z"/>
+    </svg>
+  </a>
+
+  <nav class="bottomnav" aria-label="Navegación móvil">
+    <a class="bottomnav__item" href="index.html#inicio"><span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></span><span>Inicio</span></a>
+    <a class="bottomnav__item" href="index.html#categorias"><span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span>Categorías</span></a>
+    <a class="bottomnav__item" href="index.html#ofertas"><span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.6 13.4 12 22l-9-9V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.3"/></svg></span><span>Ofertas</span></a>
+    <button class="bottomnav__item" data-open-cart>
+      <span class="bottomnav__icon" data-cart-icon><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg><span class="bottomnav__badge" data-cart-count>0</span></span><span>Carrito</span>
+    </button>
+  </nav>
+
+  <script src="assets/vendor/supabase.js?v=60"></script>
+  <script src="js/supabase-config.js?v=60"></script>
+  <script src="js/data.js?v=60"></script>
+  <script src="js/store.js?v=60"></script>
+  <script src="js/confirm.js?v=60"></script>
+  <script src="js/cart.js?v=60"></script>
+  <script src="js/ui.js?v=60"></script>
+  <script src="js/search.js?v=60"></script>
+  <script src="js/main.js?v=60"></script>
+  <script src="js/pet3d.js?v=60"></script>
+</body>
+</html>

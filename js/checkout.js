@@ -17,10 +17,14 @@ const Checkout = (() => {
 
   /* Mensajes claros para los errores que devuelve la base de datos. */
   const ERRORES = {
-    NOMBRE_INVALIDO:     "Escribí tu nombre completo (al menos 3 letras).",
+    NOMBRE_INVALIDO:     "Escribí tu nombre (al menos 2 letras).",
+    APELLIDO_INVALIDO:   "Escribí tu primer apellido.",
     TELEFONO_INVALIDO:   "Revisá el teléfono: necesitamos al menos 8 dígitos.",
+    IDENTIDAD_INVALIDA:  "Necesitamos tu número de identidad para la entrega en punto de retiro.",
     DIRECCION_INVALIDA:  "Necesitamos una dirección más específica para poder llegar.",
     ZONA_SIN_COBERTURA:  "Esa zona de entrega ya no está disponible. Elegí otra.",
+    DESTINATARIO_TELEFONO_INVALIDO: "Revisá el teléfono de quien recibe el pedido.",
+    DESTINATARIO_INVALIDO: "Escribí el nombre de quien recibe el pedido.",
     CARRITO_VACIO:       "Tu carrito está vacío.",
     CANTIDAD_INVALIDA:   "Hay una cantidad inválida en el carrito.",
     PRODUCTO_NO_EXISTE:  "Uno de los productos ya no está disponible. Vaciá el carrito y volvé a armarlo.",
@@ -44,8 +48,8 @@ const Checkout = (() => {
   const subtotal = () => lineas().reduce((a, l) => a + l.subtotal, 0);
 
   const zonaSeleccionada = () => {
-    const id = document.getElementById("co-zona").value;
-    return zonas.find(z => z.id === id) || null;
+    const r = document.querySelector('input[name="zona"]:checked');
+    return r ? (zonas.find(z => z.id === r.value) || null) : null;
   };
 
   const pintarResumen = () => {
@@ -75,35 +79,73 @@ const Checkout = (() => {
   };
 
   /* ---------- Zonas de envío ---------- */
+  /* Van como radios (no lista desplegable) para que el cliente compare
+     todos los precios de un vistazo antes de decidir. */
   const cargarZonas = async () => {
-    const sel = document.getElementById("co-zona");
+    const cont = document.getElementById("co-zonas");
     const { data, error } = await sb
       .from("zonas_envio").select("*").eq("activo", true)
       .order("orden", { ascending: true });
 
     if (error || !data || !data.length) {
-      sel.innerHTML = `<option value="">No se pudieron cargar las zonas</option>`;
+      cont.innerHTML = `<p class="muted">No se pudieron cargar las opciones de entrega.</p>`;
       mostrarError("No pudimos cargar las opciones de entrega. Recargá la página o escribinos por WhatsApp.");
       return;
     }
+
     zonas = data;
-    sel.innerHTML = `<option value="">Elegí una opción…</option>` +
-      zonas.map(z => {
-        const costo = Number(z.costo) === 0 ? "Gratis" : fmt(z.costo);
-        return `<option value="${z.id}">${z.nombre} — ${costo}</option>`;
-      }).join("");
+    cont.innerHTML = zonas.map(z => `
+      <label class="co-zona">
+        <input type="radio" name="zona" value="${z.id}">
+        <span class="co-zona__body">
+          <span class="co-zona__fila">
+            <strong>${z.nombre}</strong>
+            <span class="co-zona__precio">${Number(z.costo) === 0 ? "Gratis" : fmt(z.costo)}</span>
+          </span>
+          ${z.descripcion ? `<small>${z.descripcion}</small>` : ""}
+        </span>
+      </label>`).join("");
+
+    cont.querySelectorAll('input[name="zona"]').forEach(r =>
+      r.addEventListener("change", () => { ajustarCampos(); pintarResumen(); }));
   };
 
-  /* Un punto de retiro (UNAH CU) no necesita dirección de casa. */
-  const ajustarDireccion = () => {
+  /* Según la zona: un punto de retiro no necesita dirección pero sí
+     identidad (hay que verificar quién recoge); un envío, al revés. */
+  const ajustarCampos = () => {
     const zona = zonaSeleccionada();
-    const row = document.getElementById("co-dir-row");
-    const campo = document.getElementById("co-dir");
-    // Sin zona elegida todavía, mostramos el campo por defecto.
-    const pide = zona ? zona.pide_direccion : true;
-    row.hidden = !pide;
-    campo.required = pide;
-    if (!pide) campo.value = "";
+
+    const pideDir = zona ? zona.pide_direccion : true;
+    document.getElementById("co-dir-row").hidden = !pideDir;
+    const dir = document.getElementById("co-dir");
+    dir.required = pideDir;
+    if (!pideDir) dir.value = "";
+
+    const pideId = zona ? !!zona.pide_identidad : false;
+    document.getElementById("co-ident-row").hidden = !pideId;
+    const ident = document.getElementById("co-ident");
+    ident.required = pideId;
+    if (!pideId) ident.value = "";
+
+    // Mandarlo a otra persona solo tiene sentido si hay envío a domicilio.
+    const filaOtro = document.getElementById("co-otro-check-row");
+    filaOtro.hidden = !pideDir;
+    if (!pideDir) {
+      document.getElementById("co-otro").checked = false;
+      ajustarOtro();
+    }
+  };
+
+  /* Campos del destinatario cuando lo recibe otra persona. */
+  const ajustarOtro = () => {
+    const activo = document.getElementById("co-otro").checked;
+    document.getElementById("co-otro-campos").hidden = !activo;
+    document.getElementById("co-dest-nombre").required = activo;
+    document.getElementById("co-dest-tel").required = activo;
+    if (!activo) {
+      document.getElementById("co-dest-nombre").value = "";
+      document.getElementById("co-dest-tel").value = "";
+    }
   };
 
   /* ---------- Errores en pantalla ---------- */
@@ -142,14 +184,22 @@ const Checkout = (() => {
     btn.disabled = true;
     btn.textContent = "Registrando pedido…";
 
+    const otro = document.getElementById("co-otro").checked;
+
     const { data, error } = await sb.rpc("crear_pedido", {
-      p_items:     items,
-      p_nombre:    document.getElementById("co-nombre").value,
-      p_telefono:  document.getElementById("co-tel").value,
-      p_zona:      zona.id,
-      p_direccion: document.getElementById("co-dir").value,
-      p_notas:     document.getElementById("co-notas").value,
-      p_metodo:    document.querySelector('input[name="metodo"]:checked').value
+      p_items:         items,
+      p_nombres:       document.getElementById("co-nombres").value,
+      p_apellido1:     document.getElementById("co-ape1").value,
+      p_apellido2:     document.getElementById("co-ape2").value,
+      p_telefono:      document.getElementById("co-tel").value,
+      p_zona:          zona.id,
+      p_identidad:     document.getElementById("co-ident").value,
+      p_direccion:     document.getElementById("co-dir").value,
+      p_notas:         document.getElementById("co-notas").value,
+      p_metodo:        document.querySelector('input[name="metodo"]:checked').value,
+      p_envio_a_otro:  otro,
+      p_dest_nombre:   otro ? document.getElementById("co-dest-nombre").value : null,
+      p_dest_telefono: otro ? document.getElementById("co-dest-tel").value : null
     });
 
     btn.disabled = false;
@@ -189,12 +239,10 @@ const Checkout = (() => {
     }
 
     await cargarZonas();
+    ajustarCampos();
     pintarResumen();
 
-    document.getElementById("co-zona").addEventListener("change", () => {
-      ajustarDireccion();
-      pintarResumen();
-    });
+    document.getElementById("co-otro").addEventListener("change", ajustarOtro);
     document.getElementById("co-form").addEventListener("submit", enviar);
   };
 

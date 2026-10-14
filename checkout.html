@@ -83,16 +83,29 @@
           <fieldset class="co-card">
             <legend class="co-card__title"><span class="co-step">1</span> Tus datos</legend>
 
-            <div class="form__row">
-              <label for="co-nombre">Nombre completo *</label>
-              <input id="co-nombre" name="nombre" type="text" required minlength="3"
-                     autocomplete="name" placeholder="Como aparece en tu identidad">
+            <!-- Nombre en partes para que coincida con la identidad: en el
+                 retiro en punto hay que verificar quién recoge. -->
+            <div class="co-campos">
+              <div class="form__row">
+                <label for="co-nombres">Nombre(s) *</label>
+                <input id="co-nombres" type="text" required minlength="2"
+                       autocomplete="given-name">
+              </div>
+              <div class="form__row">
+                <label for="co-ape1">1er apellido *</label>
+                <input id="co-ape1" type="text" required minlength="2"
+                       autocomplete="family-name">
+              </div>
+              <div class="form__row">
+                <label for="co-ape2">2do apellido <span class="muted">(opcional)</span></label>
+                <input id="co-ape2" type="text" autocomplete="additional-name">
+              </div>
             </div>
 
             <div class="form__row">
               <label for="co-tel">Teléfono / WhatsApp *</label>
-              <input id="co-tel" name="telefono" type="tel" required
-                     autocomplete="tel" inputmode="tel" placeholder="9999-9999">
+              <input id="co-tel" type="tel" required
+                     autocomplete="tel" inputmode="tel">
               <small class="form__hint">Por acá te confirmamos el pedido y coordinamos la entrega.</small>
             </div>
           </fieldset>
@@ -101,26 +114,50 @@
           <fieldset class="co-card">
             <legend class="co-card__title"><span class="co-step">2</span> Entrega</legend>
 
+            <!-- Las opciones se cargan desde Supabase (tabla zonas_envio).
+                 Van como radios para que el cliente vea todos los precios
+                 de una vez, sin tener que abrir una lista. -->
             <div class="form__row">
-              <label for="co-zona">¿Dónde lo recibís? *</label>
-              <!-- Las opciones se cargan desde Supabase (tabla zonas_envio). -->
-              <select id="co-zona" name="zona" required>
-                <option value="">Cargando opciones…</option>
-              </select>
+              <label id="co-zona-label">¿Dónde lo recibís? *</label>
+              <div class="co-zonas" id="co-zonas" role="radiogroup" aria-labelledby="co-zona-label">
+                <p class="muted">Cargando opciones de entrega…</p>
+              </div>
             </div>
 
-            <!-- Se oculta solo cuando la zona es un punto de retiro (UNAH CU). -->
+            <!-- Solo aparece en zonas de retiro (UNAH CU). -->
+            <div class="form__row" id="co-ident-row" hidden>
+              <label for="co-ident">Número de identidad *</label>
+              <input id="co-ident" type="text" inputmode="numeric" placeholder="0801-1999-01234">
+              <small class="form__hint">Te lo pedimos porque al recoger el pedido tenés que presentarlo.</small>
+            </div>
+
+            <!-- Se oculta solo cuando la zona es un punto de retiro. -->
             <div class="form__row" id="co-dir-row">
               <label for="co-dir">Dirección exacta *</label>
-              <textarea id="co-dir" name="direccion" rows="3"
-                        placeholder="Colonia, calle, número de casa y un punto de referencia"></textarea>
+              <textarea id="co-dir" rows="3"></textarea>
               <small class="form__hint">Mientras más preciso, más rápido llega.</small>
+            </div>
+
+            <!-- Enviar a otra persona -->
+            <label class="co-check" id="co-otro-check-row">
+              <input type="checkbox" id="co-otro">
+              <span>¿Lo recibe otra persona?</span>
+            </label>
+
+            <div id="co-otro-campos" hidden>
+              <div class="form__row">
+                <label for="co-dest-nombre">Nombre de quien recibe *</label>
+                <input id="co-dest-nombre" type="text">
+              </div>
+              <div class="form__row">
+                <label for="co-dest-tel">Teléfono de quien recibe *</label>
+                <input id="co-dest-tel" type="tel" inputmode="tel">
+              </div>
             </div>
 
             <div class="form__row">
               <label for="co-notas">Nota para nosotros <span class="muted">(opcional)</span></label>
-              <textarea id="co-notas" name="notas" rows="2"
-                        placeholder="Ej. llamar antes de llegar, entregar en la tarde…"></textarea>
+              <textarea id="co-notas" rows="2"></textarea>
             </div>
           </fieldset>
 

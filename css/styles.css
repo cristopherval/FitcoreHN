@@ -1132,3 +1132,32 @@ img, video { max-width: 100%; }
   .pd-grid         { grid-template-columns: 1.4fr 1fr; gap: 34px; }
   .ped-modal__grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ---- Nombre en tres campos ---- */
+.co-campos { display: grid; grid-template-columns: 1fr; gap: 0; }
+.co-campos .form__row { margin-bottom: 16px; }
+
+/* ---- Zonas de envío como radios (precios a la vista) ---- */
+.co-zonas { display: flex; flex-direction: column; gap: 8px; }
+.co-zona { display: flex; align-items: flex-start; gap: 11px; padding: 13px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: border-color .2s, background .2s; }
+.co-zona:hover { border-color: var(--accent); background: var(--accent-soft); }
+.co-zona:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.co-zona input { margin-top: 3px; accent-color: var(--accent); flex-shrink: 0; }
+.co-zona__body { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.co-zona__fila { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.co-zona__fila strong { font-size: .92rem; font-weight: 600; }
+.co-zona__precio { font-size: .9rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+.co-zona__body small { color: var(--text-dim); font-size: .8rem; line-height: 1.55; }
+
+/* ---- Casilla "lo recibe otra persona" ---- */
+.co-check { display: flex; align-items: center; gap: 10px; cursor: pointer; margin-bottom: 16px; font-size: .9rem; }
+.co-check input { accent-color: var(--accent); width: 17px; height: 17px; cursor: pointer; flex-shrink: 0; }
+
+/* ---- Panel: varios botones en el encabezado de sección ---- */
+.admin-section__botones { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@media (min-width: 620px) {
+  .co-campos { grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  /* El nombre ocupa la fila completa; los apellidos van lado a lado. */
+  .co-campos .form__row:first-child { grid-column: 1 / -1; }
+}

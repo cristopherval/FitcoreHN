@@ -124,6 +124,20 @@ const AdminPedidos = (() => {
     document.getElementById("pm-dir").textContent    = actual.cliente_direccion || "Retiro en punto acordado";
     document.getElementById("pm-notas").textContent  = actual.cliente_notas || "—";
 
+    // La identidad solo se pide en retiros: mostrala únicamente si está.
+    const identRow = document.getElementById("pm-ident-row");
+    identRow.hidden = !actual.cliente_identidad;
+    if (actual.cliente_identidad)
+      document.getElementById("pm-ident").textContent = actual.cliente_identidad;
+
+    // Quién recibe, cuando no es quien compró.
+    const destRow = document.getElementById("pm-dest-row");
+    destRow.hidden = !actual.envio_a_otro;
+    if (actual.envio_a_otro) {
+      document.getElementById("pm-dest").textContent =
+        `${actual.dest_nombre || "—"} · ${actual.dest_telefono || "—"}`;
+    }
+
     document.getElementById("pm-subtotal").textContent = fmt(actual.subtotal);
     document.getElementById("pm-envio").textContent =
       Number(actual.envio) === 0 ? "Gratis" : fmt(actual.envio);
@@ -264,13 +278,67 @@ const AdminPedidos = (() => {
       return;
     }
     zonas = data || [];
+    const esc = (s) => String(s || "").replace(/"/g, "&quot;");
+
     body.innerHTML = zonas.map(z => `
       <tr data-zona="${z.id}">
-        <td><input type="text" class="admin-inline" data-campo="nombre" value="${z.nombre}"></td>
+        <td><input type="text" class="admin-inline" data-campo="nombre" value="${esc(z.nombre)}"></td>
+        <td><input type="text" class="admin-inline" data-campo="descripcion" value="${esc(z.descripcion)}" placeholder="Opcional: condiciones de la entrega"></td>
         <td><input type="number" class="admin-inline admin-inline--num" data-campo="costo" min="0" step="1" value="${Number(z.costo)}"></td>
         <td class="center"><input type="checkbox" data-campo="pide_direccion" ${z.pide_direccion ? "checked" : ""}></td>
+        <td class="center"><input type="checkbox" data-campo="pide_identidad" ${z.pide_identidad ? "checked" : ""}></td>
         <td class="center"><input type="checkbox" data-campo="activo" ${z.activo ? "checked" : ""}></td>
+        <td><button class="btn btn--ghost btn--sm" data-borrar-zona="${z.id}">Borrar</button></td>
       </tr>`).join("");
+
+    body.querySelectorAll("[data-borrar-zona]").forEach(b =>
+      b.addEventListener("click", () => borrarZona(b.dataset.borrarZona)));
+  };
+
+  /* Agregar una zona nueva (ej. "Envío local San Pedro Sula"). */
+  const agregarZona = async () => {
+    const nombre = prompt("Nombre de la zona, como la verá el cliente:\nEj. Envío local San Pedro Sula");
+    if (!nombre || nombre.trim().length < 3) return;
+
+    const costoTxt = prompt(`Costo de "${nombre.trim()}" en lempiras (0 = gratis):`, "100");
+    if (costoTxt === null) return;
+    const costo = Number(costoTxt);
+    if (!Number.isFinite(costo) || costo < 0) { toast("Costo inválido."); return; }
+
+    // El id es un slug estable: no se muestra, pero es lo que referencian
+    // los pedidos ya hechos, así que no debe cambiar nunca.
+    const id = nombre.trim().toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "").slice(0, 40);
+    if (!id) { toast("No se pudo generar un identificador para esa zona."); return; }
+
+    const orden = zonas.length ? Math.max(...zonas.map(z => z.orden || 0)) + 1 : 1;
+    const { error } = await sb.from("zonas_envio").insert({
+      id, nombre: nombre.trim(), costo, orden,
+      pide_direccion: true, pide_identidad: false, activo: true
+    });
+
+    if (error) {
+      toast(error.message.includes("duplicate")
+        ? "Ya existe una zona con ese nombre."
+        : "No se pudo crear la zona: " + error.message);
+      return;
+    }
+    toast("Zona creada.");
+    await cargarZonas();
+  };
+
+  const borrarZona = async (id) => {
+    const z = zonas.find(x => x.id === id);
+    const ok = await Confirm.show("Borrar zona de envío",
+      `¿Borrar "${z ? z.nombre : id}"? Los pedidos que ya la usaron conservan su costo y su nombre. Si solo querés dejar de ofrecerla, es mejor desactivarla.`,
+      "Sí, borrar");
+    if (!ok) return;
+
+    const { error } = await sb.from("zonas_envio").delete().eq("id", id);
+    if (error) { toast("No se pudo borrar: " + error.message); return; }
+    toast("Zona borrada.");
+    await cargarZonas();
   };
 
   const guardarZonas = async () => {
@@ -287,8 +355,10 @@ const AdminPedidos = (() => {
 
       const { error } = await sb.from("zonas_envio").update({
         nombre:         val("nombre").value.trim(),
+        descripcion:    val("descripcion").value.trim() || null,
         costo:          costo,
         pide_direccion: val("pide_direccion").checked,
+        pide_identidad: val("pide_identidad").checked,
         activo:         val("activo").checked
       }).eq("id", id);
       if (error) fallos++;
@@ -305,6 +375,7 @@ const AdminPedidos = (() => {
 
     document.getElementById("btn-recargar-ped")?.addEventListener("click", cargar);
     document.getElementById("btn-guardar-zonas")?.addEventListener("click", guardarZonas);
+    document.getElementById("btn-add-zona")?.addEventListener("click", agregarZona);
 
     document.getElementById("pm-aprobar")?.addEventListener("click", aprobar);
     document.getElementById("pm-rechazar")?.addEventListener("click", rechazar);

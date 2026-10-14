@@ -20,7 +20,8 @@
 - Talanga: GRATIS, sin monto mínimo
 - Entrega en UNAH CU (Ciudad Universitaria, Tegucigalpa): GRATIS
 - Envío local en Tegucigalpa: L. 100
-- Envío nacional (resto del país, incluido San Pedro Sula): L. 180
+- Envío local en San Pedro Sula: L. 100
+- Envío nacional (resto del país): L. 180
 - Islas de la Bahía: L. 300
 
 ## Cómo funciona la compra
@@ -39,11 +40,11 @@ para consultar su estado.
 ## Cobertura por ciudad
 - [Talanga](https://fitcore-hn.com/talanga.html): ciudad base, envío gratis.
 - [Tegucigalpa](https://fitcore-hn.com/tegucigalpa.html): envío local L. 100 o retiro gratis en UNAH CU.
-- [San Pedro Sula](https://fitcore-hn.com/san-pedro-sula.html): envío nacional L. 180.
+- [San Pedro Sula](https://fitcore-hn.com/san-pedro-sula.html): envío local L. 100.
 
 ## Preguntas frecuentes
 - ¿Hacen envíos a todo Honduras? Sí, a todo el país.
-- ¿Cuánto cuesta el envío? Gratis en Talanga y en UNAH CU; L. 100 en Tegucigalpa; L. 180 nacional; L. 300 Islas de la Bahía.
+- ¿Cuánto cuesta el envío? Gratis en Talanga y en UNAH CU; L. 100 en Tegucigalpa y San Pedro Sula; L. 180 nacional; L. 300 Islas de la Bahía.
 - ¿Cómo se paga? Por transferencia bancaria; se sube la foto del comprobante en el sitio y se verifica antes de despachar.
 - ¿Hay que crear una cuenta? No. Cada pedido tiene su propio enlace de seguimiento.
 - ¿Los productos son originales? Sí, 100% originales y sellados de fábrica.

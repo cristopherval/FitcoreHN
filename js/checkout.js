@@ -20,7 +20,6 @@ const Checkout = (() => {
     NOMBRE_INVALIDO:     "Escribí tu nombre (al menos 2 letras).",
     APELLIDO_INVALIDO:   "Escribí tu primer apellido.",
     TELEFONO_INVALIDO:   "Revisá el teléfono: necesitamos al menos 8 dígitos.",
-    IDENTIDAD_INVALIDA:  "Necesitamos tu número de identidad para la entrega en punto de retiro.",
     DIRECCION_INVALIDA:  "Necesitamos una dirección más específica para poder llegar.",
     ZONA_SIN_COBERTURA:  "Esa zona de entrega ya no está disponible. Elegí otra.",
     DESTINATARIO_TELEFONO_INVALIDO: "Revisá el teléfono de quien recibe el pedido.",
@@ -121,11 +120,12 @@ const Checkout = (() => {
     dir.required = pideDir;
     if (!pideDir) dir.value = "";
 
-    const pideId = zona ? !!zona.pide_identidad : false;
-    document.getElementById("co-ident-row").hidden = !pideId;
+    // El campo se MUESTRA en puntos de retiro, pero nunca es obligatorio:
+    // que a alguien le falte la identidad a mano no debe costarnos la venta.
+    const muestraId = zona ? !!zona.pide_identidad : false;
+    document.getElementById("co-ident-row").hidden = !muestraId;
     const ident = document.getElementById("co-ident");
-    ident.required = pideId;
-    if (!pideId) ident.value = "";
+    if (!muestraId) ident.value = "";
 
     // Mandarlo a otra persona solo tiene sentido si hay envío a domicilio.
     const filaOtro = document.getElementById("co-otro-check-row");

@@ -1,8 +1,9 @@
 /* =========================================================================
-   checkout.js  —  Página de finalizar compra
+   checkout.js  —  Compra completa en una sola pantalla
    -------------------------------------------------------------------------
-   Arma el resumen del carrito, carga las zonas de envío desde Supabase y
-   crea el pedido llamando a la función crear_pedido().
+   El cliente llena sus datos, elige dónde recibirlo, ve el monto exacto con
+   las cuentas bancarias, transfiere, adjunta el comprobante y manda todo de
+   una. No hay "reservar ahora y pagar después".
 
    IMPORTANTE: acá NO se calcula el precio que se va a cobrar. Los totales
    que se muestran son solo informativos; el total real lo calcula Supabase
@@ -12,14 +13,17 @@
 
 const Checkout = (() => {
   const fmt = (n) => `${CONFIG.moneda} ${Number(n).toLocaleString("es-HN")}`;
+  const MAX_BYTES = 5 * 1024 * 1024;   // igual que el límite del bucket
+  const TIPOS_OK = ["image/jpeg", "image/png", "image/webp", "image/heic", "application/pdf"];
 
   let zonas = [];
+  let archivo = null;
 
   /* Mensajes claros para los errores que devuelve la base de datos. */
   const ERRORES = {
     NOMBRE_INVALIDO:     "Escribí tu nombre (al menos 2 letras).",
     APELLIDO_INVALIDO:   "Escribí tu primer apellido.",
-    TELEFONO_INVALIDO:   "Revisá el teléfono: necesitamos al menos 8 dígitos.",
+    TELEFONO_INVALIDO:   "Revisá el teléfono: necesitamos los 8 dígitos.",
     DIRECCION_INVALIDA:  "Necesitamos una dirección más específica para poder llegar.",
     ZONA_SIN_COBERTURA:  "Esa zona de entrega ya no está disponible. Elegí otra.",
     DESTINATARIO_TELEFONO_INVALIDO: "Revisá el teléfono de quien recibe el pedido.",
@@ -67,14 +71,49 @@ const Checkout = (() => {
     const zona = zonaSeleccionada();
     document.getElementById("co-subtotal").textContent = fmt(sub);
 
-    if (!zona) {
-      document.getElementById("co-envio").textContent = "—";
-      document.getElementById("co-total").textContent = fmt(sub);
+    const total = sub + (zona ? Number(zona.costo) : 0);
+    document.getElementById("co-envio").textContent = !zona
+      ? "—"
+      : (Number(zona.costo) === 0 ? "Gratis" : fmt(zona.costo));
+    document.getElementById("co-total").textContent = fmt(total);
+
+    // El monto del paso 3 es el mismo total: que no haya dos cifras
+    // distintas en pantalla para la misma compra.
+    const monto = document.getElementById("co-monto");
+    monto.textContent = fmt(total);
+    monto.classList.toggle("is-incompleto", !zona);
+  };
+
+  /* ---------- Cuentas bancarias ---------- */
+  const pintarCuentas = () => {
+    const cont = document.getElementById("co-cuentas");
+    const cuentas = (typeof PAGOS !== "undefined" && PAGOS.cuentas) ? PAGOS.cuentas : [];
+
+    if (!cuentas.length) {
+      cont.innerHTML = `<p class="muted">Escribinos por WhatsApp y te pasamos los datos de la cuenta.</p>`;
       return;
     }
-    document.getElementById("co-envio").textContent =
-      Number(zona.costo) === 0 ? "Gratis" : fmt(zona.costo);
-    document.getElementById("co-total").textContent = fmt(sub + Number(zona.costo));
+
+    cont.innerHTML = cuentas.map(c => `
+      <div class="pd-cuenta">
+        <span class="pd-cuenta__banco">${c.banco}</span>
+        <div class="pd-cuenta__fila">
+          <span class="pd-cuenta__num">${c.numero}</span>
+          <button class="pd-copiar" type="button" data-copiar="${c.numero}">Copiar</button>
+        </div>
+        <span class="pd-cuenta__meta">${c.tipo}</span>
+      </div>`).join("");
+
+    cont.querySelectorAll("[data-copiar]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.copiar);
+          const antes = btn.textContent;
+          btn.textContent = "¡Copiado!";
+          setTimeout(() => (btn.textContent = antes), 1800);
+        } catch (e) { /* navegadores viejos: lo copia a mano */ }
+      });
+    });
   };
 
   /* ---------- Zonas de envío ---------- */
@@ -109,8 +148,7 @@ const Checkout = (() => {
       r.addEventListener("change", () => { ajustarCampos(); pintarResumen(); }));
   };
 
-  /* Según la zona: un punto de retiro no necesita dirección pero sí
-     identidad (hay que verificar quién recoge); un envío, al revés. */
+  /* Según la zona: un punto de retiro no necesita dirección de casa. */
   const ajustarCampos = () => {
     const zona = zonaSeleccionada();
 
@@ -162,7 +200,6 @@ const Checkout = (() => {
     const alFinal = input.selectionStart === input.value.length;
     const d = soloDigitos(input.value);
     input.value = d.length > 4 ? `${d.slice(0, 4)}-${d.slice(4)}` : d;
-    // Si estaba escribiendo al final, dejamos el cursor ahí.
     if (alFinal) input.setSelectionRange(input.value.length, input.value.length);
   };
 
@@ -182,6 +219,37 @@ const Checkout = (() => {
     return d.length > 4 ? `+504 ${d.slice(0, 4)}-${d.slice(4)}` : `+504 ${d}`;
   };
 
+  /* ---------- Comprobante ---------- */
+  const elegirArchivo = (file) => {
+    mostrarError("");
+    archivo = null;
+    const prev = document.getElementById("co-preview");
+    const txt = document.getElementById("co-drop-txt");
+
+    if (!file) {
+      txt.textContent = "Tocá para elegir la foto del comprobante";
+      prev.hidden = true;
+      return;
+    }
+    if (file.size > MAX_BYTES) {
+      mostrarError("La imagen pesa más de 5 MB. Probá con una foto de menor calidad.");
+      return;
+    }
+    if (!TIPOS_OK.includes(file.type)) {
+      mostrarError("El archivo debe ser una imagen (JPG, PNG) o un PDF.");
+      return;
+    }
+
+    archivo = file;
+    txt.textContent = file.name;
+    if (file.type.startsWith("image/")) {
+      prev.src = URL.createObjectURL(file);
+      prev.hidden = false;
+    } else {
+      prev.hidden = true;
+    }
+  };
+
   /* ---------- Errores en pantalla ---------- */
   const mostrarError = (txt) => {
     const el = document.getElementById("co-error");
@@ -191,7 +259,6 @@ const Checkout = (() => {
   };
 
   /* ---------- Guardar el token del pedido en este navegador ---------- */
-  /* Así el cliente puede volver a su pedido si cierra la pestaña. */
   const recordarPedido = (token, numero) => {
     try {
       const previos = JSON.parse(localStorage.getItem(STORAGE_KEYS.pedidos) || "[]");
@@ -200,7 +267,13 @@ const Checkout = (() => {
     } catch (e) { /* si el navegador bloquea storage, no es crítico */ }
   };
 
-  /* ---------- Enviar el pedido ---------- */
+  /* ---------- Enviar la compra ----------
+     Para el cliente es un solo botón. Por dentro son tres pasos, porque el
+     comprobante solo se puede subir a la carpeta de un pedido que ya existe
+     (así lo exige la política de seguridad del bucket):
+       1. crear el pedido   2. subir el archivo   3. adjuntarlo al pedido
+     Si el pedido se crea pero falla la subida, NO lo perdemos: lo mandamos
+     igual a su página, donde puede adjuntar el comprobante. */
   const enviar = async (e) => {
     e.preventDefault();
     mostrarError("");
@@ -213,13 +286,15 @@ const Checkout = (() => {
 
     const zona = zonaSeleccionada();
     if (!zona) { mostrarError("Elegí dónde querés recibir tu pedido."); return; }
+    if (!archivo) { mostrarError("Adjuntá la foto del comprobante de tu transferencia."); return; }
 
     const btn = document.getElementById("co-submit");
     btn.disabled = true;
-    btn.textContent = "Registrando pedido…";
+    btn.textContent = "Enviando tu pedido…";
 
     const otro = document.getElementById("co-otro").checked;
 
+    // 1. Crear el pedido
     const { data, error } = await sb.rpc("crear_pedido", {
       p_items:         items,
       p_nombres:       document.getElementById("co-nombres").value,
@@ -230,21 +305,37 @@ const Checkout = (() => {
       p_identidad:     document.getElementById("co-ident").value,
       p_direccion:     document.getElementById("co-dir").value,
       p_notas:         document.getElementById("co-notas").value,
-      p_metodo:        document.querySelector('input[name="metodo"]:checked').value,
+      p_metodo:        "transferencia",
       p_envio_a_otro:  otro,
       p_dest_nombre:   otro ? document.getElementById("co-dest-nombre").value : null,
       p_dest_telefono: otro ? telCompleto(document.getElementById("co-dest-tel")) : null
     });
 
-    btn.disabled = false;
-    btn.textContent = "Confirmar pedido";
+    if (error) {
+      btn.disabled = false;
+      btn.textContent = "Realizar pedido";
+      mostrarError(traducirError(error.message));
+      return;
+    }
 
-    if (error) { mostrarError(traducirError(error.message)); return; }
-
-    // Pedido creado: vaciamos el carrito y vamos a la página del pedido,
-    // que es donde se paga y se sube el voucher.
+    // A partir de acá el pedido YA existe: pase lo que pase con el archivo,
+    // vaciamos el carrito y lo llevamos a su página.
     recordarPedido(data.token, data.numero);
     Store.setCarrito([]);
+
+    // 2. Subir el comprobante a la carpeta del pedido
+    btn.textContent = "Subiendo tu comprobante…";
+    const ext = (archivo.name.split(".").pop() || "jpg").toLowerCase().slice(0, 5);
+    const ruta = `${data.token}/voucher-${Date.now()}.${ext}`;
+
+    const { error: errUp } = await sb.storage
+      .from("vouchers").upload(ruta, archivo, { cacheControl: "3600", upsert: false });
+
+    // 3. Adjuntarlo al pedido
+    if (!errUp) {
+      await sb.rpc("registrar_voucher", { p_token: data.token, p_path: ruta });
+    }
+
     window.location.href = `pedido.html?t=${encodeURIComponent(data.token)}`;
   };
 
@@ -257,25 +348,25 @@ const Checkout = (() => {
     }
     document.getElementById("co-contenido").hidden = false;
 
-    // La opción de tarjeta aparece sola cuando la activás en data.js.
+    // Aviso de tarjeta: aparece solo cuando la actives en data.js.
     if (typeof PAGOS !== "undefined" && PAGOS.tarjetaActiva) {
-      const t = document.getElementById("co-pago-tarjeta");
-      t.hidden = false;
-      t.classList.remove("is-disabled");
-      t.querySelector("input").disabled = false;
-      t.querySelector("small").textContent = "Pagá en línea con Visa, Mastercard o American Express.";
-    }
-    if (typeof PAGOS !== "undefined" && PAGOS.transferenciaActiva === false) {
-      const tr = document.getElementById("co-pago-transfer");
-      tr.hidden = true;
-      tr.querySelector("input").checked = false;
-      document.querySelector('input[name="metodo"][value="whatsapp"]').checked = true;
+      const av = document.getElementById("co-tarjeta-aviso");
+      av.hidden = false;
+      av.textContent = "¿Preferís pagar con tarjeta? Escribinos por WhatsApp y te pasamos el enlace de pago.";
     }
 
     await cargarZonas();
+    pintarCuentas();
     ajustarCampos();
     pintarResumen();
     initTelefonos();
+
+    const input = document.getElementById("co-file");
+    document.getElementById("co-drop").addEventListener("click", (e) => {
+      // El <label> ya abre el input; evitamos el doble disparo.
+      if (e.target !== input) { e.preventDefault(); input.click(); }
+    });
+    input.addEventListener("change", () => elegirArchivo(input.files[0]));
 
     document.getElementById("co-otro").addEventListener("change", ajustarOtro);
     document.getElementById("co-form").addEventListener("submit", enviar);

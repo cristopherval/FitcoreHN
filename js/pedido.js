@@ -1,16 +1,20 @@
 /* =========================================================================
-   pedido.js  —  Página del pedido: pago por transferencia y seguimiento
+   pedido.js  —  Confirmación y seguimiento del pedido
    -------------------------------------------------------------------------
-   El cliente llega acá con ?t=<token>. El token es un UUID aleatorio que
-   solo él tiene: hace de "llave" de su pedido, sin necesidad de registrarse.
+   El cliente llega acá DESPUÉS de comprar y pagar, con ?t=<token>. El token
+   es un UUID aleatorio que solo él tiene: hace de "llave" de su pedido, sin
+   necesidad de registrarse.
 
-   Flujo: ve el monto y la cuenta → transfiere → sube la foto del voucher →
-   el pedido pasa a "en verificación" → vos lo aprobás desde el panel.
+   Normalmente esta página solo confirma: "recibimos tu compra". La sección
+   para adjuntar el comprobante es una RED DE SEGURIDAD: aparece únicamente
+   si el pedido se creó pero el archivo no llegó a subirse (se le cortó el
+   internet, cerró la pestaña...). Así esa compra no queda sin respaldo.
    ========================================================================= */
 
 const Pedido = (() => {
   const fmt = (n) => `${CONFIG.moneda} ${Number(n).toLocaleString("es-HN")}`;
-  const MAX_BYTES = 5 * 1024 * 1024;   // igual que el límite del bucket
+  const MAX_BYTES = 5 * 1024 * 1024;
+  const TIPOS_OK = ["image/jpeg", "image/png", "image/webp", "image/heic", "application/pdf"];
 
   let token = null;
   let pedido = null;
@@ -18,45 +22,22 @@ const Pedido = (() => {
 
   /* Cómo se presenta cada estado al cliente. */
   const ESTADOS = {
-    pendiente_pago: {
-      etiqueta: "Esperando tu pago",
-      clase: "is-pendiente",
-      aviso: "Tu pedido está reservado. Hacé la transferencia por el monto exacto y subí el comprobante para que lo verifiquemos."
-    },
-    en_verificacion: {
-      etiqueta: "Verificando tu pago",
-      clase: "is-verificando",
-      aviso: "Recibimos tu comprobante. Lo estamos revisando y te confirmamos por WhatsApp."
-    },
-    verificado: {
-      etiqueta: "Pago confirmado",
+    nueva: {
+      etiqueta: "Compra recibida",
       clase: "is-ok",
-      aviso: "¡Listo! Confirmamos tu pago. Nos pondremos en contacto para coordinar la entrega."
+      aviso: "¡Gracias por tu compra! Ya nos llegó. Te escribimos por WhatsApp para coordinar la entrega."
     },
-    rechazado: {
-      etiqueta: "Comprobante rechazado",
+    entregada: {
+      etiqueta: "Entregada",
+      clase: "is-ok",
+      aviso: "Este pedido ya fue entregado. ¡Gracias por comprar con nosotros!"
+    },
+    cancelada: {
+      etiqueta: "Cancelada",
       clase: "is-error",
-      aviso: "No pudimos validar el comprobante que subiste. Revisá el detalle y subí uno nuevo."
-    },
-    enviado: {
-      etiqueta: "En camino",
-      clase: "is-ok",
-      aviso: "Tu pedido va en camino. Cualquier duda, escribinos por WhatsApp."
-    },
-    entregado: {
-      etiqueta: "Entregado",
-      clase: "is-ok",
-      aviso: "Este pedido ya fue entregado. ¡Gracias por tu compra!"
-    },
-    cancelado: {
-      etiqueta: "Cancelado",
-      clase: "is-error",
-      aviso: "Este pedido fue cancelado. Si creés que es un error, escribinos."
+      aviso: "Este pedido fue cancelado. Si creés que es un error, escribinos por WhatsApp."
     }
   };
-
-  /* Estados en los que todavía se puede (o se debe) subir comprobante. */
-  const admiteVoucher = (estado) => estado === "pendiente_pago" || estado === "rechazado";
 
   const mostrarError = (txt) => {
     const el = document.getElementById("pd-error");
@@ -64,7 +45,7 @@ const Pedido = (() => {
     el.classList.toggle("is-visible", !!txt);
   };
 
-  /* ---------- Cuentas bancarias ---------- */
+  /* ---------- Cuentas bancarias (solo en el caso de respaldo) ---------- */
   const pintarCuentas = () => {
     const cont = document.getElementById("pd-cuentas");
     const cuentas = (typeof PAGOS !== "undefined" && PAGOS.cuentas) ? PAGOS.cuentas : [];
@@ -78,13 +59,12 @@ const Pedido = (() => {
       <div class="pd-cuenta">
         <span class="pd-cuenta__banco">${c.banco}</span>
         <div class="pd-cuenta__fila">
-          <span class="pd-cuenta__num" data-num>${c.numero}</span>
+          <span class="pd-cuenta__num">${c.numero}</span>
           <button class="pd-copiar" type="button" data-copiar="${c.numero}">Copiar</button>
         </div>
         <span class="pd-cuenta__meta">${c.tipo} · ${c.titular}</span>
       </div>`).join("");
 
-    // Copiar número de cuenta al portapapeles.
     cont.querySelectorAll("[data-copiar]").forEach(btn => {
       btn.addEventListener("click", async () => {
         try {
@@ -92,7 +72,7 @@ const Pedido = (() => {
           const antes = btn.textContent;
           btn.textContent = "¡Copiado!";
           setTimeout(() => (btn.textContent = antes), 1800);
-        } catch (e) { /* navegadores viejos: el cliente lo copia a mano */ }
+        } catch (e) { /* navegadores viejos: lo copia a mano */ }
       });
     });
   };
@@ -110,13 +90,14 @@ const Pedido = (() => {
     badge.textContent = est.etiqueta;
     badge.className = `pd-badge ${est.clase}`;
 
-    // Aviso principal. Si fue rechazado y hay motivo, lo mostramos.
+    // Falta el comprobante: es el único caso en que le pedimos algo más.
+    const faltaVoucher = pedido.estado === "nueva" && !pedido.tiene_voucher;
+
     const aviso = document.getElementById("pd-aviso");
-    aviso.className = `pd-aviso ${est.clase}`;
-    aviso.innerHTML = `<p>${est.aviso}</p>` +
-      (pedido.motivo_rechazo
-        ? `<p class="pd-aviso__motivo"><strong>Motivo:</strong> ${pedido.motivo_rechazo}</p>`
-        : "");
+    aviso.className = `pd-aviso ${faltaVoucher ? "is-pendiente" : est.clase}`;
+    aviso.innerHTML = faltaVoucher
+      ? `<p>Registramos tu pedido, pero <strong>no nos llegó el comprobante</strong>. Si ya transferiste, adjuntalo acá abajo para que podamos despachar.</p>`
+      : `<p>${est.aviso}</p>`;
 
     // Detalle
     document.getElementById("pd-lineas").innerHTML = (pedido.items || []).map(l => `
@@ -134,16 +115,14 @@ const Pedido = (() => {
     document.getElementById("pd-total").textContent = fmt(pedido.total);
     document.getElementById("pd-zona").textContent = pedido.zona;
 
-    // Sección de pago: solo si es transferencia y todavía falta validarla.
-    const necesitaPagar = pedido.metodo_pago === "transferencia" && admiteVoucher(pedido.estado);
-    document.getElementById("pd-pago").hidden = !necesitaPagar;
-    if (necesitaPagar) {
+    document.getElementById("pd-pago").hidden = !faltaVoucher;
+    if (faltaVoucher) {
       document.getElementById("pd-monto").textContent = fmt(pedido.total);
       pintarCuentas();
     }
 
     // Botón de WhatsApp con el número de pedido ya escrito.
-    document.getElementById("pd-seguimiento").hidden = necesitaPagar;
+    document.getElementById("pd-seguimiento").hidden = faltaVoucher;
     const msg = `Hola ${CONFIG.marca}! Consulto por mi pedido #${pedido.numero}.`;
     document.getElementById("pd-wa").href =
       `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
@@ -154,15 +133,13 @@ const Pedido = (() => {
     mostrarError("");
     archivo = null;
     document.getElementById("pd-enviar").disabled = true;
-
     if (!file) return;
 
     if (file.size > MAX_BYTES) {
       mostrarError("La imagen pesa más de 5 MB. Probá con una foto de menor calidad.");
       return;
     }
-    const tiposOk = ["image/jpeg", "image/png", "image/webp", "image/heic", "application/pdf"];
-    if (!tiposOk.includes(file.type)) {
+    if (!TIPOS_OK.includes(file.type)) {
       mostrarError("El archivo debe ser una imagen (JPG, PNG) o un PDF.");
       return;
     }
@@ -171,7 +148,6 @@ const Pedido = (() => {
     document.getElementById("pd-drop-txt").textContent = file.name;
     document.getElementById("pd-enviar").disabled = false;
 
-    // Vista previa solo para imágenes.
     const prev = document.getElementById("pd-preview");
     if (file.type.startsWith("image/")) {
       prev.src = URL.createObjectURL(file);
@@ -181,7 +157,7 @@ const Pedido = (() => {
     }
   };
 
-  /* ---------- Subir el comprobante ---------- */
+  /* ---------- Subir el comprobante que faltó ---------- */
   const subir = async () => {
     if (!archivo) return;
     mostrarError("");
@@ -196,8 +172,7 @@ const Pedido = (() => {
     const ruta = `${token}/voucher-${Date.now()}.${ext}`;
 
     const { error: errUp } = await sb.storage
-      .from("vouchers")
-      .upload(ruta, archivo, { cacheControl: "3600", upsert: false });
+      .from("vouchers").upload(ruta, archivo, { cacheControl: "3600", upsert: false });
 
     if (errUp) {
       btn.disabled = false;
@@ -206,37 +181,35 @@ const Pedido = (() => {
       return;
     }
 
-    // Registramos el voucher y pasamos el pedido a "en verificación".
     const { error: errRpc } = await sb.rpc("registrar_voucher", {
-      p_token: token,
-      p_path:  ruta
+      p_token: token, p_path: ruta
     });
 
     btn.textContent = "Enviar comprobante";
-
     if (errRpc) {
       btn.disabled = false;
       mostrarError("Subimos el archivo pero no pudimos registrarlo. Escribinos por WhatsApp y lo resolvemos.");
       return;
     }
 
-    await cargar();   // vuelve a leer el pedido: ya estará "en verificación"
+    await cargar();
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   /* ---------- Cargar el pedido ---------- */
+  const sinPedido = () => {
+    document.getElementById("pd-cargando").hidden = true;
+    document.getElementById("pd-noencontrado").hidden = false;
+    const msg = `Hola ${CONFIG.marca}! Necesito ayuda con un pedido que hice en el sitio.`;
+    document.getElementById("pd-wa-ayuda").href =
+      `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
+  };
+
   const cargar = async () => {
     const { data, error } = await sb.rpc("ver_pedido", { p_token: token });
-
     document.getElementById("pd-cargando").hidden = true;
 
-    if (error || !data) {
-      document.getElementById("pd-noencontrado").hidden = false;
-      const msg = `Hola ${CONFIG.marca}! Necesito ayuda con un pedido que hice en el sitio.`;
-      document.getElementById("pd-wa-ayuda").href =
-        `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-      return;
-    }
+    if (error || !data) { sinPedido(); return; }
 
     pedido = data;
     document.getElementById("pd-contenido").hidden = false;
@@ -246,35 +219,24 @@ const Pedido = (() => {
   /* ---------- Arranque ---------- */
   const init = async () => {
     token = new URLSearchParams(location.search).get("t");
-
-    if (!token) {
-      document.getElementById("pd-cargando").hidden = true;
-      document.getElementById("pd-noencontrado").hidden = false;
-      const msg = `Hola ${CONFIG.marca}! Necesito ayuda con un pedido que hice en el sitio.`;
-      document.getElementById("pd-wa-ayuda").href =
-        `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-      return;
-    }
+    if (!token) { sinPedido(); return; }
 
     await cargar();
 
-    // Selector de archivo
     const input = document.getElementById("pd-file");
     document.getElementById("pd-drop").addEventListener("click", (e) => {
-      // El <label> ya abre el input; evitamos el doble disparo.
       if (e.target !== input) { e.preventDefault(); input.click(); }
     });
     input.addEventListener("change", () => elegirArchivo(input.files[0]));
     document.getElementById("pd-enviar").addEventListener("click", subir);
 
-    // Copiar el enlace del pedido
     document.getElementById("pd-copiar").addEventListener("click", async (e) => {
       try {
         await navigator.clipboard.writeText(location.href);
         const b = e.currentTarget;
         b.textContent = "¡Copiado!";
         setTimeout(() => (b.textContent = "Copiar enlace"), 1800);
-      } catch (err) { /* sin portapapeles: el cliente copia la URL a mano */ }
+      } catch (err) { /* sin portapapeles: copia la URL a mano */ }
     });
   };
 

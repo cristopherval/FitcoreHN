@@ -1177,3 +1177,10 @@ img, video { max-width: 100%; }
 .ciudad-envio { display: inline-block; margin-top: 14px; padding: 9px 17px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-2); border: 1px solid #bfdfcd; font-size: .9rem; }
 .ciudad-envio strong { font-weight: 700; }
 .ciudad-cta { text-align: center; margin-top: 30px; }
+
+/* ---- Pago dentro del checkout ---- */
+.co-pago-intro { font-size: .87rem; line-height: 1.6; margin-bottom: 14px; }
+.co-sub { font-family: var(--ff-display); font-size: 1rem; text-transform: uppercase; letter-spacing: .5px; margin: 26px 0 4px; padding-top: 22px; border-top: 1px solid var(--border); }
+.pd-monto.is-incompleto { opacity: .45; }
+.co-tarjeta-aviso { font-size: .84rem; color: var(--text-dim); background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 13px; margin-top: 10px; }
+.ped-sincomp { margin-top: 5px; font-size: .68rem; }

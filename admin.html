@@ -65,16 +65,17 @@
           <button class="btn btn--ghost btn--sm" id="btn-recargar-ped">↻ Actualizar</button>
         </div>
         <p class="muted admin-wrap__hint">
-          Cuando un cliente sube su comprobante, el pedido aparece como
-          <strong>En verificación</strong>. Abrilo, revisá que el monto coincida y confirmá el pago.
+          Cada compra llega con el comprobante adjunto y los datos del cliente.
+          Abrila, contactalo por WhatsApp y marcala <strong>entregada</strong> cuando se la diste.
+          Si una entró <strong>sin comprobante</strong>, el cliente no completó el pago.
         </p>
 
         <div class="admin-filtros" id="ped-filtros">
-          <button class="admin-chip is-active" data-estado="por_revisar">Por revisar</button>
-          <button class="admin-chip" data-estado="pendiente_pago">Esperando pago</button>
-          <button class="admin-chip" data-estado="verificado">Verificados</button>
-          <button class="admin-chip" data-estado="enviado">Enviados</button>
-          <button class="admin-chip" data-estado="">Todos</button>
+          <button class="admin-chip is-active" data-estado="nueva">Nuevas</button>
+          <button class="admin-chip" data-estado="sin_comprobante">Sin comprobante</button>
+          <button class="admin-chip" data-estado="entregada">Entregadas</button>
+          <button class="admin-chip" data-estado="cancelada">Canceladas</button>
+          <button class="admin-chip" data-estado="">Todas</button>
         </div>
 
         <div class="table-wrap">
@@ -239,27 +240,11 @@
             <textarea id="pm-nota" rows="2" placeholder="Ej. nº de referencia 884213, entró a la cuenta de Atlántida"></textarea>
           </div>
 
-          <div class="form__row">
-            <label for="pm-motivo">Motivo de rechazo <span class="muted">(se le muestra al cliente)</span></label>
-            <input id="pm-motivo" type="text" placeholder="Ej. el monto no coincide con el total">
-          </div>
-
           <div class="ped-modal__acciones">
-            <button class="btn btn--accent btn--block" id="pm-aprobar">✓ Confirmar pago</button>
-            <button class="btn btn--danger btn--block btn--sm" id="pm-rechazar">✕ Rechazar comprobante</button>
-            <div class="ped-modal__estado">
-              <label for="pm-estado">Cambiar estado manualmente</label>
-              <select id="pm-estado">
-                <option value="pendiente_pago">Esperando pago</option>
-                <option value="en_verificacion">En verificación</option>
-                <option value="verificado">Pago confirmado</option>
-                <option value="rechazado">Rechazado</option>
-                <option value="enviado">Enviado</option>
-                <option value="entregado">Entregado</option>
-                <option value="cancelado">Cancelado</option>
-              </select>
-              <button class="btn btn--ghost btn--sm" id="pm-guardar-estado">Aplicar</button>
-            </div>
+            <button class="btn btn--accent btn--block" id="pm-entregada">✓ Marcar entregada</button>
+            <button class="btn btn--ghost btn--block btn--sm" id="pm-guardar-nota">Guardar nota</button>
+            <button class="btn btn--danger btn--block btn--sm" id="pm-cancelar">✕ Cancelar pedido</button>
+            <button class="btn btn--ghost btn--block btn--sm" id="pm-reabrir" hidden>↩ Volver a "nueva"</button>
           </div>
         </div>
       </div>

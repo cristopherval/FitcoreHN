@@ -15,17 +15,13 @@ const AdminPedidos = (() => {
   let pedidos = [];
   let zonas = [];
   let actual = null;          // pedido abierto en el modal
-  let filtro = "por_revisar";
+  let filtro = "nueva";
 
   /* Etiquetas y color de cada estado. */
   const ESTADOS = {
-    pendiente_pago:  { txt: "Esperando pago",  clase: "is-pendiente" },
-    en_verificacion: { txt: "En verificación", clase: "is-verificando" },
-    verificado:      { txt: "Pago confirmado", clase: "is-ok" },
-    rechazado:       { txt: "Rechazado",       clase: "is-error" },
-    enviado:         { txt: "Enviado",         clase: "is-ok" },
-    entregado:       { txt: "Entregado",       clase: "is-ok" },
-    cancelado:       { txt: "Cancelado",       clase: "is-error" }
+    nueva:     { txt: "Nueva",     clase: "is-verificando" },
+    entregada: { txt: "Entregada", clase: "is-ok" },
+    cancelada: { txt: "Cancelada", clase: "is-error" }
   };
 
   const toast = (msg) => {
@@ -57,19 +53,21 @@ const AdminPedidos = (() => {
     await cargarZonas();
   };
 
-  /* Insignia con los que esperan revisión. */
+  /* Insignia con las compras que todavía no despachaste. */
   const pintarContador = () => {
-    const n = pedidos.filter(p => p.estado === "en_verificacion").length;
+    const n = pedidos.filter(p => p.estado === "nueva").length;
     const el = document.getElementById("ped-contador");
     if (!el) return;
     el.hidden = n === 0;
-    el.textContent = n === 1 ? "1 por revisar" : `${n} por revisar`;
+    el.textContent = n === 1 ? "1 sin entregar" : `${n} sin entregar`;
   };
 
   /* ---------- Tabla de pedidos ---------- */
   const filtrados = () => {
     if (filtro === "") return pedidos;
-    if (filtro === "por_revisar") return pedidos.filter(p => p.estado === "en_verificacion");
+    // Las que entraron sin comprobante: el cliente no completó el pago.
+    if (filtro === "sin_comprobante")
+      return pedidos.filter(p => p.estado === "nueva" && !p.voucher_path);
     return pedidos.filter(p => p.estado === filtro);
   };
 
@@ -94,11 +92,13 @@ const AdminPedidos = (() => {
           </td>
           <td><small>${p.zona_nombre || "—"}</small></td>
           <td><strong>${fmt(p.total)}</strong></td>
-          <td><span class="pd-badge ${e.clase}">${e.txt}</span></td>
           <td>
-            <button class="btn btn--ghost btn--sm" data-ver="${p.id}">
-              ${p.estado === "en_verificacion" ? "Revisar" : "Ver"}
-            </button>
+            <span class="pd-badge ${e.clase}">${e.txt}</span>
+            ${(p.estado === "nueva" && !p.voucher_path)
+                ? '<br><span class="pd-badge is-error ped-sincomp">Sin comprobante</span>' : ""}
+          </td>
+          <td>
+            <button class="btn btn--ghost btn--sm" data-ver="${p.id}">Ver</button>
           </td>
         </tr>`;
     }).join("");
@@ -143,9 +143,10 @@ const AdminPedidos = (() => {
       Number(actual.envio) === 0 ? "Gratis" : fmt(actual.envio);
     document.getElementById("pm-total").textContent = fmt(actual.total);
 
-    document.getElementById("pm-nota").value   = actual.nota_admin || "";
-    document.getElementById("pm-motivo").value = actual.motivo_rechazo || "";
-    document.getElementById("pm-estado").value = actual.estado;
+    document.getElementById("pm-nota").value = actual.nota_admin || "";
+    // Reabrir solo tiene sentido en algo ya cerrado.
+    document.getElementById("pm-reabrir").hidden = actual.estado === "nueva";
+    document.getElementById("pm-entregada").hidden = actual.estado === "entregada";
 
     const msg = `Hola ${actual.cliente_nombre}! Te escribo de FITCORE HN por tu pedido #${actual.numero}.`;
     const tel = String(actual.cliente_telefono).replace(/\D/g, "");
@@ -217,53 +218,40 @@ const AdminPedidos = (() => {
     await cargar();
   };
 
-  const aprobar = async () => {
-    if (!actual) return;
-    const ok = await Confirm.show("Confirmar pago",
-      `¿Confirmás que recibiste ${fmt(actual.total)} del pedido #${actual.numero}? El cliente verá su pago como aprobado.`,
-      "Sí, confirmar");
-    if (!ok) return;
+  const nota = () => document.getElementById("pm-nota").value.trim() || null;
 
-    const { data: sesion } = await sb.auth.getUser();
+  const marcarEntregada = async () => {
+    if (!actual) return;
+    const ok = await Confirm.show("Marcar entregada",
+      `¿Ya le entregaste el pedido #${actual.numero} a ${actual.cliente_nombre}?`,
+      "Sí, entregada");
+    if (!ok) return;
     await actualizar({
-      estado:         "verificado",
-      verificado_at:  new Date().toISOString(),
-      verificado_por: sesion?.user?.id || null,
-      nota_admin:     document.getElementById("pm-nota").value.trim() || null,
-      motivo_rechazo: null
-    }, `Pedido #${actual.numero} confirmado.`);
+      estado:       "entregada",
+      entregada_at: new Date().toISOString(),
+      nota_admin:   nota()
+    }, `Pedido #${actual.numero} entregado.`);
   };
 
-  const rechazar = async () => {
+  const cancelar = async () => {
     if (!actual) return;
-    const motivo = document.getElementById("pm-motivo").value.trim();
-    if (!motivo) {
-      toast("Escribí el motivo: el cliente lo necesita para corregir.");
-      document.getElementById("pm-motivo").focus();
-      return;
-    }
-    const ok = await Confirm.show("Rechazar comprobante",
-      `El cliente verá: "${motivo}" y podrá subir otro comprobante. ¿Continuar?`,
-      "Sí, rechazar");
+    const ok = await Confirm.show("Cancelar pedido",
+      `¿Cancelar el pedido #${actual.numero}? Usalo cuando no haya pago real detrás, no tengas el producto o no puedas ubicar al cliente. Si ya te pagó, acordate de devolverle.`,
+      "Sí, cancelar");
     if (!ok) return;
-
-    await actualizar({
-      estado:         "rechazado",
-      motivo_rechazo: motivo,
-      nota_admin:     document.getElementById("pm-nota").value.trim() || null
-    }, `Pedido #${actual.numero} rechazado.`);
+    await actualizar({ estado: "cancelada", nota_admin: nota() },
+      `Pedido #${actual.numero} cancelado.`);
   };
 
-  const guardarEstado = async () => {
+  const reabrir = async () => {
     if (!actual) return;
-    const nuevo = document.getElementById("pm-estado").value;
-    await actualizar({
-      estado:         nuevo,
-      nota_admin:     document.getElementById("pm-nota").value.trim() || null,
-      motivo_rechazo: nuevo === "rechazado"
-        ? (document.getElementById("pm-motivo").value.trim() || null)
-        : null
-    }, `Pedido #${actual.numero}: ${(ESTADOS[nuevo] || {}).txt || nuevo}.`);
+    await actualizar({ estado: "nueva", entregada_at: null, nota_admin: nota() },
+      `Pedido #${actual.numero} vuelve a estar abierto.`);
+  };
+
+  const guardarNota = async () => {
+    if (!actual) return;
+    await actualizar({ nota_admin: nota() }, "Nota guardada.");
   };
 
   /* ---------- Envíos (zonas) ---------- */
@@ -377,9 +365,10 @@ const AdminPedidos = (() => {
     document.getElementById("btn-guardar-zonas")?.addEventListener("click", guardarZonas);
     document.getElementById("btn-add-zona")?.addEventListener("click", agregarZona);
 
-    document.getElementById("pm-aprobar")?.addEventListener("click", aprobar);
-    document.getElementById("pm-rechazar")?.addEventListener("click", rechazar);
-    document.getElementById("pm-guardar-estado")?.addEventListener("click", guardarEstado);
+    document.getElementById("pm-entregada")?.addEventListener("click", marcarEntregada);
+    document.getElementById("pm-cancelar")?.addEventListener("click", cancelar);
+    document.getElementById("pm-reabrir")?.addEventListener("click", reabrir);
+    document.getElementById("pm-guardar-nota")?.addEventListener("click", guardarNota);
     document.getElementById("pm-cerrar")?.addEventListener("click", cerrar);
 
     // Clic fuera del cuadro cierra el modal.

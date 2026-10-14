@@ -173,42 +173,47 @@
             </div>
           </fieldset>
 
-          <!-- Paso 3: pago -->
+          <!-- Paso 3: pago, en el mismo formulario -->
           <fieldset class="co-card">
-            <legend class="co-card__title"><span class="co-step">3</span> Forma de pago</legend>
+            <legend class="co-card__title"><span class="co-step">3</span> Pagá tu pedido</legend>
 
-            <label class="co-pago" id="co-pago-transfer">
-              <input type="radio" name="metodo" value="transferencia" checked>
-              <span class="co-pago__body">
-                <strong>Transferencia bancaria</strong>
-                <small>Te mostramos la cuenta, transferís y subís la foto del voucher. Confirmamos y se despacha.</small>
+            <p class="pd-monto-label">Monto exacto a transferir</p>
+            <!-- Se actualiza solo al cambiar la zona de entrega. -->
+            <p class="pd-monto" id="co-monto">L. 0</p>
+
+            <p class="muted co-pago-intro">
+              Transferí a cualquiera de estas cuentas y adjuntá el comprobante. Todas están a nombre de
+              <strong>Cristopher Daniel Valle</strong>.
+            </p>
+
+            <div id="co-cuentas"></div>
+
+            <!-- Aparece sola cuando actives la pasarela de tarjeta en data.js -->
+            <p class="co-tarjeta-aviso" id="co-tarjeta-aviso" hidden></p>
+
+            <h3 class="co-sub">Adjuntá tu comprobante *</h3>
+            <p class="muted pd-upload-intro">
+              Tomale una foto al voucher o subí la captura de la transferencia. Debe verse el monto y la fecha.
+            </p>
+
+            <label class="pd-drop" id="co-drop">
+              <input type="file" id="co-file" accept="image/*,application/pdf" hidden>
+              <span class="pd-drop__icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
               </span>
+              <span class="pd-drop__txt" id="co-drop-txt">Tocá para elegir la foto del comprobante</span>
+              <small class="pd-drop__hint">JPG, PNG o PDF · máximo 5 MB</small>
             </label>
 
-            <label class="co-pago">
-              <input type="radio" name="metodo" value="whatsapp">
-              <span class="co-pago__body">
-                <strong>Coordinar por WhatsApp</strong>
-                <small>Guardamos tu pedido y seguimos la conversación por chat, como siempre.</small>
-              </span>
-            </label>
-
-            <!-- Aparece sola cuando actives la pasarela en data.js -->
-            <label class="co-pago is-disabled" id="co-pago-tarjeta" hidden>
-              <input type="radio" name="metodo" value="tarjeta" disabled>
-              <span class="co-pago__body">
-                <strong>Tarjeta de crédito o débito</strong>
-                <small>Próximamente.</small>
-              </span>
-            </label>
+            <img id="co-preview" class="pd-preview" hidden alt="Vista previa del comprobante">
           </fieldset>
 
           <p class="form__error" id="co-error" role="alert"></p>
 
           <button type="submit" class="btn btn--accent btn--block btn--lg" id="co-submit">
-            Confirmar pedido
+            Realizar pedido
           </button>
-          <p class="co-legal">Al confirmar reservamos tu pedido y te mostramos el monto y la cuenta para transferir. <strong>Todavía no estás pagando nada.</strong></p>
+          <p class="co-legal">Al enviarlo nos llega tu compra con el comprobante. Te escribimos por WhatsApp para coordinar la entrega.</p>
         </form>
 
         <!-- ============ COLUMNA DERECHA: RESUMEN ============ -->

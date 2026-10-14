@@ -993,3 +993,142 @@ img, video { max-width: 100%; }
 .cat-article li { margin-bottom: 6px; }
 .cat-article strong { color: var(--text); }
 .cat-article__note { font-size: .85rem; color: var(--text-dim); border-left: 3px solid var(--accent); padding: 10px 14px; background: var(--accent-soft); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-top: 26px; }
+
+/* =========================================================================
+   22. CHECKOUT, PEDIDO Y VERIFICACIÓN DE PAGOS
+   -------------------------------------------------------------------------
+   Pantallas de checkout.html y pedido.html, más los bloques que el panel
+   reutiliza para revisar vouchers.
+   ========================================================================= */
+
+/* ---- Layout de dos columnas (formulario + resumen) ---- */
+.co-grid { display: grid; grid-template-columns: 1fr; gap: 26px; align-items: start; }
+.page-hero--tight { padding-bottom: 18px; }
+.section--pedido { padding-top: 34px; }
+
+/* ---- Carrito vacío / pedido no encontrado ---- */
+.co-empty { text-align: center; max-width: 440px; margin: 20px auto 40px; }
+.co-empty h2 { font-family: var(--ff-display); font-size: 1.5rem; margin-bottom: 8px; }
+.co-empty p { margin-bottom: 18px; }
+.pd-estado-carga { text-align: center; padding: 60px 0; }
+
+/* ---- Tarjetas de paso ---- */
+.co-card { border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; margin-bottom: 18px; background: var(--surface); box-shadow: var(--shadow-sm); }
+.co-card__title { display: flex; align-items: center; gap: 10px; font-family: var(--ff-display); font-size: 1.1rem; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 16px; padding: 0; }
+.co-card__title--sep { margin-top: 28px; padding-top: 22px; border-top: 1px solid var(--border); }
+.co-step { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); font-size: .85rem; flex-shrink: 0; }
+.co-form fieldset { border: 0; }
+.co-form .form__row { margin-bottom: 16px; }
+.form__hint { font-size: .78rem; color: var(--text-dim); }
+
+/* ---- Opciones de pago ---- */
+.co-pago { display: flex; align-items: flex-start; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; margin-bottom: 10px; transition: border-color .2s, background .2s; }
+.co-pago:hover { border-color: var(--accent); background: var(--accent-soft); }
+.co-pago input { margin-top: 3px; accent-color: var(--accent); flex-shrink: 0; }
+.co-pago__body { display: flex; flex-direction: column; gap: 3px; }
+.co-pago__body strong { font-size: .95rem; }
+.co-pago__body small { color: var(--text-dim); font-size: .82rem; line-height: 1.5; }
+.co-pago.is-disabled { opacity: .5; cursor: not-allowed; }
+.co-pago.is-disabled:hover { border-color: var(--border); background: none; }
+
+/* ---- Resumen del pedido ---- */
+.co-resumen { border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; background: var(--bg-alt); position: sticky; top: 90px; }
+.co-resumen__title { font-family: var(--ff-display); font-size: 1.05rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+.co-linea { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+.co-linea img { width: 48px; height: 48px; object-fit: contain; background: var(--media-bg); border-radius: 6px; padding: 3px; flex-shrink: 0; }
+.co-linea__info { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.co-linea__nombre { font-size: .88rem; font-weight: 600; }
+.co-linea__cant { font-size: .78rem; color: var(--text-dim); }
+.co-linea__sub { font-size: .88rem; font-weight: 600; white-space: nowrap; }
+.co-totales { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; }
+.co-totales > div { display: flex; justify-content: space-between; align-items: baseline; }
+.co-totales dt { font-size: .86rem; color: var(--text-dim); }
+.co-totales dd { font-size: .9rem; font-weight: 600; }
+.co-totales__total { padding-top: 10px; border-top: 1px solid var(--border-2); }
+.co-totales__total dt { font-family: var(--ff-display); text-transform: uppercase; letter-spacing: 1px; color: var(--text); font-size: .9rem; }
+.co-totales__total dd { font-size: 1.25rem; color: var(--accent); font-family: var(--ff-display); }
+.co-seguir { display: inline-block; margin-top: 16px; font-size: .85rem; color: var(--text-dim); }
+.co-seguir:hover { color: var(--accent); }
+.co-legal { font-size: .76rem; color: var(--text-dim); text-align: center; margin-top: 12px; }
+.btn--lg { padding: 15px 26px; font-size: 1rem; }
+
+/* ---- Encabezado del pedido ---- */
+.pd-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.pd-numero { font-family: var(--ff-display); font-size: 2rem; line-height: 1.1; }
+.pd-fecha { font-size: .85rem; }
+.pd-grid { display: grid; grid-template-columns: 1fr; gap: 26px; align-items: start; }
+
+/* ---- Insignia de estado (se usa también en el panel) ---- */
+.pd-badge { display: inline-block; padding: 6px 13px; border-radius: 999px; font-size: .78rem; font-weight: 600; font-family: var(--ff-display); text-transform: uppercase; letter-spacing: .6px; background: var(--surface-2); color: var(--text-dim); border: 1px solid var(--border); white-space: nowrap; }
+.pd-badge.is-pendiente   { background: #fff4e5; color: #96580a; border-color: #f3d9b0; }
+.pd-badge.is-verificando { background: #e8f0fe; color: #1a4b9c; border-color: #c3d6f5; }
+.pd-badge.is-ok          { background: var(--accent-soft); color: var(--accent-2); border-color: #bfdfcd; }
+.pd-badge.is-error       { background: #fdeaea; color: #a52121; border-color: #f2c4c4; }
+
+/* ---- Aviso grande de estado ---- */
+.pd-aviso { padding: 16px 18px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-alt); margin-bottom: 24px; font-size: .92rem; line-height: 1.6; }
+.pd-aviso.is-pendiente   { background: #fff8ef; border-color: #f3d9b0; }
+.pd-aviso.is-verificando { background: #f1f6ff; border-color: #c3d6f5; }
+.pd-aviso.is-ok          { background: var(--accent-soft); border-color: #bfdfcd; }
+.pd-aviso.is-error       { background: #fdf1f1; border-color: #f2c4c4; }
+.pd-aviso__motivo { margin-top: 8px; font-size: .88rem; }
+
+/* ---- Monto y cuentas bancarias ---- */
+.pd-monto-label { font-size: .78rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); font-family: var(--ff-display); }
+.pd-monto { font-family: var(--ff-display); font-size: 2.1rem; color: var(--accent); margin: 2px 0 18px; }
+.pd-cuenta { border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; margin-bottom: 10px; background: var(--bg-alt); }
+.pd-cuenta__banco { display: block; font-family: var(--ff-display); font-size: .95rem; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 6px; }
+.pd-cuenta__fila { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.pd-cuenta__num { font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+.pd-cuenta__meta { display: block; font-size: .8rem; color: var(--text-dim); margin-top: 6px; }
+.pd-copiar { background: none; border: 1px solid var(--border-2); border-radius: 999px; padding: 4px 12px; font-size: .76rem; cursor: pointer; color: var(--text-dim); font-family: var(--ff-body); transition: border-color .2s, color .2s; }
+.pd-copiar:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- Zona de subida del comprobante ---- */
+.pd-upload-intro { font-size: .87rem; line-height: 1.6; margin-bottom: 14px; }
+.pd-drop { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 28px 18px; border: 2px dashed var(--border-2); border-radius: var(--radius); cursor: pointer; text-align: center; transition: border-color .2s, background .2s; }
+.pd-drop:hover { border-color: var(--accent); background: var(--accent-soft); }
+.pd-drop__icon { color: var(--accent); }
+.pd-drop__txt { font-size: .9rem; font-weight: 600; word-break: break-all; }
+.pd-drop__hint { font-size: .76rem; color: var(--text-dim); }
+.pd-preview { width: 100%; max-height: 320px; object-fit: contain; border: 1px solid var(--border); border-radius: var(--radius-sm); margin-top: 14px; background: var(--media-bg); }
+.pd-zona { font-size: .82rem; margin-top: 12px; }
+.pd-guardar { font-size: .78rem; color: var(--text-dim); margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); line-height: 1.7; }
+
+/* ---- Panel: filtros y chips ---- */
+.admin-section--first { margin-top: 0; padding-top: 0; border-top: 0; }
+.admin-filtros { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 4px; }
+.admin-chip { background: none; border: 1px solid var(--border-2); border-radius: 999px; padding: 7px 15px; font-size: .82rem; cursor: pointer; color: var(--text-dim); font-family: var(--ff-body); transition: border-color .2s, color .2s, background .2s; }
+.admin-chip:hover { border-color: var(--accent); color: var(--accent); }
+.admin-chip.is-active { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.admin-pill { display: inline-block; vertical-align: middle; margin-left: 10px; padding: 4px 12px; border-radius: 999px; background: #fff4e5; color: #96580a; border: 1px solid #f3d9b0; font-size: .72rem; font-family: var(--ff-body); text-transform: none; letter-spacing: 0; font-weight: 600; }
+
+/* ---- Panel: edición en línea (tabla de envíos) ---- */
+.admin-inline { width: 100%; min-width: 120px; padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: var(--ff-body); font-size: .88rem; background: var(--surface); color: var(--text); }
+.admin-inline:focus { outline: none; border-color: var(--accent); }
+.admin-inline--num { max-width: 110px; }
+.table td.center, .table th.center { text-align: center; }
+.table input[type="checkbox"] { accent-color: var(--accent); width: 17px; height: 17px; cursor: pointer; }
+
+/* ---- Panel: modal de pedido ---- */
+.ped-modal__head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+.ped-modal__grid { display: grid; grid-template-columns: 1fr; gap: 26px; text-align: left; }
+.ped-modal__sub { font-family: var(--ff-display); font-size: .9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); margin: 0 0 10px; }
+.ped-datos { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.ped-datos > div { display: flex; flex-direction: column; gap: 2px; }
+.ped-datos dt { font-size: .74rem; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); font-family: var(--ff-display); }
+.ped-datos dd { font-size: .92rem; }
+.ped-modal__acciones { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+.ped-modal__estado { display: flex; flex-direction: column; gap: 8px; padding-top: 16px; margin-top: 8px; border-top: 1px solid var(--border); }
+.ped-modal__estado label { font-size: .74rem; text-transform: uppercase; letter-spacing: .8px; color: var(--text-dim); font-family: var(--ff-display); }
+.pm-voucher { width: 100%; max-height: 420px; object-fit: contain; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--media-bg); display: block; }
+.pm-voucher-link { display: block; text-align: center; }
+.pm-voucher-link small { display: block; margin-top: 6px; font-size: .76rem; }
+.pm-voucher-fecha { font-size: .78rem; margin-top: 8px; }
+
+/* ---- Escritorio ---- */
+@media (min-width: 880px) {
+  .co-grid         { grid-template-columns: 1.5fr 1fr; gap: 34px; }
+  .pd-grid         { grid-template-columns: 1.4fr 1fr; gap: 34px; }
+  .ped-modal__grid { grid-template-columns: 1fr 1fr; }
+}

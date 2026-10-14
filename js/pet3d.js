@@ -11,7 +11,7 @@
 (() => {
   "use strict";
 
-  const V = "?v=59";
+  const V = "?v=60";
   const SPEED_PX_S = 340;   // velocidad constante (px/seg en pantalla)
   const PPU = 4.2;          // pixeles por unidad de mundo (controla el tamaño)
   const ELEV = 1.02;        // elevación de la cámara (rad) ~58°: vista aérea 3/4

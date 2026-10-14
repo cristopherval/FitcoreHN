@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=59">
+  <link rel="stylesheet" href="css/styles.css?v=60">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -53,6 +53,45 @@
     </header>
 
     <main class="container admin-wrap">
+
+      <!-- ===== PEDIDOS ===== -->
+      <section class="admin-section admin-section--first">
+        <div class="admin-section__head">
+          <h1 class="admin-wrap__title">
+            Pedidos
+            <!-- Contador de los que están esperando que los revises. -->
+            <span class="admin-pill" id="ped-contador" hidden>0 por revisar</span>
+          </h1>
+          <button class="btn btn--ghost btn--sm" id="btn-recargar-ped">↻ Actualizar</button>
+        </div>
+        <p class="muted admin-wrap__hint">
+          Cuando un cliente sube su comprobante, el pedido aparece como
+          <strong>En verificación</strong>. Abrilo, revisá que el monto coincida y confirmá el pago.
+        </p>
+
+        <div class="admin-filtros" id="ped-filtros">
+          <button class="admin-chip is-active" data-estado="por_revisar">Por revisar</button>
+          <button class="admin-chip" data-estado="pendiente_pago">Esperando pago</button>
+          <button class="admin-chip" data-estado="verificado">Verificados</button>
+          <button class="admin-chip" data-estado="enviado">Enviados</button>
+          <button class="admin-chip" data-estado="">Todos</button>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Pedido</th><th>Fecha</th><th>Cliente</th>
+                <th>Entrega</th><th>Total</th><th>Estado</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="ped-tabla-body">
+              <tr><td colspan="7" class="muted">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       <h1 class="admin-wrap__title">Productos</h1>
       <p class="muted admin-wrap__hint">
         Los cambios se guardan en la nube y <strong>se ven al instante</strong> en la tienda. No hace falta publicar nada.
@@ -115,8 +154,115 @@
           </table>
         </div>
       </section>
+
+      <!-- ===== ENVÍOS ===== -->
+      <section class="admin-section">
+        <div class="admin-section__head">
+          <h2 class="admin-wrap__title">Envíos</h2>
+          <button class="btn btn--accent btn--sm" id="btn-guardar-zonas">Guardar cambios</button>
+        </div>
+        <p class="muted admin-wrap__hint">
+          El costo que se le cobra al cliente según dónde recibe el pedido.
+          Poné <strong>0</strong> para envío gratis. Si desactivás una zona, deja de aparecer en el checkout.
+        </p>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Zona (como la ve el cliente)</th><th>Costo (L.)</th>
+                <th>¿Pide dirección?</th><th>Activa</th>
+              </tr>
+            </thead>
+            <tbody id="zona-tabla-body">
+              <tr><td colspan="4" class="muted">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="muted admin-wrap__hint">
+          “¿Pide dirección?” desactivado = punto de retiro (como UNAH CU): no se le pide
+          la dirección de su casa.
+        </p>
+      </section>
     </main>
   </section>
+
+  <!-- ===== MODAL: detalle del pedido y verificación del voucher ===== -->
+  <div class="modal" id="ped-modal">
+    <div class="modal__box modal__box--wide">
+      <header class="ped-modal__head">
+        <h3 class="modal__title">Pedido #<span id="pm-numero">—</span></h3>
+        <span class="pd-badge" id="pm-badge">—</span>
+      </header>
+
+      <div class="ped-modal__grid">
+
+        <!-- Datos del cliente y detalle -->
+        <div class="ped-modal__col">
+          <h4 class="ped-modal__sub">Cliente</h4>
+          <dl class="ped-datos">
+            <div><dt>Nombre</dt><dd id="pm-nombre">—</dd></div>
+            <div><dt>Teléfono</dt><dd id="pm-tel">—</dd></div>
+            <div><dt>Entrega</dt><dd id="pm-zona">—</dd></div>
+            <div><dt>Dirección</dt><dd id="pm-dir">—</dd></div>
+            <div><dt>Nota del cliente</dt><dd id="pm-notas">—</dd></div>
+          </dl>
+
+          <h4 class="ped-modal__sub">Productos</h4>
+          <div id="pm-lineas"></div>
+          <dl class="co-totales">
+            <div><dt>Subtotal</dt><dd id="pm-subtotal">L. 0</dd></div>
+            <div><dt>Envío</dt><dd id="pm-envio">—</dd></div>
+            <div class="co-totales__total"><dt>Total</dt><dd id="pm-total">L. 0</dd></div>
+          </dl>
+
+          <a class="btn btn--ghost btn--block btn--sm" id="pm-wa" href="#" target="_blank" rel="noopener">
+            Escribirle por WhatsApp
+          </a>
+        </div>
+
+        <!-- Comprobante + acciones -->
+        <div class="ped-modal__col">
+          <h4 class="ped-modal__sub">Comprobante</h4>
+          <div id="pm-voucher-wrap">
+            <p class="muted" id="pm-sin-voucher">Todavía no subió comprobante.</p>
+          </div>
+
+          <div class="form__row">
+            <label for="pm-nota">Nota interna <span class="muted">(solo la ves vos)</span></label>
+            <textarea id="pm-nota" rows="2" placeholder="Ej. nº de referencia 884213, entró a la cuenta de Atlántida"></textarea>
+          </div>
+
+          <div class="form__row">
+            <label for="pm-motivo">Motivo de rechazo <span class="muted">(se le muestra al cliente)</span></label>
+            <input id="pm-motivo" type="text" placeholder="Ej. el monto no coincide con el total">
+          </div>
+
+          <div class="ped-modal__acciones">
+            <button class="btn btn--accent btn--block" id="pm-aprobar">✓ Confirmar pago</button>
+            <button class="btn btn--danger btn--block btn--sm" id="pm-rechazar">✕ Rechazar comprobante</button>
+            <div class="ped-modal__estado">
+              <label for="pm-estado">Cambiar estado manualmente</label>
+              <select id="pm-estado">
+                <option value="pendiente_pago">Esperando pago</option>
+                <option value="en_verificacion">En verificación</option>
+                <option value="verificado">Pago confirmado</option>
+                <option value="rechazado">Rechazado</option>
+                <option value="enviado">Enviado</option>
+                <option value="entregado">Entregado</option>
+                <option value="cancelado">Cancelado</option>
+              </select>
+              <button class="btn btn--ghost btn--sm" id="pm-guardar-estado">Aplicar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="pm-cerrar">Cerrar</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ===== MODAL: formulario de producto ===== -->
   <div class="modal" id="prod-modal">
@@ -238,10 +384,11 @@
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/vendor/supabase.js?v=59"></script>
-  <script src="js/supabase-config.js?v=59"></script>
-  <script src="js/data.js?v=59"></script>
-  <script src="js/confirm.js?v=59"></script>
-  <script src="js/adminpanel.js?v=59"></script>
+  <script src="assets/vendor/supabase.js?v=60"></script>
+  <script src="js/supabase-config.js?v=60"></script>
+  <script src="js/data.js?v=60"></script>
+  <script src="js/confirm.js?v=60"></script>
+  <script src="js/adminpanel.js?v=60"></script>
+  <script src="js/adminpedidos.js?v=60"></script>
 </body>
 </html>

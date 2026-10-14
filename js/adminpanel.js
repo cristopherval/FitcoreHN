@@ -57,6 +57,8 @@ const Admin = (() => {
     document.getElementById("login-view").style.display = "none";
     document.getElementById("panel-view").hidden = false;
     await cargarDatos();
+    // Los pedidos y los envíos los maneja adminpedidos.js (archivo aparte).
+    if (typeof AdminPedidos !== "undefined") AdminPedidos.cargar();
   };
 
   const logout = async () => {

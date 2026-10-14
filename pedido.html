@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  /* Limpia service workers/cachés de OTROS proyectos que pudieran haber quedado
+     registrados en este puerto y "secuestran" la página mostrando otra app. */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  }
+  if (window.caches && caches.keys) { caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }); }
+</script>
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Tu pedido | FITCORE HN</title>
+  <meta name="description" content="Estado de tu pedido FITCORE HN y datos para completar el pago.">
+  <!-- Contiene datos de un pedido: nunca debe indexarse. -->
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=60">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar is-scrolled">
+    <div class="container navbar__inner">
+      <a href="index.html" class="logo" data-logo aria-label="FITCORE HN inicio">
+        FIT<span class="logo__accent">CORE</span><small>HN</small>
+      </a>
+      <nav class="navbar__links" aria-label="Navegación principal">
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="index.html#productos">Productos</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <div class="navbar__actions">
+        <button class="cart-btn" data-open-cart aria-label="Abrir carrito">
+          <span data-cart-icon class="cart-btn__icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg></span>
+          <span class="cart-btn__badge" data-cart-count>0</span>
+        </button>
+        <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section section--pedido">
+      <div class="container">
+
+        <!-- Cargando -->
+        <div id="pd-cargando" class="pd-estado-carga">
+          <p class="muted">Cargando tu pedido…</p>
+        </div>
+
+        <!-- Token inválido o pedido inexistente -->
+        <div id="pd-noencontrado" class="co-empty" hidden>
+          <h2>No encontramos ese pedido</h2>
+          <p class="muted">El enlace puede estar incompleto. Si ya hiciste tu pedido, escribinos y lo buscamos por tu nombre.</p>
+          <a class="btn btn--accent" id="pd-wa-ayuda" href="#" target="_blank" rel="noopener">Escribir por WhatsApp</a>
+        </div>
+
+        <!-- Pedido encontrado -->
+        <div id="pd-contenido" hidden>
+
+          <header class="pd-head">
+            <div>
+              <span class="section__eyebrow">Pedido</span>
+              <h1 class="pd-numero">#<span id="pd-numero">—</span></h1>
+              <p class="pd-fecha muted" id="pd-fecha"></p>
+            </div>
+            <span class="pd-badge" id="pd-badge">—</span>
+          </header>
+
+          <!-- Mensaje grande según el estado -->
+          <div class="pd-aviso" id="pd-aviso"></div>
+
+          <div class="pd-grid">
+
+            <!-- ====== IZQUIERDA: PAGO ====== -->
+            <div class="pd-col">
+
+              <!-- Datos bancarios + subida de voucher (solo si falta pagar) -->
+              <section class="co-card" id="pd-pago" hidden>
+                <h2 class="co-card__title"><span class="co-step">1</span> Hacé la transferencia</h2>
+
+                <p class="pd-monto-label">Monto exacto a transferir</p>
+                <p class="pd-monto" id="pd-monto">L. 0</p>
+
+                <div id="pd-cuentas"></div>
+
+                <h2 class="co-card__title co-card__title--sep"><span class="co-step">2</span> Subí tu comprobante</h2>
+                <p class="muted pd-upload-intro">
+                  Tomale una foto al voucher o subí la captura de la transferencia.
+                  Debe verse el monto y la fecha.
+                </p>
+
+                <label class="pd-drop" id="pd-drop">
+                  <input type="file" id="pd-file" accept="image/*,application/pdf" hidden>
+                  <span class="pd-drop__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+                  </span>
+                  <span class="pd-drop__txt" id="pd-drop-txt">Tocá para elegir la foto del voucher</span>
+                  <small class="pd-drop__hint">JPG, PNG o PDF · máximo 5 MB</small>
+                </label>
+
+                <img id="pd-preview" class="pd-preview" hidden alt="Vista previa del comprobante">
+
+                <p class="form__error" id="pd-error" role="alert"></p>
+
+                <button class="btn btn--accent btn--block btn--lg" id="pd-enviar" disabled>
+                  Enviar comprobante
+                </button>
+              </section>
+
+              <!-- Seguimiento cuando ya no hay nada que hacer -->
+              <section class="co-card" id="pd-seguimiento" hidden>
+                <h2 class="co-card__title">¿Necesitás ayuda con este pedido?</h2>
+                <p class="muted">Escribinos y mencioná tu número de pedido.</p>
+                <a class="btn btn--accent btn--block" id="pd-wa" href="#" target="_blank" rel="noopener">
+                  Escribir por WhatsApp
+                </a>
+              </section>
+
+            </div>
+
+            <!-- ====== DERECHA: RESUMEN ====== -->
+            <aside class="co-resumen">
+              <h2 class="co-resumen__title">Detalle</h2>
+              <div id="pd-lineas"></div>
+              <dl class="co-totales">
+                <div><dt>Subtotal</dt><dd id="pd-subtotal">L. 0</dd></div>
+                <div><dt>Envío</dt><dd id="pd-envio">—</dd></div>
+                <div class="co-totales__total"><dt>Total</dt><dd id="pd-total">L. 0</dd></div>
+              </dl>
+              <p class="pd-zona muted" id="pd-zona"></p>
+              <p class="pd-guardar">
+                Guardá este enlace para volver a ver tu pedido.
+                <button class="pd-copiar" id="pd-copiar" type="button">Copiar enlace</button>
+              </p>
+            </aside>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__col">
+        <a href="index.html" class="logo">FIT<span class="logo__accent">CORE</span><small>HN</small></a>
+        <p class="footer__text">Suplementos originales con envío en Talanga, Tegucigalpa y todo Honduras.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Tienda</h4>
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div class="footer__col">
+        <h4>Contacto</h4>
+        <a href="mailto:cristopherval04@gmail.com">cristopherval04@gmail.com</a>
+        <a href="https://wa.me/50433644559" target="_blank" rel="noopener">+504 3364 4559</a>
+        <p class="footer__cities">Talanga &amp; Tegucigalpa</p>
+      </div>
+      <div class="footer__col">
+        <h4>Síguenos</h4>
+        <div class="footer__social">
+          <a href="https://www.instagram.com/vale4_c?igsh=MWtja2Y2MWRsZHBzYw%3D%3D&utm_source=qr" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.facebook.com/share/18h41AgsuA/?mibextid=wwXIfr" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://tiktok.com/" target="_blank" rel="noopener">TikTok</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© <span id="anio">2026</span> FITCORE HN</p>
+    </div>
+  </footer>
+
+  <!-- CARRITO (DRAWER) -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Carrito de compras">
+    <header class="cart-drawer__head">
+      <h3>Tu carrito</h3>
+      <button class="cart-drawer__close" id="cart-close" aria-label="Cerrar carrito">✕</button>
+    </header>
+    <div class="cart-drawer__items" id="cart-items"></div>
+    <footer class="cart-drawer__foot">
+      <div class="cart-drawer__total"><span>Total</span><strong id="cart-total">L. 0</strong></div>
+      <button class="btn btn--accent btn--block" id="cart-checkout">Finalizar compra</button>
+      <button class="btn btn--ghost btn--block btn--sm" id="cart-clear">Vaciar carrito</button>
+    </footer>
+  </aside>
+
+  <script src="assets/vendor/supabase.js?v=60"></script>
+  <script src="js/supabase-config.js?v=60"></script>
+  <script src="js/data.js?v=60"></script>
+  <script src="js/store.js?v=60"></script>
+  <script src="js/confirm.js?v=60"></script>
+  <script src="js/cart.js?v=60"></script>
+  <script src="js/ui.js?v=60"></script>
+  <script src="js/main.js?v=60"></script>
+  <script src="js/pedido.js?v=60"></script>
+</body>
+</html>

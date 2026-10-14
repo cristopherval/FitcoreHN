@@ -140,22 +140,34 @@ const Cart = (() => {
     });
   };
 
-  /* --- Checkout: arma el mensaje y abre WhatsApp --- */
+  /* --- Checkout: lleva a la página de finalizar compra ---
+     Antes esto abría WhatsApp directamente. Ahora pasa por checkout.html,
+     donde el cliente elige entrega y forma de pago, y el pedido queda
+     REGISTRADO en la base. La opción de seguir por WhatsApp sigue estando,
+     pero ya con el pedido guardado. */
   const checkout = () => {
-    const els = lineas();
-    if (els.length === 0) return;
+    if (lineas().length === 0) return;
+    // Si ya estamos en el checkout, solo cerramos el drawer.
+    if (location.pathname.endsWith("/checkout.html") ||
+        location.pathname.endsWith("checkout.html")) {
+      cerrar();
+      return;
+    }
+    window.location.href = "checkout.html";
+  };
 
+  /* --- Mensaje de WhatsApp con el detalle del pedido ---
+     Se sigue usando como respaldo: si el cliente prefiere coordinar por
+     chat, el texto ya va armado. */
+  const mensajeWhatsApp = () => {
+    const els = lineas();
     let msg = `*¡Hola ${CONFIG.marca}!* 🏋️\nQuiero realizar el siguiente pedido:\n\n`;
     els.forEach((l, i) => {
       msg += `${i + 1}. ${l.nombre}\n   ${l.cantidad} x ${fmt(l.precio)} = ${fmt(l.subtotal)}\n`;
     });
     msg += `\n*TOTAL: ${fmt(total())}*\n\n`;
     msg += `Por favor confírmenme disponibilidad y forma de entrega. ¡Gracias!`;
-
-    const url = `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
-    // Navegamos en la MISMA pestaña: en móvil abre la app de WhatsApp y el
-    // navegador conserva el sitio (sin dejar una pestaña en blanco).
-    window.location.href = url;
+    return `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
   };
 
   /* Conecta los listeners del drawer (delegación de eventos). */
@@ -188,5 +200,6 @@ const Cart = (() => {
     render();
   };
 
-  return { agregar, cambiarCantidad, eliminar, vaciar, checkout, abrir, cerrar, render, initEventos, fmt, conteo };
+  return { agregar, cambiarCantidad, eliminar, vaciar, checkout, mensajeWhatsApp,
+           abrir, cerrar, render, initEventos, fmt, conteo };
 })();

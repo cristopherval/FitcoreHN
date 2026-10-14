@@ -27,9 +27,47 @@ const CONFIG = {
 };
 
 /* Claves de almacenamiento en el navegador (localStorage).
-   Hoy solo se usa el carrito; el catálogo vive en Supabase. */
+   El catálogo vive en Supabase; acá solo el carrito y los pedidos propios. */
 const STORAGE_KEYS = {
-  carrito: "fitcore_carrito"
+  carrito: "fitcore_carrito",
+  // Tokens de los pedidos que hizo ESTE navegador, para poder volver a
+  // abrirlos si el cliente cierra la pestaña.
+  pedidos: "fitcore_pedidos"
+};
+
+/* =========================================================================
+   PAGOS — Datos para pago por transferencia
+   -------------------------------------------------------------------------
+   ⚠️ IMPORTANTE: reemplazá las cuentas de abajo por tus datos REALES.
+   Esto es lo que el cliente ve cuando elige pagar por transferencia.
+
+   Nota: estos datos son públicos (cualquiera puede verlos en el sitio), lo
+   cual es normal para recibir transferencias. Nunca pongas acá tu clave de
+   banca en línea ni el número de tu tarjeta.
+
+   Los COSTOS DE ENVÍO no están acá: viven en la tabla `zonas_envio` de
+   Supabase y los cambiás desde el panel (pestaña "Envíos").
+   ========================================================================= */
+const PAGOS = {
+  // Poné en false si querés desactivar temporalmente la transferencia.
+  transferenciaActiva: true,
+
+  // La pasarela de tarjeta todavía no está contratada. Cuando tengas la
+  // cuenta de comercio, esto pasa a true y aparece la opción en el checkout.
+  tarjetaActiva: false,
+
+  cuentas: [
+    {
+      banco:   "CAMBIAR — ej. Banco Atlántida",
+      tipo:    "Cuenta de ahorro",
+      numero:  "CAMBIAR — 0000000000",
+      titular: "CAMBIAR — tu nombre como aparece en el banco"
+    }
+    // Podés agregar más cuentas copiando el bloque de arriba.
+  ],
+
+  // Cuánto tiempo le decís al cliente que tardás en verificar.
+  tiempoVerificacion: "Verificamos tu pago en un máximo de 24 horas hábiles."
 };
 
 /* Página HTML dedicada para cada categoría (mejor SEO y enlaces limpios).

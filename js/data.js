@@ -56,14 +56,34 @@ const PAGOS = {
   // cuenta de comercio, esto pasa a true y aparece la opción en el checkout.
   tarjetaActiva: false,
 
+  // El cliente elige la que le quede más cómoda. Todas aparecen con un
+  // botón para copiar el número y evitar errores de tecleo.
   cuentas: [
     {
-      banco:   "CAMBIAR — ej. Banco Atlántida",
-      tipo:    "Cuenta de ahorro",
-      numero:  "CAMBIAR — 0000000000",
-      titular: "CAMBIAR — tu nombre como aparece en el banco"
+      banco:   "Banco Atlántida",
+      tipo:    "Cuenta de Ahorros",
+      numero:  "2020230168",
+      titular: "Cristopher Daniel Valle"
+    },
+    {
+      banco:   "Davivienda",
+      tipo:    "Cuenta de Ahorros",
+      numero:  "1781009838",
+      titular: "Cristopher Daniel Valle"
+    },
+    {
+      banco:   "BAC Credomatic",
+      tipo:    "Cuenta de Ahorros",
+      numero:  "790732490",
+      titular: "Cristopher Daniel Valle"
+    },
+    {
+      banco:   "Ficohsa",
+      tipo:    "Cuenta de Ahorros",
+      numero:  "200017329161",
+      titular: "Cristopher Daniel Valle"
     }
-    // Podés agregar más cuentas copiando el bloque de arriba.
+    // Para agregar otra, copiá un bloque completo y cambiá los datos.
   ],
 
   // Cuánto tiempo le decís al cliente que tardás en verificar.

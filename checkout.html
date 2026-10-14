@@ -104,8 +104,15 @@
 
             <div class="form__row">
               <label for="co-tel">Teléfono / WhatsApp *</label>
-              <input id="co-tel" type="tel" required
-                     autocomplete="tel" inputmode="tel">
+              <!-- El +504 es fijo: en Honduras pedirlo solo agrega ruido.
+                   El guion se pone solo al llegar al cuarto dígito. -->
+              <div class="co-tel">
+                <span class="co-tel__pre" aria-hidden="true">+504</span>
+                <input id="co-tel" type="tel" required data-tel
+                       autocomplete="tel-national" inputmode="numeric"
+                       maxlength="9" placeholder="9999-9999"
+                       pattern="[0-9]{4}-[0-9]{4}" title="8 dígitos, sin el +504">
+              </div>
               <small class="form__hint">Por acá te confirmamos el pedido y coordinamos la entrega.</small>
             </div>
           </fieldset>
@@ -151,7 +158,12 @@
               </div>
               <div class="form__row">
                 <label for="co-dest-tel">Teléfono de quien recibe *</label>
-                <input id="co-dest-tel" type="tel" inputmode="tel">
+                <div class="co-tel">
+                  <span class="co-tel__pre" aria-hidden="true">+504</span>
+                  <input id="co-dest-tel" type="tel" data-tel
+                         inputmode="numeric" maxlength="9" placeholder="9999-9999"
+                       pattern="[0-9]{4}-[0-9]{4}" title="8 dígitos, sin el +504">
+                </div>
               </div>
             </div>
 

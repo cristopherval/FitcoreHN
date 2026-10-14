@@ -148,6 +148,40 @@ const Checkout = (() => {
     }
   };
 
+  /* ---------- Teléfono: 8 dígitos con guion automático ---------- */
+  /* El +504 va fijo al lado del campo, así que acá solo viven los 8
+     dígitos locales. Al pasar el cuarto se inserta el guion solo. */
+  const soloDigitos = (txt) => {
+    let d = String(txt || "").replace(/\D/g, "");
+    // Si pegaron el número completo (+504 9999-9999), quitamos el país.
+    if (d.length === 11 && d.startsWith("504")) d = d.slice(3);
+    return d.slice(0, 8);
+  };
+
+  const formatearTel = (input) => {
+    const alFinal = input.selectionStart === input.value.length;
+    const d = soloDigitos(input.value);
+    input.value = d.length > 4 ? `${d.slice(0, 4)}-${d.slice(4)}` : d;
+    // Si estaba escribiendo al final, dejamos el cursor ahí.
+    if (alFinal) input.setSelectionRange(input.value.length, input.value.length);
+  };
+
+  const initTelefonos = () => {
+    document.querySelectorAll("[data-tel]").forEach(inp => {
+      inp.addEventListener("input", () => formatearTel(inp));
+      inp.addEventListener("paste", () => setTimeout(() => formatearTel(inp), 0));
+    });
+  };
+
+  /* Lo que se guarda en la base: número completo y sin ambigüedad.
+     Si está incompleto no inventamos el guion; que lo rechace la
+     validación en vez de guardar algo a medias. */
+  const telCompleto = (input) => {
+    const d = soloDigitos(input.value);
+    if (!d) return "";
+    return d.length > 4 ? `+504 ${d.slice(0, 4)}-${d.slice(4)}` : `+504 ${d}`;
+  };
+
   /* ---------- Errores en pantalla ---------- */
   const mostrarError = (txt) => {
     const el = document.getElementById("co-error");
@@ -191,7 +225,7 @@ const Checkout = (() => {
       p_nombres:       document.getElementById("co-nombres").value,
       p_apellido1:     document.getElementById("co-ape1").value,
       p_apellido2:     document.getElementById("co-ape2").value,
-      p_telefono:      document.getElementById("co-tel").value,
+      p_telefono:      telCompleto(document.getElementById("co-tel")),
       p_zona:          zona.id,
       p_identidad:     document.getElementById("co-ident").value,
       p_direccion:     document.getElementById("co-dir").value,
@@ -199,7 +233,7 @@ const Checkout = (() => {
       p_metodo:        document.querySelector('input[name="metodo"]:checked').value,
       p_envio_a_otro:  otro,
       p_dest_nombre:   otro ? document.getElementById("co-dest-nombre").value : null,
-      p_dest_telefono: otro ? document.getElementById("co-dest-tel").value : null
+      p_dest_telefono: otro ? telCompleto(document.getElementById("co-dest-tel")) : null
     });
 
     btn.disabled = false;
@@ -241,6 +275,7 @@ const Checkout = (() => {
     await cargarZonas();
     ajustarCampos();
     pintarResumen();
+    initTelefonos();
 
     document.getElementById("co-otro").addEventListener("change", ajustarOtro);
     document.getElementById("co-form").addEventListener("submit", enviar);

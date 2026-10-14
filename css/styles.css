@@ -1161,3 +1161,10 @@ img, video { max-width: 100%; }
   /* El nombre ocupa la fila completa; los apellidos van lado a lado. */
   .co-campos .form__row:first-child { grid-column: 1 / -1; }
 }
+
+/* ---- Telefono con prefijo fijo +504 ---- */
+.co-tel { display: flex; align-items: stretch; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; background: var(--surface); transition: border-color .2s; }
+.co-tel:focus-within { border-color: var(--accent); }
+.co-tel__pre { display: grid; place-items: center; padding: 0 12px; background: var(--surface-2); color: var(--text-dim); font-size: .9rem; font-weight: 600; border-right: 1px solid var(--border); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+.co-tel input { flex: 1; border: 0; border-radius: 0; background: none; letter-spacing: 1px; font-variant-numeric: tabular-nums; min-width: 0; }
+.co-tel input:focus { outline: none; }

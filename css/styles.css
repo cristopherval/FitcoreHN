@@ -1196,3 +1196,10 @@ img, video { max-width: 100%; }
 .co-metodos .co-pago { margin-bottom: 0; }
 .co-metodos .co-pago:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
 .co-wa-aviso { font-size: .88rem; line-height: 1.6; color: var(--text-dim); background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; }
+
+/* ---- Titular e identidad junto a las cuentas ---- */
+.co-titular { background: var(--bg-alt); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 13px 15px; margin-bottom: 16px; }
+.co-titular__nombre { font-size: .89rem; margin-bottom: 8px; }
+.co-titular__fila { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: .89rem; }
+.co-titular__fila strong { font-variant-numeric: tabular-nums; letter-spacing: .5px; }
+.co-titular__nota { font-size: .78rem; color: var(--text-dim); margin-top: 8px; }

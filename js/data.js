@@ -59,6 +59,12 @@ const PAGOS = {
   // cuenta de comercio, esto pasa a true y aparece la opción en el checkout.
   tarjetaActiva: false,
 
+  // Titular de TODAS las cuentas. En Honduras el banco pide el nombre Y el
+  // número de identidad del destinatario para completar una transferencia,
+  // así que los dos tienen que estar a la vista del cliente.
+  titular:   "Cristopher Daniel Valle",
+  identidad: "0824200400961",
+
   // El cliente elige la que le quede más cómoda. Todas aparecen con un
   // botón para copiar el número y evitar errores de tecleo.
   cuentas: [

@@ -109,6 +109,27 @@ const Checkout = (() => {
     mostrarError("");
   };
 
+  /* Titular + identidad: el banco pide los dos para transferir. */
+  const pintarTitular = (idElemento) => {
+    const cont = document.getElementById(idElemento);
+    if (!cont || typeof PAGOS === "undefined") return;
+    const ident = PAGOS.identidad
+      ? `<span class="co-titular__fila">
+           <span>Identidad <strong>${PAGOS.identidad}</strong></span>
+           <button class="pd-copiar" type="button" data-copiar="${PAGOS.identidad}">Copiar</button>
+         </span>`
+      : "";
+    cont.innerHTML = `
+      <p class="co-titular__nombre">Todas las cuentas están a nombre de <strong>${PAGOS.titular || ""}</strong></p>
+      ${ident}
+      <p class="co-titular__nota">Tu banco te va a pedir el nombre y la identidad del destinatario.</p>`;
+    activarCopiar(cont);
+  };
+
+  /* Copiar al portapapeles, compartido por cuentas e identidad. */
+  const activarCopiar = (cont) => {
+    activarCopiar(cont);
+  };
   /* ---------- Cuentas bancarias ---------- */
   const pintarCuentas = () => {
     const cont = document.getElementById("co-cuentas");
@@ -400,6 +421,7 @@ const Checkout = (() => {
     }
 
     await cargarZonas();
+    pintarTitular("co-titular");
     pintarCuentas();
     ajustarCampos();
     pintarResumen();

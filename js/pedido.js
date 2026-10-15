@@ -62,7 +62,7 @@ const Pedido = (() => {
           <span class="pd-cuenta__num">${c.numero}</span>
           <button class="pd-copiar" type="button" data-copiar="${c.numero}">Copiar</button>
         </div>
-        <span class="pd-cuenta__meta">${c.tipo} · ${c.titular}</span>
+        <span class="pd-cuenta__meta">${c.tipo} · ${c.titular}${PAGOS.identidad ? " · Identidad " + PAGOS.identidad : ""}</span>
       </div>`).join("");
 
     cont.querySelectorAll("[data-copiar]").forEach(btn => {

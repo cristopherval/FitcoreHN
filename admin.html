@@ -317,6 +317,26 @@
           <img id="f-preview" class="admin-preview" alt="" hidden>
         </div>
 
+        <!-- ===== Galería: más fotos del mismo producto ===== -->
+        <div class="form__row form__row--full">
+          <label>Más imágenes <span class="muted">(galería)</span></label>
+          <small class="muted">Vistas adicionales del envase, el sabor o la <strong>tabla nutricional</strong>. Se ven en la página del producto.</small>
+
+          <!-- Para un producto nuevo todavía no hay id al que colgar las fotos -->
+          <p class="muted admin-gal__aviso" id="gal-aviso" hidden>
+            Guarda el producto primero y vuelve a abrirlo para agregar más fotos.
+          </p>
+
+          <div id="gal-zona" hidden>
+            <div class="admin-gal" id="gal-lista"></div>
+            <label class="btn btn--ghost btn--sm admin-gal__add">
+              + Agregar imágenes
+              <input type="file" id="gal-file" accept="image/*" multiple hidden>
+            </label>
+            <span class="muted admin-gal__estado" id="gal-estado"></span>
+          </div>
+        </div>
+
         <div class="form__actions form__row--full">
           <button type="submit" class="btn btn--accent" id="btn-save">Guardar producto</button>
           <button type="button" class="btn btn--ghost" id="btn-cancel">Cancelar</button>

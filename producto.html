@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  /* Limpia service workers/cachés de OTROS proyectos que pudieran haber quedado
+     registrados en este puerto y "secuestran" la página mostrando otra app. */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  }
+  if (window.caches && caches.keys) { caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }); }
+</script>
+  <meta name="theme-color" content="#0a0a0a">
+
+  <!-- El título, la descripción y el canonical los completa producto.js con
+       los datos reales del producto, porque el sitio es estático y no hay
+       servidor que los genere. -->
+  <title>Producto | FITCORE HN</title>
+  <meta name="description" content="Suplementos deportivos originales con envío a todo Honduras.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=64">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <header class="navbar is-scrolled">
+    <div class="container navbar__inner">
+      <a href="index.html" class="logo" data-logo aria-label="FITCORE HN inicio">
+        FIT<span class="logo__accent">CORE</span><small>HN</small>
+      </a>
+      <nav class="navbar__links" aria-label="Navegación principal">
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="index.html#productos">Productos</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <div class="navbar__actions">
+        <button class="cart-btn" data-open-cart aria-label="Abrir carrito">
+          <span data-cart-icon class="cart-btn__icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg></span>
+          <span class="cart-btn__badge" data-cart-count>0</span>
+        </button>
+        <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Migas de pan: la categoría se completa por JS -->
+    <nav class="migas container" id="pr-migas" aria-label="Ruta de navegación">
+      <a href="index.html">Inicio</a>
+    </nav>
+
+    <!-- Cargando -->
+    <div class="container" id="pr-cargando">
+      <p class="muted pd-estado-carga">Cargando producto…</p>
+    </div>
+
+    <!-- No existe -->
+    <section class="section" id="pr-noexiste" hidden>
+      <div class="container">
+        <div class="co-empty">
+          <h2>No encontramos ese producto</h2>
+          <p class="muted">Puede que ya no esté disponible o que el enlace esté incompleto.</p>
+          <a href="index.html#categorias" class="btn btn--accent">Ver el catálogo</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ficha del producto -->
+    <section class="section section--producto" id="pr-contenido" hidden>
+      <div class="container pr-grid">
+
+        <!-- ===== Galería ===== -->
+        <div class="pr-galeria">
+          <div class="pr-foto">
+            <span class="card__badge" id="pr-badge" hidden></span>
+            <img id="pr-img" src="" alt="">
+          </div>
+          <!-- Miniaturas: solo aparecen si hay más de una imagen -->
+          <div class="pr-miniaturas" id="pr-miniaturas" hidden></div>
+        </div>
+
+        <!-- ===== Información ===== -->
+        <div class="pr-info">
+          <a class="pr-marca" id="pr-marca" href="#" hidden></a>
+          <h1 class="pr-nombre" id="pr-nombre">—</h1>
+
+          <div class="pr-precios">
+            <span class="pr-precio" id="pr-precio">—</span>
+            <span class="pr-precio-old" id="pr-precio-old" hidden></span>
+            <span class="pr-dcto" id="pr-dcto" hidden></span>
+          </div>
+
+          <p class="pr-stock">
+            <span class="pr-punto" aria-hidden="true"></span> Disponible · envío a todo Honduras
+          </p>
+
+          <p class="pr-desc" id="pr-desc"></p>
+
+          <!-- Cantidad + agregar -->
+          <div class="pr-compra">
+            <div class="qty qty--lg">
+              <button class="qty__btn" type="button" id="pr-menos" aria-label="Quitar uno">−</button>
+              <span class="qty__num" id="pr-cant" aria-live="polite">1</span>
+              <button class="qty__btn" type="button" id="pr-mas" aria-label="Agregar uno">+</button>
+            </div>
+            <button class="btn btn--accent btn--lg pr-add" id="pr-add">Agregar al carrito</button>
+          </div>
+
+          <a class="btn btn--ghost btn--block" id="pr-wa" href="#" target="_blank" rel="noopener">
+            Consultar por WhatsApp
+          </a>
+
+          <!-- Compartir -->
+          <div class="pr-compartir">
+            <span class="pr-compartir__txt">Compartir:</span>
+            <a id="pr-sh-wa" href="#" target="_blank" rel="noopener" aria-label="Compartir por WhatsApp">WhatsApp</a>
+            <a id="pr-sh-fb" href="#" target="_blank" rel="noopener" aria-label="Compartir en Facebook">Facebook</a>
+            <button type="button" id="pr-sh-link">Copiar enlace</button>
+          </div>
+
+          <dl class="pr-meta">
+            <div><dt>Categoría</dt><dd id="pr-cat">—</dd></div>
+            <div id="pr-meta-marca" hidden><dt>Marca</dt><dd id="pr-cat-marca">—</dd></div>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <!-- Relacionados -->
+    <section class="section section--alt" id="pr-relacionados" hidden>
+      <div class="container">
+        <span class="section__eyebrow">También te puede servir</span>
+        <h2 class="section__title" id="pr-rel-titulo">Productos relacionados</h2>
+        <div class="grid grid--products" id="pr-rel-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__col">
+        <a href="index.html" class="logo">FIT<span class="logo__accent">CORE</span><small>HN</small></a>
+        <p class="footer__text">Suplementos originales con envío a todo Honduras.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Tienda</h4>
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div class="footer__col">
+        <h4>Envíos</h4>
+        <a href="talanga.html">Suplementos en Talanga</a>
+        <a href="tegucigalpa.html">Suplementos en Tegucigalpa</a>
+        <a href="san-pedro-sula.html">Suplementos en San Pedro Sula</a>
+      </div>
+      <div class="footer__col">
+        <h4>Legal</h4>
+        <a href="terminos.html">Términos y condiciones</a>
+        <a href="privacidad.html">Política de privacidad</a>
+        <a href="devoluciones.html">Devoluciones</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© <span id="anio">2026</span> FITCORE HN</p>
+    </div>
+  </footer>
+
+  <!-- CARRITO (DRAWER) -->
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Carrito de compras">
+    <header class="cart-drawer__head">
+      <h3>Tu carrito</h3>
+      <button class="cart-drawer__close" id="cart-close" aria-label="Cerrar carrito">✕</button>
+    </header>
+    <div class="cart-drawer__items" id="cart-items"></div>
+    <footer class="cart-drawer__foot">
+      <div class="cart-drawer__total"><span>Total</span><strong id="cart-total">L. 0</strong></div>
+      <button class="btn btn--accent btn--block" id="cart-checkout">Finalizar compra</button>
+      <button class="btn btn--ghost btn--block btn--sm" id="cart-clear">Vaciar carrito</button>
+    </footer>
+  </aside>
+
+  <!-- BOTÓN FLOTANTE WHATSAPP -->
+  <a class="whatsapp-float" href="https://wa.me/50433644559?text=Hola%20FITCORE%20HN" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+    <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" fill="currentColor">
+      <path d="M16 .5C7.4.5.5 7.4.5 16c0 2.8.7 5.4 2 7.7L.5 31.5l8-2.1c2.2 1.2 4.8 1.9 7.5 1.9 8.6 0 15.5-6.9 15.5-15.5S24.6.5 16 .5zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.7 1.2 1.3-4.6-.3-.5c-1.3-2.1-2-4.5-2-6.9C2.4 8.5 8.5 2.4 16 2.4S29.6 8.5 29.6 16 23.5 28.8 16 28.8zm8.3-9.9c-.5-.2-2.7-1.3-3.1-1.5-.4-.2-.7-.2-1 .2-.3.5-1.1 1.5-1.4 1.7-.3.2-.5.3-1 .1-2.7-1.4-4.5-2.4-6.3-5.4-.5-.8.5-.8 1.3-2.5.1-.3.1-.5 0-.7-.1-.2-1-2.4-1.4-3.2-.4-.9-.7-.7-1-.8h-.8c-.3 0-.7.1-1.1.5C8.7 7.6 8 8.5 8 10.3s1.5 3.6 1.7 3.9c.2.3 2.9 4.4 7 6.1 3.7 1.6 3.7 1.1 4.4 1 .7-.1 2.2-.9 2.5-1.7.3-.9.3-1.6.2-1.7-.1-.2-.4-.3-.9-.5z"/>
+    </svg>
+  </a>
+
+  <script src="assets/vendor/supabase.js?v=64"></script>
+  <script src="js/supabase-config.js?v=64"></script>
+  <script src="js/data.js?v=64"></script>
+  <script src="js/store.js?v=64"></script>
+  <script src="js/confirm.js?v=64"></script>
+  <script src="js/cart.js?v=64"></script>
+  <script src="js/ui.js?v=64"></script>
+  <script src="js/search.js?v=64"></script>
+  <script src="js/main.js?v=64"></script>
+  <script src="js/producto.js?v=64"></script>
+</body>
+</html>

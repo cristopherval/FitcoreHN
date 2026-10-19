@@ -36,6 +36,8 @@ const Store = (() => {
   /* Traduce una fila de Supabase (snake_case) al formato que usa el sitio. */
   const mapProducto = (r) => ({
     id: r.id,
+    // Slug para la URL legible de su pagina (producto.html?p=...)
+    slug: r.slug || r.id,
     nombre: r.nombre,
     descripcion: r.descripcion || "",
     precio: Number(r.precio),

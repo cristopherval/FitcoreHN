@@ -10,18 +10,24 @@ const UI = (() => {
   const fmt = Cart.fmt;
 
   /* Crea el HTML de una tarjeta de producto reutilizable. */
+  /* URL de la ficha del producto. Usa el slug si existe (mejor para SEO:
+     las palabras de la URL cuentan) y cae al id si todavia no lo tiene. */
+  const urlProducto = (p) =>
+    p.slug ? `producto.html?p=${encodeURIComponent(p.slug)}`
+           : `producto.html?id=${encodeURIComponent(p.id)}`;
+
   const tarjetaProducto = (p, i = 0) => {
     const oferta = p.precioAnterior && p.precioAnterior > p.precio;
     const dcto = oferta ? Math.round((1 - p.precio / p.precioAnterior) * 100) : 0;
     return `
       <article class="card reveal ${i % 2 === 0 ? "reveal--left" : "reveal--right"}" data-cat="${p.categoria}" style="--rd:${(i % 4) * 120}ms">
         ${oferta ? `<span class="card__badge">-${dcto}%</span>` : ""}
-        <div class="card__media">
+        <a class="card__media" href="${urlProducto(p)}" aria-label="Ver ${p.nombre}">
           <img src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="300" height="300">
-        </div>
+        </a>
         <div class="card__body">
           <span class="card__cat">${nombreMarca(p.marca) || nombreCategoria(p.categoria)}</span>
-          <h3 class="card__title">${p.nombre}</h3>
+          <h3 class="card__title"><a href="${urlProducto(p)}">${p.nombre}</a></h3>
           <p class="card__desc">${p.descripcion}</p>
           <div class="card__footer">
             <div class="card__prices">
@@ -226,6 +232,8 @@ const UI = (() => {
       const item = {
         "@type": "Product",
         "name": p.nombre,
+        // La url deja que Google descubra e indexe la ficha de cada producto.
+        "url": absUrl(urlProducto(p)),
         "image": absUrl(p.imagen),
         "category": nombreCategoria(p.categoria),
         "offers": {
@@ -260,5 +268,5 @@ const UI = (() => {
     injectProductsJsonLd(Store.getProductos(), "Catálogo FITCORE HN");
   };
 
-  return { initHome, initCommon, renderProductos, tarjetaProducto, injectProductsJsonLd };
+  return { initHome, initCommon, renderProductos, tarjetaProducto, urlProducto, injectProductsJsonLd };
 })();

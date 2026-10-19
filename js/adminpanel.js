@@ -388,6 +388,10 @@ const Admin = (() => {
     if (p && p.imagen_url) { prev.src = p.imagen_url; prev.hidden = false; }
     else { prev.hidden = true; prev.removeAttribute("src"); }
 
+    // Carga la galeria del producto (vacia y deshabilitada si es nuevo).
+    galEstado("");
+    galCargar(p ? p.id : null);
+
     modal().classList.add("is-open");
   };
 
@@ -402,6 +406,138 @@ const Admin = (() => {
     });
     if (error) throw new Error("No se pudo subir la foto: " + error.message);
     return sb.storage.from(SUPABASE_BUCKET).getPublicUrl(ruta).data.publicUrl;
+  };
+
+
+  /* ================= GALERÍA DE IMÁGENES ================= */
+  /* Son las fotos EXTRA del producto (vistas, sabores, tabla nutricional).
+     La foto principal sigue siendo productos.imagen_url; esto la complementa.
+     Solo se puede usar al editar, porque las imágenes se cuelgan de un id
+     de producto que un producto nuevo todavía no tiene. */
+
+  let galImagenes = [];
+  let galProductoId = null;
+
+  const galEstado = (txt) => {
+    const el = document.getElementById("gal-estado");
+    if (el) el.textContent = txt || "";
+  };
+
+  const galCargar = async (productoId) => {
+    galProductoId = productoId || null;
+    const zona = document.getElementById("gal-zona");
+    const aviso = document.getElementById("gal-aviso");
+
+    // Producto nuevo: no hay dónde guardar las fotos todavía.
+    if (!galProductoId) {
+      zona.hidden = true; aviso.hidden = false;
+      galImagenes = []; return;
+    }
+    zona.hidden = false; aviso.hidden = true;
+
+    const { data, error } = await sb.from("producto_imagenes")
+      .select("*").eq("producto_id", galProductoId)
+      .order("orden", { ascending: true });
+
+    if (error) { galEstado("No se pudieron cargar las imágenes."); galImagenes = []; }
+    else galImagenes = data || [];
+    galPintar();
+  };
+
+  const galPintar = () => {
+    const cont = document.getElementById("gal-lista");
+    if (!cont) return;
+
+    if (!galImagenes.length) {
+      cont.innerHTML = `<p class="muted">Sin imágenes extra todavía.</p>`;
+      return;
+    }
+
+    cont.innerHTML = galImagenes.map((im, i) => `
+      <div class="admin-gal__item" data-id="${im.id}">
+        <img src="${im.url}" alt="">
+        <input type="text" class="admin-inline" data-alt value="${(im.alt || "").replace(/"/g, "&quot;")}"
+               placeholder="Qué se ve (ej. tabla nutricional)">
+        <div class="admin-gal__acciones">
+          <button type="button" data-sube title="Subir" ${i === 0 ? "disabled" : ""}>↑</button>
+          <button type="button" data-baja title="Bajar" ${i === galImagenes.length - 1 ? "disabled" : ""}>↓</button>
+          <button type="button" data-borra title="Borrar" class="admin-gal__borrar">✕</button>
+        </div>
+      </div>`).join("");
+
+    cont.querySelectorAll(".admin-gal__item").forEach(el => {
+      const id = el.dataset.id;
+      el.querySelector("[data-sube]").addEventListener("click", () => galMover(id, -1));
+      el.querySelector("[data-baja]").addEventListener("click", () => galMover(id, 1));
+      el.querySelector("[data-borra]").addEventListener("click", () => galBorrar(id));
+      // El texto alternativo se guarda al salir del campo.
+      el.querySelector("[data-alt]").addEventListener("blur", (e) => galGuardarAlt(id, e.target.value));
+    });
+  };
+
+  /* Reordenar: se reescribe el "orden" de todas para que quede 0,1,2… */
+  const galMover = async (id, dir) => {
+    const i = galImagenes.findIndex(x => x.id === id);
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= galImagenes.length) return;
+    [galImagenes[i], galImagenes[j]] = [galImagenes[j], galImagenes[i]];
+    galPintar();
+    galEstado("Guardando orden…");
+    for (let k = 0; k < galImagenes.length; k++) {
+      await sb.from("producto_imagenes").update({ orden: k }).eq("id", galImagenes[k].id);
+      galImagenes[k].orden = k;
+    }
+    galEstado("Orden guardado.");
+  };
+
+  const galGuardarAlt = async (id, alt) => {
+    const im = galImagenes.find(x => x.id === id);
+    if (!im || (im.alt || "") === alt.trim()) return;
+    const { error } = await sb.from("producto_imagenes")
+      .update({ alt: alt.trim() || null }).eq("id", id);
+    if (error) { galEstado("No se pudo guardar el texto."); return; }
+    im.alt = alt.trim();
+    galEstado("Texto guardado.");
+  };
+
+  const galBorrar = async (id) => {
+    const ok = await Confirm.show("Borrar imagen",
+      "Se quita de la galería del producto. El archivo queda en la nube pero deja de mostrarse.",
+      "Sí, borrar");
+    if (!ok) return;
+    const { error } = await sb.from("producto_imagenes").delete().eq("id", id);
+    if (error) { galEstado("No se pudo borrar: " + error.message); return; }
+    galImagenes = galImagenes.filter(x => x.id !== id);
+    galPintar();
+    galEstado("Imagen borrada.");
+  };
+
+  const galSubir = async (files) => {
+    if (!galProductoId || !files || !files.length) return;
+    const lista = Array.from(files);
+    let n = 0;
+
+    for (const file of lista) {
+      galEstado(`Subiendo ${++n} de ${lista.length}…`);
+      try {
+        const url = await subirFoto(file);
+        const orden = galImagenes.length ? Math.max(...galImagenes.map(x => x.orden || 0)) + 1 : 0;
+        const { data, error } = await sb.from("producto_imagenes")
+          .insert({ producto_id: galProductoId, url, orden }).select().single();
+        if (error) throw new Error(error.message);
+        galImagenes.push(data);
+        galPintar();
+      } catch (e) {
+        galEstado("Falló una imagen: " + e.message);
+        return;
+      }
+    }
+    galEstado(lista.length === 1 ? "Imagen agregada." : lista.length + " imágenes agregadas.");
+    document.getElementById("gal-file").value = "";
+  };
+
+  const initGaleria = () => {
+    document.getElementById("gal-file")?.addEventListener("change", (e) => galSubir(e.target.files));
   };
 
   const initForm = () => {
@@ -490,6 +626,7 @@ const Admin = (() => {
     if (!sb) { alert("No se pudo conectar con Supabase."); return; }
     initLogin();
     initForm();
+    initGaleria();
     initFormCat();
     initFormMarca();
     document.getElementById("btn-add").addEventListener("click", () => abrirForm(null));

@@ -1210,3 +1210,78 @@ img, video { max-width: 100%; }
 .legal h2:first-of-type { margin-top: 10px; }
 .legal-aviso { font-size: .9rem; line-height: 1.7; background: #fff8ef; border: 1px solid #f3d9b0; border-left-width: 3px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 14px 16px; margin: 16px 0; color: var(--text); }
 .footer__h4--sep { margin-top: 20px; }
+
+/* =========================================================================
+   23. FICHA DE PRODUCTO (producto.html)
+   ========================================================================= */
+
+.section--producto { padding-top: 24px; }
+.pr-grid { display: grid; grid-template-columns: 1fr; gap: 30px; align-items: start; }
+
+/* ---- Galería ---- */
+.pr-foto { position: relative; background: var(--media-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: grid; place-items: center; aspect-ratio: 1 / 1; }
+.pr-foto img { width: 100%; height: 100%; object-fit: contain; padding: 18px; }
+.pr-foto .card__badge { top: 14px; left: 14px; }
+
+.pr-miniaturas { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+.pr-mini { width: 68px; height: 68px; padding: 4px; background: var(--media-bg); border: 1px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; overflow: hidden; transition: border-color .2s, transform .2s; }
+.pr-mini img { width: 100%; height: 100%; object-fit: contain; }
+.pr-mini:hover { border-color: var(--accent); transform: translateY(-2px); }
+.pr-mini.is-active { border-color: var(--accent); border-width: 2px; }
+
+/* ---- Información ---- */
+.pr-marca { display: inline-block; font-family: var(--ff-display); font-size: .78rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--accent); margin-bottom: 6px; }
+.pr-nombre { font-family: var(--ff-display); font-size: clamp(1.6rem, 4.5vw, 2.3rem); line-height: 1.15; margin-bottom: 14px; }
+
+.pr-precios { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.pr-precio { font-family: var(--ff-display); font-size: 2.1rem; color: var(--accent); }
+.pr-precio-old { font-size: 1.05rem; color: var(--text-dim); text-decoration: line-through; }
+.pr-dcto { background: var(--accent); color: var(--accent-ink); font-size: .8rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+
+.pr-stock { display: flex; align-items: center; gap: 8px; font-size: .86rem; color: var(--text-dim); margin-bottom: 20px; }
+.pr-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+.pr-desc { color: var(--text-dim); line-height: 1.75; margin-bottom: 24px; }
+
+/* ---- Cantidad + agregar ---- */
+.pr-compra { display: flex; gap: 12px; align-items: stretch; margin-bottom: 12px; flex-wrap: wrap; }
+.qty--lg { border: 1px solid var(--border-2); border-radius: var(--radius-sm); padding: 4px; flex-shrink: 0; }
+.qty--lg .qty__btn { width: 38px; height: 38px; font-size: 1.1rem; }
+.qty--lg .qty__num { min-width: 34px; font-size: 1rem; }
+.pr-add { flex: 1; min-width: 180px; }
+
+/* ---- Compartir ---- */
+.pr-compartir { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); font-size: .84rem; }
+.pr-compartir__txt { color: var(--text-dim); }
+.pr-compartir a, .pr-compartir button { color: var(--text-dim); background: none; border: 0; padding: 0; font-size: .84rem; font-family: var(--ff-body); cursor: pointer; text-decoration: underline; }
+.pr-compartir a:hover, .pr-compartir button:hover { color: var(--accent); }
+
+/* ---- Metadatos ---- */
+.pr-meta { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
+.pr-meta > div { display: flex; gap: 10px; font-size: .86rem; }
+.pr-meta dt { color: var(--text-dim); min-width: 84px; }
+.pr-meta dd a { color: var(--accent); }
+
+/* ---- Tarjetas del catálogo ahora enlazan ---- */
+.card__media { display: block; }
+.card__title a { color: inherit; }
+.card__title a:hover { color: var(--accent); }
+
+/* ---- Escritorio ---- */
+@media (min-width: 880px) {
+  .pr-grid { grid-template-columns: 1fr 1fr; gap: 44px; }
+}
+
+/* ---- Galeria de imagenes en el panel ---- */
+.admin-gal { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.admin-gal__item { display: flex; align-items: center; gap: 10px; padding: 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-alt); }
+.admin-gal__item img { width: 52px; height: 52px; object-fit: contain; background: var(--media-bg); border-radius: 6px; padding: 3px; flex-shrink: 0; }
+.admin-gal__item .admin-inline { flex: 1; min-width: 0; }
+.admin-gal__acciones { display: flex; gap: 4px; flex-shrink: 0; }
+.admin-gal__acciones button { width: 30px; height: 30px; border: 1px solid var(--border-2); background: var(--surface); border-radius: 6px; cursor: pointer; color: var(--text-dim); font-size: .85rem; }
+.admin-gal__acciones button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.admin-gal__acciones button:disabled { opacity: .3; cursor: not-allowed; }
+.admin-gal__borrar:hover:not(:disabled) { border-color: var(--danger) !important; color: var(--danger) !important; }
+.admin-gal__add { display: inline-block; cursor: pointer; }
+.admin-gal__estado { display: block; margin-top: 8px; font-size: .8rem; }
+.admin-gal__aviso { margin-top: 8px; font-size: .84rem; }

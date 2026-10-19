@@ -1,9 +1,9 @@
 /* =========================================================================
    categorias.js  —  Página con TODAS las categorías
    -------------------------------------------------------------------------
-   La portada muestra solo las categorías principales (CATEGORIAS_PRINCIPALES)
-   para no saturar el mosaico. Esta página lista TODAS las que existan en la
-   base, así que una categoría nueva aparece acá sola, sin tocar código.
+   Lista todas las categorías que existan en la base. Hoy la portada también
+   las muestra todas, así que esta página queda como vista alternativa con
+   foto; no está enlazada desde el sitio.
 
    Las tarjetas NO llevan la clase "reveal": se pintan después de que el
    observador de animaciones ya corrió, así que nacerían invisibles.

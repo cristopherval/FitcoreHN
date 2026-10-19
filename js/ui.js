@@ -109,20 +109,16 @@ const UI = (() => {
   const renderCategorias = () => {
     const cont = document.getElementById("categorias-grid");
     if (!cont) return;
-    // El mosaico del inicio muestra SOLO las categorías principales (fijas).
-    const cats = Store.getCategorias().filter(c =>
-      (typeof CATEGORIAS_PRINCIPALES === "undefined") || CATEGORIAS_PRINCIPALES.includes(c.id));
+    // El mosaico muestra TODAS las categorías, en el orden de la base. Al
+    // pasar de foto grande a icono ocupan poco, así que ya no hace falta
+    // esconder ninguna.
+    const cats = Store.getCategorias();
     const productos = Store.getProductos();
 
     // Cada tarjeta muestra un PRODUCTO representativo de la categoría
     // y enlaza a su propia página (categoria.html).
     cont.innerHTML = cats.map((c, i) => {
       const items = productos.filter(p => p.categoria === c.id);
-      const prod = items[0];
-      const heroFallback = (typeof HERO_POR_CATEGORIA !== "undefined" && HERO_POR_CATEGORIA[c.id]) || "assets/gym-amb2.jpg";
-      // Imagen propia de la categoría (panel) > portada fija > primer producto > genérica.
-      const portada = (typeof PORTADA_CATEGORIA !== "undefined" && PORTADA_CATEGORIA[c.id]);
-      const img = c.imagen || portada || (prod ? prod.imagen : heroFallback);
       const desde = items.length ? ` · desde ${fmt(Math.min(...items.map(p => p.precio)))}` : "";
       // Página dedicada por categoría (mejor SEO); si es nueva, usa la genérica.
       const href = (typeof CATEGORIA_PAGES !== "undefined" && CATEGORIA_PAGES[c.id])

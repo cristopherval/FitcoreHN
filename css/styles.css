@@ -451,7 +451,9 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
   .bottomnav { display: none; }
   body { padding-bottom: 0; }
   .whatsapp-float { bottom: 24px; right: 24px; }
-  .cat-grid { grid-template-columns: repeat(3, 1fr); }
+  /* auto-fit para que 4 o mas categorias se repartan solas en vez de
+     quedar 3 arriba y 1 suelta abajo. */
+  .cat-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
 }
 @media (min-width: 1100px) {
   .testi-grid { grid-template-columns: repeat(4, 1fr); }

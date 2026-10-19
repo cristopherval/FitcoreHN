@@ -107,9 +107,9 @@ const CATEGORIA_PAGES = {
   preentrenos: "preentrenos.html"
 };
 
-/* Categorías PRINCIPALES (fijas). Son las ÚNICAS que se muestran en el mosaico
-   de categorías del inicio y no se pueden borrar desde el panel. Las demás
-   categorías existen solo para clasificar productos y para la búsqueda. */
+/* Categorías base del negocio. El mosaico del inicio las muestra TODAS, así
+   que esta lista ya no filtra nada: existe solo para PROTEGERLAS, porque el
+   panel no permite borrarlas. */
 const CATEGORIAS_PRINCIPALES = ["creatinas", "proteinas", "preentrenos"];
 
 /* Categorías por defecto. `id` es estable; `nombre` es editable. */

@@ -1326,3 +1326,44 @@ img, video { max-width: 100%; }
 .rel-card__precios { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: auto; }
 .rel-card__precio { font-family: var(--ff-display); font-size: 1.05rem; color: var(--accent); }
 .rel-card__old { font-size: .78rem; color: var(--text-dim); text-decoration: line-through; }
+
+/* =========================================================================
+   24. MENÚ DESPLEGABLE DE CATEGORÍAS (catmenu.js)
+   -------------------------------------------------------------------------
+   Un solo panel para los dos accesos: "Categorías" del menú superior en
+   escritorio y el de la barra inferior en celular. En móvil sale como hoja
+   anclada abajo, justo encima de esa barra; en escritorio, como desplegable
+   bajo la cabecera.
+   ========================================================================= */
+.catmenu {
+  position: fixed; left: 12px; right: 12px; bottom: 74px; z-index: 80;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+  max-height: 68vh; overflow-y: auto;
+  opacity: 0; visibility: hidden; transform: translateY(12px);
+  transition: opacity .2s var(--ease), transform .2s var(--ease), visibility .2s;
+}
+.catmenu.is-open { opacity: 1; visibility: visible; transform: none; }
+
+.catmenu__head { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid var(--border); font-family: var(--ff-display); text-transform: uppercase; letter-spacing: 1px; font-size: .85rem; position: sticky; top: 0; background: var(--surface); }
+.catmenu__close { background: none; border: 0; font-size: 1rem; color: var(--text-dim); cursor: pointer; padding: 4px 6px; line-height: 1; }
+.catmenu__close:hover { color: var(--accent); }
+
+.catmenu__item { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); color: var(--text); font-size: .95rem; transition: background .15s, color .15s; }
+.catmenu__item:hover { background: var(--accent-soft); color: var(--accent-2); }
+/* Cuántos productos tiene: ayuda a decidir sin entrar. */
+.catmenu__n { font-size: .78rem; color: var(--text-dim); background: var(--surface-2); border-radius: 999px; padding: 2px 9px; flex-shrink: 0; }
+.catmenu__item:hover .catmenu__n { background: #fff; }
+
+.catmenu__todas { display: block; padding: 14px 16px; font-size: .85rem; color: var(--accent); font-weight: 600; }
+.catmenu__todas:hover { background: var(--accent-soft); }
+.catmenu__cargando { padding: 18px 16px; margin: 0; font-size: .88rem; }
+
+@media (min-width: 900px) {
+  /* Desplegable bajo la cabecera, alineado a la izquierda del contenido. */
+  .catmenu {
+    left: 50%; right: auto; bottom: auto; top: 72px;
+    transform: translate(-50%, 12px); width: 300px; max-height: 72vh;
+  }
+  .catmenu.is-open { transform: translate(-50%, 0); }
+}

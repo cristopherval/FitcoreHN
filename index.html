@@ -39,7 +39,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
 
   <link rel="preload" as="image" href="assets/heroimagenmujer.jpg" fetchpriority="high">
-  <link rel="stylesheet" href="css/styles.css?v=72">
+  <link rel="stylesheet" href="css/styles.css?v=73">
 
   <!-- Geo (SEO local) -->
   <meta name="geo.region" content="HN-FM">
@@ -114,7 +114,7 @@
       <nav class="navbar__links" aria-label="Navegación principal">
         <a href="#inicio">Inicio</a>
         <a href="#ofertas">Ofertas</a>
-        <a href="categorias.html">Categorías</a>
+        <a href="categorias.html" data-catmenu>Categorías</a>
         <a href="#productos">Productos</a>
         <a href="nosotros.html">Nosotros</a>
         <a href="contacto.html">Contacto</a>
@@ -328,7 +328,7 @@
         <h4>Navegación</h4>
         <a href="#inicio">Inicio</a>
         <a href="#ofertas">Ofertas</a>
-        <a href="categorias.html">Categorías</a>
+        <a href="categorias.html" data-catmenu>Categorías</a>
         <a href="nosotros.html">Nosotros</a>
         <a href="contacto.html">Contacto</a>
       </div>
@@ -390,7 +390,7 @@
     <a class="bottomnav__item is-active" href="#inicio" data-section="inicio">
       <span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg></span><span>Inicio</span>
     </a>
-    <a class="bottomnav__item" href="categorias.html">
+    <a class="bottomnav__item" href="categorias.html" data-catmenu>
       <span class="bottomnav__icon"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span>Categorías</span>
     </a>
     <a class="bottomnav__item" href="#ofertas" data-section="ofertas">
@@ -402,14 +402,15 @@
   </nav>
 
   <!-- Scripts: orden importa (datos → store → carrito → ui → main) -->
-  <script src="assets/vendor/supabase.js?v=72"></script>
-  <script src="js/supabase-config.js?v=72"></script>
-  <script src="js/data.js?v=72"></script>
-  <script src="js/store.js?v=72"></script>
-  <script src="js/confirm.js?v=72"></script>
-  <script src="js/cart.js?v=72"></script>
-  <script src="js/ui.js?v=72"></script>
-  <script src="js/search.js?v=72"></script>
-  <script src="js/main.js?v=72"></script>
+  <script src="assets/vendor/supabase.js?v=73"></script>
+  <script src="js/supabase-config.js?v=73"></script>
+  <script src="js/data.js?v=73"></script>
+  <script src="js/store.js?v=73"></script>
+  <script src="js/confirm.js?v=73"></script>
+  <script src="js/cart.js?v=73"></script>
+  <script src="js/ui.js?v=73"></script>
+  <script src="js/search.js?v=73"></script>
+  <script src="js/main.js?v=73"></script>
+  <script src="js/catmenu.js?v=73"></script>
 </body>
 </html>

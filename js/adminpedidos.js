@@ -130,7 +130,7 @@ const AdminPedidos = (() => {
       actual.metodo_pago === "whatsapp" ? "Coordinar por WhatsApp (sin comprobante)"
       : actual.metodo_pago === "tarjeta" ? "Tarjeta" : "Transferencia bancaria";
 
-    // La identidad solo se pide en retiros: mostrala únicamente si está.
+    // La identidad solo se pide en retiros: muéstrala únicamente si está.
     const identRow = document.getElementById("pm-ident-row");
     identRow.hidden = !actual.cliente_identidad;
     if (actual.cliente_identidad)
@@ -184,7 +184,7 @@ const AdminPedidos = (() => {
 
     if (!actual.voucher_path) {
       wrap.innerHTML = actual.metodo_pago === "whatsapp"
-        ? `<p class="muted">Eligió coordinar por WhatsApp: todavía no hay comprobante. Escribile para arreglar el pago.</p>`
+        ? `<p class="muted">Eligió coordinar por WhatsApp: todavía no hay comprobante. Escríbele para arreglar el pago.</p>`
         : `<p class="muted">Todavía no subió comprobante. Puede que no haya completado el pago.</p>`;
       return;
     }
@@ -203,7 +203,7 @@ const AdminPedidos = (() => {
       ? `<a class="btn btn--ghost btn--block btn--sm" href="${data.signedUrl}" target="_blank" rel="noopener">Abrir comprobante (PDF)</a>`
       : `<a href="${data.signedUrl}" target="_blank" rel="noopener" class="pm-voucher-link">
            <img src="${data.signedUrl}" class="pm-voucher" alt="Comprobante de transferencia">
-           <small class="muted">Tocá la imagen para verla en grande</small>
+           <small class="muted">Toca la imagen para verla en grande</small>
          </a>`;
 
     if (actual.voucher_subido_at) {
@@ -244,7 +244,7 @@ const AdminPedidos = (() => {
   const cancelar = async () => {
     if (!actual) return;
     const ok = await Confirm.show("Cancelar pedido",
-      `¿Cancelar el pedido #${actual.numero}? Usalo cuando no haya pago real detrás, no tengas el producto o no puedas ubicar al cliente. Si ya te pagó, acordate de devolverle.`,
+      `¿Cancelar el pedido #${actual.numero}? Úsalo cuando no haya pago real detrás, no tengas el producto o no puedas ubicar al cliente. Si ya te pagó, acuérdate de devolverle.`,
       "Sí, cancelar");
     if (!ok) return;
     await actualizar({ estado: "cancelada", nota_admin: nota() },
@@ -327,7 +327,7 @@ const AdminPedidos = (() => {
   const borrarZona = async (id) => {
     const z = zonas.find(x => x.id === id);
     const ok = await Confirm.show("Borrar zona de envío",
-      `¿Borrar "${z ? z.nombre : id}"? Los pedidos que ya la usaron conservan su costo y su nombre. Si solo querés dejar de ofrecerla, es mejor desactivarla.`,
+      `¿Borrar "${z ? z.nombre : id}"? Los pedidos que ya la usaron conservan su costo y su nombre. Si solo quieres dejar de ofrecerla, es mejor desactivarla.`,
       "Sí, borrar");
     if (!ok) return;
 
@@ -361,7 +361,7 @@ const AdminPedidos = (() => {
     }
 
     btn.disabled = false; btn.textContent = "Guardar cambios";
-    toast(fallos ? `Se guardó con ${fallos} error(es). Revisá los costos.` : "Envíos actualizados.");
+    toast(fallos ? `Se guardó con ${fallos} error(es). Revisa los costos.` : "Envíos actualizados.");
     await cargarZonas();
   };
 

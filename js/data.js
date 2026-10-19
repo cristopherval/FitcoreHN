@@ -49,10 +49,10 @@ const STORAGE_KEYS = {
    banca en línea ni el número de tu tarjeta.
 
    Los COSTOS DE ENVÍO no están acá: viven en la tabla `zonas_envio` de
-   Supabase y los cambiás desde el panel (pestaña "Envíos").
+   Supabase y los cambias desde el panel (pestaña "Envíos").
    ========================================================================= */
 const PAGOS = {
-  // Poné en false si querés desactivar temporalmente la transferencia.
+  // Pon en false si quieres desactivar temporalmente la transferencia.
   transferenciaActiva: true,
 
   // La pasarela de tarjeta todavía no está contratada. Cuando tengas la

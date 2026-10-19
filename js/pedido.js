@@ -35,7 +35,7 @@ const Pedido = (() => {
     cancelada: {
       etiqueta: "Cancelada",
       clase: "is-error",
-      aviso: "Este pedido fue cancelado. Si creés que es un error, escribinos por WhatsApp."
+      aviso: "Este pedido fue cancelado. Si crees que es un error, escríbenos por WhatsApp."
     }
   };
 
@@ -51,7 +51,7 @@ const Pedido = (() => {
     const cuentas = (typeof PAGOS !== "undefined" && PAGOS.cuentas) ? PAGOS.cuentas : [];
 
     if (!cuentas.length) {
-      cont.innerHTML = `<p class="muted">Escribinos por WhatsApp y te pasamos los datos de la cuenta.</p>`;
+      cont.innerHTML = `<p class="muted">Escríbenos por WhatsApp y te pasamos los datos de la cuenta.</p>`;
       return;
     }
 
@@ -98,9 +98,9 @@ const Pedido = (() => {
     const aviso = document.getElementById("pd-aviso");
     aviso.className = `pd-aviso ${faltaVoucher ? "is-pendiente" : est.clase}`;
     aviso.innerHTML = faltaVoucher
-      ? `<p>Registramos tu pedido, pero <strong>no nos llegó el comprobante</strong>. Si ya transferiste, adjuntalo acá abajo para que podamos despachar.</p>`
+      ? `<p>Registramos tu pedido, pero <strong>no nos llegó el comprobante</strong>. Si ya transferiste, adjúntalo acá abajo para que podamos despachar.</p>`
       : (porChat && pedido.estado === "nueva")
-        ? `<p>Tu pedido quedó registrado. <strong>Escribinos por WhatsApp</strong> para arreglar el pago y coordinar la entrega.</p>`
+        ? `<p>Tu pedido quedó registrado. <strong>Escríbenos por WhatsApp</strong> para arreglar el pago y coordinar la entrega.</p>`
         : `<p>${est.aviso}</p>`;
 
     // Detalle
@@ -140,7 +140,7 @@ const Pedido = (() => {
     if (!file) return;
 
     if (file.size > MAX_BYTES) {
-      mostrarError("La imagen pesa más de 5 MB. Probá con una foto de menor calidad.");
+      mostrarError("La imagen pesa más de 5 MB. Prueba con una foto de menor calidad.");
       return;
     }
     if (!TIPOS_OK.includes(file.type)) {
@@ -181,7 +181,7 @@ const Pedido = (() => {
     if (errUp) {
       btn.disabled = false;
       btn.textContent = "Enviar comprobante";
-      mostrarError("No pudimos subir el archivo. Revisá tu conexión e intentá de nuevo.");
+      mostrarError("No pudimos subir el archivo. Revisa tu conexión e intenta de nuevo.");
       return;
     }
 
@@ -192,7 +192,7 @@ const Pedido = (() => {
     btn.textContent = "Enviar comprobante";
     if (errRpc) {
       btn.disabled = false;
-      mostrarError("Subimos el archivo pero no pudimos registrarlo. Escribinos por WhatsApp y lo resolvemos.");
+      mostrarError("Subimos el archivo pero no pudimos registrarlo. Escríbenos por WhatsApp y lo resolvemos.");
       return;
     }
 

@@ -11,7 +11,7 @@
 (() => {
   "use strict";
 
-  const V = "?v=62";
+  const V = "?v=63";
   const SPEED_PX_S = 340;   // velocidad constante (px/seg en pantalla)
   const PPU = 4.2;          // pixeles por unidad de mundo (controla el tamaño)
   const ELEV = 1.02;        // elevación de la cámara (rad) ~58°: vista aérea 3/4
@@ -125,7 +125,7 @@
       ".pet3d-bubble::after{content:'';position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);width:0;height:0;" +
       "border-left:8px solid transparent;border-right:8px solid transparent;border-top:9px solid #0e7a4c;}";
     document.head.appendChild(estilo);
-    const FRASES = ["¡Llevá tu creatina! 💪", "Escribinos ahora 📲", "Alcanzá tu mejor versión 🔥"];
+    const FRASES = ["¡Lleva tu creatina! 💪", "Escríbenos ahora 📲", "Alcanza tu mejor versión 🔥"];
 
     const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));

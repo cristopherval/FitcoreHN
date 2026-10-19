@@ -21,24 +21,24 @@ const Checkout = (() => {
 
   /* Mensajes claros para los errores que devuelve la base de datos. */
   const ERRORES = {
-    NOMBRE_INVALIDO:     "Escribí tu nombre (al menos 2 letras).",
-    APELLIDO_INVALIDO:   "Escribí tu primer apellido.",
-    TELEFONO_INVALIDO:   "Revisá el teléfono: necesitamos los 8 dígitos.",
+    NOMBRE_INVALIDO:     "Escribe tu nombre (al menos 2 letras).",
+    APELLIDO_INVALIDO:   "Escribe tu primer apellido.",
+    TELEFONO_INVALIDO:   "Revisa el teléfono: necesitamos los 8 dígitos.",
     DIRECCION_INVALIDA:  "Necesitamos una dirección más específica para poder llegar.",
-    ZONA_SIN_COBERTURA:  "Esa zona de entrega ya no está disponible. Elegí otra.",
-    DESTINATARIO_TELEFONO_INVALIDO: "Revisá el teléfono de quien recibe el pedido.",
-    DESTINATARIO_INVALIDO: "Escribí el nombre de quien recibe el pedido.",
+    ZONA_SIN_COBERTURA:  "Esa zona de entrega ya no está disponible. Elige otra.",
+    DESTINATARIO_TELEFONO_INVALIDO: "Revisa el teléfono de quien recibe el pedido.",
+    DESTINATARIO_INVALIDO: "Escribe el nombre de quien recibe el pedido.",
     CARRITO_VACIO:       "Tu carrito está vacío.",
     CANTIDAD_INVALIDA:   "Hay una cantidad inválida en el carrito.",
-    PRODUCTO_NO_EXISTE:  "Uno de los productos ya no está disponible. Vaciá el carrito y volvé a armarlo.",
-    DEMASIADOS_ITEMS:    "El pedido tiene demasiados productos distintos. Escribinos por WhatsApp.",
+    PRODUCTO_NO_EXISTE:  "Uno de los productos ya no está disponible. Vacía el carrito y vuelve a armarlo.",
+    DEMASIADOS_ITEMS:    "El pedido tiene demasiados productos distintos. Escríbenos por WhatsApp.",
     METODO_INVALIDO:     "Forma de pago no válida."
   };
 
   const traducirError = (msg) => {
-    if (!msg) return "No pudimos registrar tu pedido. Intentá de nuevo.";
+    if (!msg) return "No pudimos registrar tu pedido. Intenta de nuevo.";
     const clave = Object.keys(ERRORES).find(k => msg.includes(k));
-    return clave ? ERRORES[clave] : "No pudimos registrar tu pedido. Revisá tu conexión e intentá de nuevo.";
+    return clave ? ERRORES[clave] : "No pudimos registrar tu pedido. Revisa tu conexión e intenta de nuevo.";
   };
 
   /* ---------- Resumen del pedido ---------- */
@@ -104,7 +104,7 @@ const Checkout = (() => {
       if (inp) inp.value = "";
       document.getElementById("co-preview").hidden = true;
       document.getElementById("co-drop-txt").textContent =
-        "Tocá para elegir la foto del comprobante";
+        "Toca para elegir la foto del comprobante";
     }
     mostrarError("");
   };
@@ -136,7 +136,7 @@ const Checkout = (() => {
     const cuentas = (typeof PAGOS !== "undefined" && PAGOS.cuentas) ? PAGOS.cuentas : [];
 
     if (!cuentas.length) {
-      cont.innerHTML = `<p class="muted">Escribinos por WhatsApp y te pasamos los datos de la cuenta.</p>`;
+      cont.innerHTML = `<p class="muted">Escríbenos por WhatsApp y te pasamos los datos de la cuenta.</p>`;
       return;
     }
 
@@ -173,7 +173,7 @@ const Checkout = (() => {
 
     if (error || !data || !data.length) {
       cont.innerHTML = `<p class="muted">No se pudieron cargar las opciones de entrega.</p>`;
-      mostrarError("No pudimos cargar las opciones de entrega. Recargá la página o escribinos por WhatsApp.");
+      mostrarError("No pudimos cargar las opciones de entrega. Recarga la página o escríbenos por WhatsApp.");
       return;
     }
 
@@ -273,12 +273,12 @@ const Checkout = (() => {
     const txt = document.getElementById("co-drop-txt");
 
     if (!file) {
-      txt.textContent = "Tocá para elegir la foto del comprobante";
+      txt.textContent = "Toca para elegir la foto del comprobante";
       prev.hidden = true;
       return;
     }
     if (file.size > MAX_BYTES) {
-      mostrarError("La imagen pesa más de 5 MB. Probá con una foto de menor calidad.");
+      mostrarError("La imagen pesa más de 5 MB. Prueba con una foto de menor calidad.");
       return;
     }
     if (!TIPOS_OK.includes(file.type)) {
@@ -331,10 +331,10 @@ const Checkout = (() => {
     if (!items.length) { mostrarError(ERRORES.CARRITO_VACIO); return; }
 
     const zona = zonaSeleccionada();
-    if (!zona) { mostrarError("Elegí dónde querés recibir tu pedido."); return; }
+    if (!zona) { mostrarError("Elige dónde quieres recibir tu pedido."); return; }
     const esTransfer = metodo() === "transferencia";
     if (esTransfer && !archivo) {
-      mostrarError("Adjuntá la foto del comprobante de tu transferencia.");
+      mostrarError("Adjunta la foto del comprobante de tu transferencia.");
       return;
     }
 
@@ -407,10 +407,10 @@ const Checkout = (() => {
         op.disabled = false;
         op.closest(".co-pago").classList.remove("is-disabled");
         document.getElementById("co-tarjeta-txt").textContent =
-          "Pagá en línea con Visa, Mastercard o American Express.";
+          "Paga en línea con Visa, Mastercard o American Express.";
       }
     }
-    // Si desactivás la transferencia, la opción deja de ofrecerse.
+    // Si desactivas la transferencia, la opción deja de ofrecerse.
     if (typeof PAGOS !== "undefined" && PAGOS.transferenciaActiva === false) {
       const op = document.querySelector('input[name="metodo"][value="transferencia"]');
       if (op) {

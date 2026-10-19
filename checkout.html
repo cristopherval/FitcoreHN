@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=62">
+  <link rel="stylesheet" href="css/styles.css?v=63">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -58,7 +58,7 @@
       <div class="container">
         <span class="section__eyebrow">Último paso</span>
         <h1 class="page-hero__title">Finalizar compra</h1>
-        <p class="page-hero__lead">Completá tus datos y elegí cómo querés pagar. Te confirmamos el pedido por WhatsApp.</p>
+        <p class="page-hero__lead">Completa tus datos y elige cómo quieres pagar. Te confirmamos el pedido por WhatsApp.</p>
       </div>
     </section>
 
@@ -67,7 +67,7 @@
       <div class="container">
         <div class="co-empty">
           <h2>Tu carrito está vacío</h2>
-          <p class="muted">Agregá productos para poder finalizar la compra.</p>
+          <p class="muted">Agrega productos para poder finalizar la compra.</p>
           <a href="index.html#productos" class="btn btn--accent">Ver productos</a>
         </div>
       </div>
@@ -125,7 +125,7 @@
                  Van como radios para que el cliente vea todos los precios
                  de una vez, sin tener que abrir una lista. -->
             <div class="form__row">
-              <label id="co-zona-label">¿Dónde lo recibís? *</label>
+              <label id="co-zona-label">¿Dónde lo recibes? *</label>
               <div class="co-zonas" id="co-zonas" role="radiogroup" aria-labelledby="co-zona-label">
                 <p class="muted">Cargando opciones de entrega…</p>
               </div>
@@ -135,7 +135,7 @@
             <div class="form__row" id="co-ident-row" hidden>
               <label for="co-ident">Número de identidad <span class="muted">(opcional)</span></label>
               <input id="co-ident" type="text" inputmode="numeric" placeholder="0801-1999-01234">
-              <small class="form__hint">Si lo dejás, agilizamos la entrega el día que pases a recoger.</small>
+              <small class="form__hint">Si lo dejas, agilizamos la entrega el día que pases a recoger.</small>
             </div>
 
             <!-- Se oculta solo cuando la zona es un punto de retiro. -->
@@ -175,14 +175,14 @@
 
           <!-- Paso 3: pago, en el mismo formulario -->
           <fieldset class="co-card">
-            <legend class="co-card__title"><span class="co-step">3</span> Pagá tu pedido</legend>
+            <legend class="co-card__title"><span class="co-step">3</span> Paga tu pedido</legend>
 
             <div class="co-metodos" role="radiogroup" aria-label="Forma de pago">
               <label class="co-pago">
                 <input type="radio" name="metodo" value="transferencia" checked>
                 <span class="co-pago__body">
                   <strong>Transferencia bancaria</strong>
-                  <small>Transferís, adjuntás el comprobante y listo. Es la vía más rápida.</small>
+                  <small>Transfieres, adjuntas el comprobante y listo. Es la vía más rápida.</small>
                 </span>
               </label>
 
@@ -207,7 +207,7 @@
             <!-- Aviso cuando elige coordinar por chat -->
             <p class="co-wa-aviso" id="co-wa-aviso" hidden>
               Registramos tu pedido y te escribimos por WhatsApp para arreglar el pago
-              y la entrega. No necesitás adjuntar nada ahora.
+              y la entrega. No necesitas adjuntar nada ahora.
             </p>
 
             <!-- Todo lo de transferencia: se oculta si elige otra forma -->
@@ -223,9 +223,9 @@
 
             <div id="co-cuentas"></div>
 
-            <h3 class="co-sub">Adjuntá tu comprobante *</h3>
+            <h3 class="co-sub">Adjunta tu comprobante *</h3>
             <p class="muted pd-upload-intro">
-              Tomale una foto al voucher o subí la captura de la transferencia. Debe verse el monto y la fecha.
+              Tómale una foto al voucher o sube la captura de la transferencia. Debe verse el monto y la fecha.
             </p>
 
             <label class="pd-drop" id="co-drop">
@@ -233,7 +233,7 @@
               <span class="pd-drop__icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m7 9 5-5 5 5"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
               </span>
-              <span class="pd-drop__txt" id="co-drop-txt">Tocá para elegir la foto del comprobante</span>
+              <span class="pd-drop__txt" id="co-drop-txt">Toca para elegir la foto del comprobante</span>
               <small class="pd-drop__hint">JPG, PNG o PDF · máximo 5 MB</small>
             </label>
 
@@ -248,7 +248,7 @@
             Realizar pedido
           </button>
           <p class="co-legal">Al enviarlo nos llega tu compra con el comprobante. Te escribimos por WhatsApp para coordinar la entrega.
-            Al comprar aceptás nuestros <a href="terminos.html" target="_blank" rel="noopener">términos</a> y la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</p>
+            Al comprar aceptas nuestros <a href="terminos.html" target="_blank" rel="noopener">términos</a> y la <a href="privacidad.html" target="_blank" rel="noopener">política de privacidad</a>.</p>
         </form>
 
         <!-- ============ COLUMNA DERECHA: RESUMEN ============ -->
@@ -331,14 +331,14 @@
     </svg>
   </a>
 
-  <script src="assets/vendor/supabase.js?v=62"></script>
-  <script src="js/supabase-config.js?v=62"></script>
-  <script src="js/data.js?v=62"></script>
-  <script src="js/store.js?v=62"></script>
-  <script src="js/confirm.js?v=62"></script>
-  <script src="js/cart.js?v=62"></script>
-  <script src="js/ui.js?v=62"></script>
-  <script src="js/main.js?v=62"></script>
-  <script src="js/checkout.js?v=62"></script>
+  <script src="assets/vendor/supabase.js?v=63"></script>
+  <script src="js/supabase-config.js?v=63"></script>
+  <script src="js/data.js?v=63"></script>
+  <script src="js/store.js?v=63"></script>
+  <script src="js/confirm.js?v=63"></script>
+  <script src="js/cart.js?v=63"></script>
+  <script src="js/ui.js?v=63"></script>
+  <script src="js/main.js?v=63"></script>
+  <script src="js/checkout.js?v=63"></script>
 </body>
 </html>

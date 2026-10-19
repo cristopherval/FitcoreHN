@@ -1285,3 +1285,22 @@ img, video { max-width: 100%; }
 .admin-gal__add { display: inline-block; cursor: pointer; }
 .admin-gal__estado { display: block; margin-top: 8px; font-size: .8rem; }
 .admin-gal__aviso { margin-top: 8px; font-size: .84rem; }
+
+/* ---- Toda la tarjeta abre la ficha del producto ----
+   Tecnica de "enlace estirado": el enlace del titulo crece con un
+   pseudo-elemento hasta cubrir la tarjeta entera. Se hace asi y no
+   envolviendo todo en un <a> porque un boton dentro de un enlace es HTML
+   invalido y dejaria de funcionar. El buscador sigue viendo un unico
+   enlace limpio hacia el producto. */
+.card { cursor: pointer; }
+.card__title a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+/* El boton y la insignia quedan por encima del enlace estirado. */
+.card__footer .btn, .card__badge { position: relative; z-index: 2; }
+.card__footer .btn { cursor: pointer; }
+
+/* ---- Resultado de busqueda enlazado ---- */
+.sresult__link { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; color: inherit; }
+.sresult__link:hover .sresult__name { color: var(--accent); }
+.slide__title a { color: inherit; }
+.slide__title a:hover { color: var(--accent); }
+.slide__media { display: block; }

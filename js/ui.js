@@ -66,10 +66,10 @@ const UI = (() => {
 
     track.innerHTML = lista.map(p => `
       <div class="slide">
-        <div class="slide__media"><img src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="260" height="260"></div>
+        <a class="slide__media" href="${urlProducto(p)}" aria-label="Ver ${p.nombre}"><img src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="260" height="260"></a>
         <div class="slide__info">
           <span class="slide__tag">Oferta especial</span>
-          <h3 class="slide__title">${p.nombre}</h3>
+          <h3 class="slide__title"><a href="${urlProducto(p)}">${p.nombre}</a></h3>
           <p class="slide__desc">${p.descripcion}</p>
           <div class="slide__prices">
             <span class="slide__price">${fmt(p.precio)}</span>

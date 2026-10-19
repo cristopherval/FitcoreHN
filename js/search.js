@@ -110,16 +110,23 @@ const Search = (() => {
       html += `</div></div>`;
     }
 
+    // Ficha del producto. Usa el slug si ya existe (URL legible).
+    const urlFicha = (p) => p.slug
+      ? `producto.html?p=${encodeURIComponent(p.slug)}`
+      : `producto.html?id=${encodeURIComponent(p.id)}`;
+
     if (prodsMatch.length) {
       html += `<div class="search-group"><h4 class="search-group__title">Productos</h4>`;
       html += prodsMatch.map(p => `
         <div class="sresult">
-          <img class="sresult__img" src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="52" height="52">
-          <div class="sresult__info">
-            <span class="sresult__meta">${marcaName(p.marca) || catName(p.categoria)}</span>
-            <span class="sresult__name">${p.nombre}</span>
-            <span class="sresult__price">${Cart.fmt(p.precio)}</span>
-          </div>
+          <a class="sresult__link" href="${urlFicha(p)}">
+            <img class="sresult__img" src="${p.imagen}" alt="${p.nombre}" loading="lazy" width="52" height="52">
+            <div class="sresult__info">
+              <span class="sresult__meta">${marcaName(p.marca) || catName(p.categoria)}</span>
+              <span class="sresult__name">${p.nombre}</span>
+              <span class="sresult__price">${Cart.fmt(p.precio)}</span>
+            </div>
+          </a>
           <button class="btn btn--accent btn--xs" data-add="${p.id}" aria-label="Agregar ${p.nombre}">Agregar</button>
         </div>`).join("");
       html += `</div>`;

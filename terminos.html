@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  /* Limpia service workers/cachés de OTROS proyectos que pudieran haber quedado
+     registrados en este puerto y "secuestran" la página mostrando otra app. */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  }
+  if (window.caches && caches.keys) { caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }); }
+</script>
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Términos y condiciones | FITCORE HN</title>
+  <meta name="description" content="Condiciones de compra en FITCORE HN: precios, pagos por transferencia, envíos a todo Honduras y responsabilidades.">
+  <link rel="canonical" href="https://fitcore-hn.com/terminos.html">
+  <meta property="og:url" content="https://fitcore-hn.com/terminos.html">
+  <meta property="og:title" content="Términos y condiciones | FITCORE HN">
+  <meta property="og:description" content="Condiciones de compra en FITCORE HN: precios, pagos por transferencia, envíos a todo Honduras y responsabilidades.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=62">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Términos y condiciones",
+  "url": "https://fitcore-hn.com/terminos.html",
+  "description": "Condiciones de compra en FITCORE HN: precios, pagos por transferencia, envíos a todo Honduras y responsabilidades.",
+  "dateModified": "2026-10-19",
+  "publisher": {
+    "@type": "Store",
+    "name": "FITCORE HN",
+    "@id": "https://fitcore-hn.com/#tienda"
+  }
+}
+  </script>
+</head>
+<body>
+
+  <header class="navbar is-scrolled">
+    <div class="container navbar__inner">
+      <a href="index.html" class="logo" data-logo aria-label="FITCORE HN inicio">
+        FIT<span class="logo__accent">CORE</span><small>HN</small>
+      </a>
+      <nav class="navbar__links" aria-label="Navegación principal">
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="index.html#productos">Productos</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <div class="navbar__actions">
+        <button class="cart-btn" data-open-cart aria-label="Abrir carrito">
+          <span data-cart-icon class="cart-btn__icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg></span>
+          <span class="cart-btn__badge" data-cart-count>0</span>
+        </button>
+        <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <nav class="migas container" aria-label="Ruta de navegación">
+      <a href="index.html">Inicio</a> <span aria-hidden="true">›</span>
+      <span aria-current="page">Términos y condiciones</span>
+    </nav>
+
+    <section class="page-hero page-hero--tight">
+      <div class="container">
+        <span class="section__eyebrow">Legal</span>
+        <h1 class="page-hero__title">Términos y condiciones</h1>
+        <p class="page-hero__lead">Las reglas con las que vendemos. Al hacer un pedido en este sitio, aceptás lo que está acá.</p>
+        <p class="legal-fecha">Última actualización: 19 de octubre de 2026</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <article class="cat-article legal">
+        <h2>1. Quiénes somos</h2>
+        <p>Este sitio, <strong>fitcore-hn.com</strong>, es operado por <strong>FITCORE HN</strong>, a cargo de Cristopher Daniel Valle, con domicilio comercial en Honduras. El contacto oficial es WhatsApp <a href="https://wa.me/50433644559" target="_blank" rel="noopener">+504 3364 4559</a> o al correo <a href="mailto:cristopherval04@gmail.com">cristopherval04@gmail.com</a>.</p>
+
+        <h2>2. Qué vendemos</h2>
+        <p>Comercializamos <strong>suplementos alimenticios</strong> de marcas reconocidas. Todos los productos se entregan sellados de fábrica.</p>
+        <p class="legal-aviso"><strong>Importante:</strong> los suplementos alimenticios <strong>no son medicamentos</strong> y no están destinados a diagnosticar, tratar, curar ni prevenir ninguna enfermedad. La información del sitio es orientativa y no sustituye la consulta con un médico o nutricionista. Si estás embarazada, en período de lactancia, bajo tratamiento médico o tenés alguna condición de salud, consultá con un profesional antes de consumir cualquier suplemento.</p>
+
+        <h2>3. Precios</h2>
+        <p>Todos los precios están en <strong>lempiras hondureños (L.)</strong> e incluyen los impuestos aplicables. El costo de envío se calcula aparte, según la zona de entrega que elijas, y se te muestra antes de confirmar.</p>
+        <p>Los precios pueden cambiar sin aviso previo, pero <strong>el precio que se te muestra al confirmar tu pedido es el que se respeta</strong>, aunque después cambie.</p>
+
+        <h2>4. Cómo se hace un pedido</h2>
+        <p>Armás tu carrito, elegís la zona de entrega y completás tus datos. Podés pagar de dos formas:</p>
+        <ul>
+          <li><strong>Transferencia bancaria:</strong> te mostramos el monto exacto y nuestras cuentas. Transferís y adjuntás la foto del comprobante en el mismo formulario.</li>
+          <li><strong>Coordinar por WhatsApp:</strong> registramos tu pedido y arreglamos el pago por chat.</li>
+        </ul>
+        <p>Un pedido queda <strong>confirmado cuando verificamos que el pago ingresó</strong>, no antes. Te escribimos por WhatsApp para coordinar la entrega.</p>
+
+        <h2>5. Disponibilidad</h2>
+        <p>Hacemos lo posible por mantener el catálogo al día, pero puede ocurrir que un producto se agote entre que lo pedís y lo despachamos. Si eso pasa te avisamos de inmediato y podés elegir entre esperar reposición, cambiarlo por otro producto o que te devolvamos el dinero completo.</p>
+
+        <h2>6. Envíos</h2>
+        <p>Enviamos a <strong>todo Honduras</strong>. Los costos vigentes son:</p>
+        <ul>
+          <li><strong>Talanga:</strong> gratis, sin monto mínimo</li>
+          <li><strong>Entrega en UNAH CU, Tegucigalpa:</strong> gratis</li>
+          <li><strong>Envío local Tegucigalpa:</strong> L. 100</li>
+          <li><strong>Envío local San Pedro Sula:</strong> L. 100</li>
+          <li><strong>Envío nacional:</strong> L. 180</li>
+          <li><strong>Islas de la Bahía:</strong> L. 300</li>
+        </ul>
+        <p>Los tiempos de entrega se coordinan contigo por WhatsApp y dependen de la zona. En los envíos nacionales trabajamos con empresas de transporte, por lo que los plazos dependen también de ellas.</p>
+        <p>Es tu responsabilidad darnos una <strong>dirección correcta y completa</strong>. Si un envío se pierde o se retrasa por una dirección equivocada, el costo de reenvío corre por tu cuenta.</p>
+        <p>En la <strong>entrega en UNAH CU</strong> tenés que presentar tu identidad y el número de pedido. Si manda a otra persona a recogerlo, debe llevar copia de tu identidad.</p>
+
+        <h2>7. Devoluciones</h2>
+        <p>Las condiciones están detalladas en nuestra <a href="devoluciones.html">política de devoluciones</a>, que forma parte de estos términos.</p>
+
+        <h2>8. Tus datos</h2>
+        <p>Los datos que nos das se usan únicamente para procesar y entregar tu pedido. Lo explicamos en detalle en la <a href="privacidad.html">política de privacidad</a>.</p>
+
+        <h2>9. Contenido del sitio</h2>
+        <p>Los textos, el diseño y las fotografías propias de este sitio pertenecen a FITCORE HN. Las marcas de los productos (Optimum Nutrition, Nutrex y otras) pertenecen a sus respectivos dueños, y las usamos únicamente para identificar lo que vendemos.</p>
+
+        <h2>10. Cambios a estos términos</h2>
+        <p>Podemos actualizar estos términos cuando cambie nuestra operación. La fecha de la última actualización aparece al inicio de esta página. Los pedidos ya confirmados se rigen por los términos vigentes al momento de hacerlos.</p>
+
+        <h2>11. Dudas</h2>
+        <p>Escribinos por WhatsApp al <a href="https://wa.me/50433644559" target="_blank" rel="noopener">+504 3364 4559</a> o al correo <a href="mailto:cristopherval04@gmail.com">cristopherval04@gmail.com</a>. Respondemos a todo.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__col">
+        <a href="index.html" class="logo">FIT<span class="logo__accent">CORE</span><small>HN</small></a>
+        <p class="footer__text">Suplementos originales con envío a todo Honduras.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Tienda</h4>
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div class="footer__col">
+        <h4>Envíos</h4>
+        <a href="talanga.html">Suplementos en Talanga</a>
+        <a href="tegucigalpa.html">Suplementos en Tegucigalpa</a>
+        <a href="san-pedro-sula.html">Suplementos en San Pedro Sula</a>
+      </div>
+      <div class="footer__col">
+        <h4>Legal</h4>
+        <a href="terminos.html">Términos y condiciones</a>
+        <a href="privacidad.html">Política de privacidad</a>
+        <a href="devoluciones.html">Devoluciones</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© <span id="anio">2026</span> FITCORE HN</p>
+    </div>
+  </footer>
+
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Carrito de compras">
+    <header class="cart-drawer__head">
+      <h3>Tu carrito</h3>
+      <button class="cart-drawer__close" id="cart-close" aria-label="Cerrar carrito">✕</button>
+    </header>
+    <div class="cart-drawer__items" id="cart-items"></div>
+    <footer class="cart-drawer__foot">
+      <div class="cart-drawer__total"><span>Total</span><strong id="cart-total">L. 0</strong></div>
+      <button class="btn btn--accent btn--block" id="cart-checkout">Finalizar compra</button>
+      <button class="btn btn--ghost btn--block btn--sm" id="cart-clear">Vaciar carrito</button>
+    </footer>
+  </aside>
+
+  <a class="whatsapp-float" href="https://wa.me/50433644559?text=Hola%20FITCORE%20HN" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+    <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" fill="currentColor">
+      <path d="M16 .5C7.4.5.5 7.4.5 16c0 2.8.7 5.4 2 7.7L.5 31.5l8-2.1c2.2 1.2 4.8 1.9 7.5 1.9 8.6 0 15.5-6.9 15.5-15.5S24.6.5 16 .5zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.7 1.2 1.3-4.6-.3-.5c-1.3-2.1-2-4.5-2-6.9C2.4 8.5 8.5 2.4 16 2.4S29.6 8.5 29.6 16 23.5 28.8 16 28.8zm8.3-9.9c-.5-.2-2.7-1.3-3.1-1.5-.4-.2-.7-.2-1 .2-.3.5-1.1 1.5-1.4 1.7-.3.2-.5.3-1 .1-2.7-1.4-4.5-2.4-6.3-5.4-.5-.8.5-.8 1.3-2.5.1-.3.1-.5 0-.7-.1-.2-1-2.4-1.4-3.2-.4-.9-.7-.7-1-.8h-.8c-.3 0-.7.1-1.1.5C8.7 7.6 8 8.5 8 10.3s1.5 3.6 1.7 3.9c.2.3 2.9 4.4 7 6.1 3.7 1.6 3.7 1.1 4.4 1 .7-.1 2.2-.9 2.5-1.7.3-.9.3-1.6.2-1.7-.1-.2-.4-.3-.9-.5z"/>
+    </svg>
+  </a>
+
+  <script src="assets/vendor/supabase.js?v=62"></script>
+  <script src="js/supabase-config.js?v=62"></script>
+  <script src="js/data.js?v=62"></script>
+  <script src="js/store.js?v=62"></script>
+  <script src="js/confirm.js?v=62"></script>
+  <script src="js/cart.js?v=62"></script>
+  <script src="js/ui.js?v=62"></script>
+  <script src="js/main.js?v=62"></script>
+</body>
+</html>

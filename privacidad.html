@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script>
+  /* Limpia service workers/cachés de OTROS proyectos que pudieran haber quedado
+     registrados en este puerto y "secuestran" la página mostrando otra app. */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function (rs) { rs.forEach(function (r) { r.unregister(); }); });
+  }
+  if (window.caches && caches.keys) { caches.keys().then(function (ks) { ks.forEach(function (k) { caches.delete(k); }); }); }
+</script>
+  <meta name="theme-color" content="#0a0a0a">
+
+  <title>Política de privacidad | FITCORE HN</title>
+  <meta name="description" content="Qué datos recopila FITCORE HN, para qué los usa, dónde se guardan y cómo pedir que los eliminemos.">
+  <link rel="canonical" href="https://fitcore-hn.com/privacidad.html">
+  <meta property="og:url" content="https://fitcore-hn.com/privacidad.html">
+  <meta property="og:title" content="Política de privacidad | FITCORE HN">
+  <meta property="og:description" content="Qué datos recopila FITCORE HN, para qué los usa, dónde se guardan y cómo pedir que los eliminemos.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css?v=62">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/favicon.png">
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Política de privacidad",
+  "url": "https://fitcore-hn.com/privacidad.html",
+  "description": "Qué datos recopila FITCORE HN, para qué los usa, dónde se guardan y cómo pedir que los eliminemos.",
+  "dateModified": "2026-10-19",
+  "publisher": {
+    "@type": "Store",
+    "name": "FITCORE HN",
+    "@id": "https://fitcore-hn.com/#tienda"
+  }
+}
+  </script>
+</head>
+<body>
+
+  <header class="navbar is-scrolled">
+    <div class="container navbar__inner">
+      <a href="index.html" class="logo" data-logo aria-label="FITCORE HN inicio">
+        FIT<span class="logo__accent">CORE</span><small>HN</small>
+      </a>
+      <nav class="navbar__links" aria-label="Navegación principal">
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#ofertas">Ofertas</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="index.html#productos">Productos</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <div class="navbar__actions">
+        <button class="cart-btn" data-open-cart aria-label="Abrir carrito">
+          <span data-cart-icon class="cart-btn__icon" aria-hidden="true"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="20" r="1.6"/><circle cx="18" cy="20" r="1.6"/><path d="M2 3h3l2.2 12.2a1.6 1.6 0 0 0 1.6 1.3h8.6a1.6 1.6 0 0 0 1.6-1.3L21 7H6"/></svg></span>
+          <span class="cart-btn__badge" data-cart-count>0</span>
+        </button>
+        <button class="navbar__toggle" aria-label="Abrir menú" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <nav class="migas container" aria-label="Ruta de navegación">
+      <a href="index.html">Inicio</a> <span aria-hidden="true">›</span>
+      <span aria-current="page">Política de privacidad</span>
+    </nav>
+
+    <section class="page-hero page-hero--tight">
+      <div class="container">
+        <span class="section__eyebrow">Legal</span>
+        <h1 class="page-hero__title">Política de privacidad</h1>
+        <p class="page-hero__lead">Qué datos te pedimos, para qué los usamos y cómo los cuidamos. En español claro, sin letra chica.</p>
+        <p class="legal-fecha">Última actualización: 19 de octubre de 2026</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <article class="cat-article legal">
+        <p class="cat-article__lead">Resumen en una línea: usamos tus datos <strong>solo para entregarte tu pedido</strong>. No los vendemos, no los compartimos con terceros para publicidad y no te vamos a llenar de correos.</p>
+
+        <h2>1. Qué datos recopilamos</h2>
+        <p>Cuando hacés un pedido te pedimos:</p>
+        <ul>
+          <li><strong>Nombre y apellidos</strong> — para identificar el pedido y entregártelo</li>
+          <li><strong>Teléfono</strong> — para avisarte y coordinar la entrega por WhatsApp</li>
+          <li><strong>Dirección de entrega</strong> — solo si elegís envío a domicilio</li>
+          <li><strong>Número de identidad</strong> — <em>opcional</em>, y solo en entregas con retiro en punto, para verificar quién recoge</li>
+          <li><strong>Comprobante de transferencia</strong> — si pagás por ese medio</li>
+          <li><strong>Datos de quien recibe</strong> — solo si indicás que lo recibe otra persona</li>
+          <li><strong>Notas</strong> — lo que vos decidas escribirnos</li>
+        </ul>
+        <p><strong>No te pedimos ni guardamos datos de tarjetas.</strong> Hoy solo cobramos por transferencia bancaria.</p>
+        <p><strong>No hace falta crear una cuenta</strong> ni una contraseña para comprar.</p>
+
+        <h2>2. Para qué los usamos</h2>
+        <p>Exclusivamente para: procesar tu pedido, verificar que el pago ingresó, coordinar y realizar la entrega, y responderte si tenés un problema con tu compra.</p>
+        <p>No los usamos para publicidad ni para perfilarte, y <strong>no los vendemos ni los cedemos a terceros</strong> con fines comerciales.</p>
+
+        <h2>3. Dónde se guardan</h2>
+        <p>Los pedidos se almacenan en <strong>Supabase</strong>, un servicio de base de datos en la nube, con acceso restringido. Los comprobantes de transferencia se guardan en un <strong>almacenamiento privado</strong>: no son accesibles con solo tener el enlace y solo se pueden ver desde el panel de administración, mediante enlaces temporales que caducan.</p>
+        <p>El acceso al panel está protegido con correo y contraseña, y <strong>únicamente el administrador de FITCORE HN</strong> puede ver los pedidos.</p>
+
+        <h2>4. Qué guarda tu navegador</h2>
+        <p>Este sitio <strong>no usa cookies de publicidad ni de rastreo</strong>. Solo guardamos en tu propio navegador:</p>
+        <ul>
+          <li>Tu <strong>carrito</strong>, para que no se pierda si cambiás de página</li>
+          <li>El <strong>enlace de tus pedidos</strong>, para que puedas volver a consultarlos</li>
+        </ul>
+        <p>Eso se queda en tu dispositivo, no lo recibimos nosotros, y podés borrarlo limpiando los datos del sitio en tu navegador.</p>
+
+        <h2>5. Cuánto tiempo los conservamos</h2>
+        <p>Conservamos los datos de un pedido mientras sean necesarios para atenderlo y para dejar constancia de la venta. Si querés que borremos los tuyos antes, escribinos y lo hacemos.</p>
+
+        <h2>6. Tus derechos</h2>
+        <p>Podés pedirnos en cualquier momento que te digamos <strong>qué datos tuyos tenemos</strong>, que <strong>corrijamos</strong> algo que esté mal, o que <strong>borremos</strong> tu información. Escribinos al <a href="https://wa.me/50433644559" target="_blank" rel="noopener">+504 3364 4559</a> o al correo <a href="mailto:cristopherval04@gmail.com">cristopherval04@gmail.com</a> indicando tu número de pedido y lo resolvemos.</p>
+
+        <h2>7. Enlaces a otros sitios</h2>
+        <p>Nuestro sitio enlaza a WhatsApp y a nuestras redes sociales. Una vez que salís de fitcore-hn.com, aplican las políticas de privacidad de esos servicios, no la nuestra.</p>
+
+        <h2>8. Menores de edad</h2>
+        <p>Nuestros productos están dirigidos a mayores de 18 años. Si sos menor, pedile a tu madre, padre o tutor que haga la compra.</p>
+
+        <h2>9. Cambios a esta política</h2>
+        <p>Si cambiamos cómo tratamos los datos, actualizamos esta página y la fecha del inicio.</p>
+
+        <h2>10. Contacto</h2>
+        <p>Cualquier duda sobre tus datos, escribinos al <a href="https://wa.me/50433644559" target="_blank" rel="noopener">+504 3364 4559</a> o al correo <a href="mailto:cristopherval04@gmail.com">cristopherval04@gmail.com</a>.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__grid">
+      <div class="footer__col">
+        <a href="index.html" class="logo">FIT<span class="logo__accent">CORE</span><small>HN</small></a>
+        <p class="footer__text">Suplementos originales con envío a todo Honduras.</p>
+      </div>
+      <div class="footer__col">
+        <h4>Tienda</h4>
+        <a href="index.html#inicio">Inicio</a>
+        <a href="index.html#categorias">Categorías</a>
+        <a href="nosotros.html">Nosotros</a>
+        <a href="contacto.html">Contacto</a>
+      </div>
+      <div class="footer__col">
+        <h4>Envíos</h4>
+        <a href="talanga.html">Suplementos en Talanga</a>
+        <a href="tegucigalpa.html">Suplementos en Tegucigalpa</a>
+        <a href="san-pedro-sula.html">Suplementos en San Pedro Sula</a>
+      </div>
+      <div class="footer__col">
+        <h4>Legal</h4>
+        <a href="terminos.html">Términos y condiciones</a>
+        <a href="privacidad.html">Política de privacidad</a>
+        <a href="devoluciones.html">Devoluciones</a>
+      </div>
+    </div>
+    <div class="footer__bottom">
+      <p>© <span id="anio">2026</span> FITCORE HN</p>
+    </div>
+  </footer>
+
+  <div class="overlay" id="overlay"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Carrito de compras">
+    <header class="cart-drawer__head">
+      <h3>Tu carrito</h3>
+      <button class="cart-drawer__close" id="cart-close" aria-label="Cerrar carrito">✕</button>
+    </header>
+    <div class="cart-drawer__items" id="cart-items"></div>
+    <footer class="cart-drawer__foot">
+      <div class="cart-drawer__total"><span>Total</span><strong id="cart-total">L. 0</strong></div>
+      <button class="btn btn--accent btn--block" id="cart-checkout">Finalizar compra</button>
+      <button class="btn btn--ghost btn--block btn--sm" id="cart-clear">Vaciar carrito</button>
+    </footer>
+  </aside>
+
+  <a class="whatsapp-float" href="https://wa.me/50433644559?text=Hola%20FITCORE%20HN" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+    <svg viewBox="0 0 32 32" width="30" height="30" aria-hidden="true" fill="currentColor">
+      <path d="M16 .5C7.4.5.5 7.4.5 16c0 2.8.7 5.4 2 7.7L.5 31.5l8-2.1c2.2 1.2 4.8 1.9 7.5 1.9 8.6 0 15.5-6.9 15.5-15.5S24.6.5 16 .5zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.7 1.2 1.3-4.6-.3-.5c-1.3-2.1-2-4.5-2-6.9C2.4 8.5 8.5 2.4 16 2.4S29.6 8.5 29.6 16 23.5 28.8 16 28.8zm8.3-9.9c-.5-.2-2.7-1.3-3.1-1.5-.4-.2-.7-.2-1 .2-.3.5-1.1 1.5-1.4 1.7-.3.2-.5.3-1 .1-2.7-1.4-4.5-2.4-6.3-5.4-.5-.8.5-.8 1.3-2.5.1-.3.1-.5 0-.7-.1-.2-1-2.4-1.4-3.2-.4-.9-.7-.7-1-.8h-.8c-.3 0-.7.1-1.1.5C8.7 7.6 8 8.5 8 10.3s1.5 3.6 1.7 3.9c.2.3 2.9 4.4 7 6.1 3.7 1.6 3.7 1.1 4.4 1 .7-.1 2.2-.9 2.5-1.7.3-.9.3-1.6.2-1.7-.1-.2-.4-.3-.9-.5z"/>
+    </svg>
+  </a>
+
+  <script src="assets/vendor/supabase.js?v=62"></script>
+  <script src="js/supabase-config.js?v=62"></script>
+  <script src="js/data.js?v=62"></script>
+  <script src="js/store.js?v=62"></script>
+  <script src="js/confirm.js?v=62"></script>
+  <script src="js/cart.js?v=62"></script>
+  <script src="js/ui.js?v=62"></script>
+  <script src="js/main.js?v=62"></script>
+</body>
+</html>

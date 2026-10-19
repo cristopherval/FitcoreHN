@@ -14,6 +14,11 @@
   <url><loc>https://fitcore-hn.com/san-pedro-sula.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://fitcore-hn.com/talanga.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
+  <!-- Legales -->
+  <url><loc>https://fitcore-hn.com/terminos.html</loc><lastmod>2026-10-19</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://fitcore-hn.com/privacidad.html</loc><lastmod>2026-10-19</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+  <url><loc>https://fitcore-hn.com/devoluciones.html</loc><lastmod>2026-10-19</lastmod><changefreq>yearly</changefreq><priority>0.3</priority></url>
+
   <!-- Institucionales -->
   <url><loc>https://fitcore-hn.com/nosotros.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
   <url><loc>https://fitcore-hn.com/contacto.html</loc><lastmod>2026-10-14</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>

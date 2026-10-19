@@ -69,7 +69,11 @@ function initFAQ() {
   };
 
   items.forEach(item => {
+    // Si un item no trae su <summary class="faq__q"> lo salteamos. Antes
+    // esto lanzaba un error que abortaba TODO el arranque de la pagina:
+    // una pregunta mal formada dejaba la pagina sin productos.
     const summary = item.querySelector(".faq__q");
+    if (!summary || !item.querySelector(".faq__a")) return;
     summary.addEventListener("click", (e) => {
       e.preventDefault();
       if (item.open) {

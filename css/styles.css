@@ -1203,3 +1203,10 @@ img, video { max-width: 100%; }
 .co-titular__fila { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: .89rem; }
 .co-titular__fila strong { font-variant-numeric: tabular-nums; letter-spacing: .5px; }
 .co-titular__nota { font-size: .78rem; color: var(--text-dim); margin-top: 8px; }
+
+/* ---- Paginas legales ---- */
+.legal-fecha { font-size: .8rem; color: var(--text-dim); margin-top: 14px; }
+.legal h2 { font-size: 1.22rem; margin-top: 36px; }
+.legal h2:first-of-type { margin-top: 10px; }
+.legal-aviso { font-size: .9rem; line-height: 1.7; background: #fff8ef; border: 1px solid #f3d9b0; border-left-width: 3px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 14px 16px; margin: 16px 0; color: var(--text); }
+.footer__h4--sep { margin-top: 20px; }

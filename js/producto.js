@@ -232,14 +232,31 @@ const Producto = (() => {
     });
 
     document.getElementById("pr-sh-link").addEventListener("click", async (e) => {
+      const b = e.currentTarget;
+      const url = urlCanonica();
+      const texto = `${prod.nombre} — ${fmt(prod.precio)} en ${CONFIG.marca}`;
+
+      // En celular abre el menú de compartir del sistema: WhatsApp,
+      // Instagram, Mensajes, lo que tenga instalado.
+      if (navigator.share) {
+        try {
+          await navigator.share({ title: prod.nombre, text: texto, url });
+          return;
+        } catch (err) {
+          // Si cerró el menú sin elegir, no es un error: no hacemos nada.
+          if (err && err.name === "AbortError") return;
+          // Cualquier otro fallo cae al plan B de abajo.
+        }
+      }
+
+      // Escritorio (o navegador sin esa función): copiar el enlace.
       try {
-        await navigator.clipboard.writeText(urlCanonica());
-        // El botón ahora es un icono: cambiarle el texto borraría el dibujo,
-        // así que la confirmación se da con un destello de color y el título.
-        const b = e.currentTarget;
+        await navigator.clipboard.writeText(url);
+        // Es un icono: cambiarle el texto borraría el dibujo, así que la
+        // confirmación se da con un destello de color y el título.
         b.classList.add("is-ok");
         b.title = "¡Enlace copiado!";
-        setTimeout(() => { b.classList.remove("is-ok"); b.title = "Copiar enlace"; }, 1800);
+        setTimeout(() => { b.classList.remove("is-ok"); b.title = "Compartir"; }, 1800);
       } catch (err) { /* sin portapapeles: copia la URL a mano */ }
     });
   };

@@ -1306,4 +1306,7 @@ img, video { max-width: 100%; }
 .sresult__link:hover .sresult__name { color: var(--accent); }
 .slide__title a { color: inherit; }
 .slide__title a:hover { color: var(--accent); }
-.slide__media { display: block; }
+/* Igual que en .card__media: NO poner display aquí. La regla original ya es
+   grid con place-items:center y es lo que centra la foto; pisarla con
+   display:block la deja pegada a la izquierda. Un <a> centra igual siendo
+   grid. Este mismo error se cometió dos veces: no repetirlo. */

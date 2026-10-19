@@ -22,7 +22,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=66">
+  <link rel="stylesheet" href="css/styles.css?v=67">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -92,7 +92,6 @@
 
         <!-- ===== Información ===== -->
         <div class="pr-info">
-          <a class="pr-marca" id="pr-marca" href="#" hidden></a>
           <h1 class="pr-nombre" id="pr-nombre">—</h1>
 
           <div class="pr-precios">
@@ -100,10 +99,6 @@
             <span class="pr-precio-old" id="pr-precio-old" hidden></span>
             <span class="pr-dcto" id="pr-dcto" hidden></span>
           </div>
-
-          <p class="pr-stock">
-            <span class="pr-punto" aria-hidden="true"></span> Disponible · envío a todo Honduras
-          </p>
 
           <p class="pr-desc" id="pr-desc"></p>
 
@@ -121,18 +116,24 @@
             Consultar por WhatsApp
           </a>
 
-          <!-- Compartir -->
+          <!-- Compartir: solo dos iconos. El texto y el enlace a Facebook
+               sobraban; la categoría ya está en las migas de pan de arriba. -->
           <div class="pr-compartir">
-            <span class="pr-compartir__txt">Compartir:</span>
-            <a id="pr-sh-wa" href="#" target="_blank" rel="noopener" aria-label="Compartir por WhatsApp">WhatsApp</a>
-            <a id="pr-sh-fb" href="#" target="_blank" rel="noopener" aria-label="Compartir en Facebook">Facebook</a>
-            <button type="button" id="pr-sh-link">Copiar enlace</button>
+            <a class="pr-icono" id="pr-sh-wa" href="#" target="_blank" rel="noopener"
+               aria-label="Compartir por WhatsApp" title="Compartir por WhatsApp">
+              <svg viewBox="0 0 32 32" width="20" height="20" aria-hidden="true" fill="currentColor">
+                <path d="M16 .5C7.4.5.5 7.4.5 16c0 2.8.7 5.4 2 7.7L.5 31.5l8-2.1c2.2 1.2 4.8 1.9 7.5 1.9 8.6 0 15.5-6.9 15.5-15.5S24.6.5 16 .5zm0 28.3c-2.4 0-4.7-.6-6.7-1.8l-.5-.3-4.7 1.2 1.3-4.6-.3-.5c-1.3-2.1-2-4.5-2-6.9C2.4 8.5 8.5 2.4 16 2.4S29.6 8.5 29.6 16 23.5 28.8 16 28.8zm8.3-9.9c-.5-.2-2.7-1.3-3.1-1.5-.4-.2-.7-.2-1 .2-.3.5-1.1 1.5-1.4 1.7-.3.2-.5.3-1 .1-2.7-1.4-4.5-2.4-6.3-5.4-.5-.8.5-.8 1.3-2.5.1-.3.1-.5 0-.7-.1-.2-1-2.4-1.4-3.2-.4-.9-.7-.7-1-.8h-.8c-.3 0-.7.1-1.1.5C8.7 7.6 8 8.5 8 10.3s1.5 3.6 1.7 3.9c.2.3 2.9 4.4 7 6.1 3.7 1.6 3.7 1.1 4.4 1 .7-.1 2.2-.9 2.5-1.7.3-.9.3-1.6.2-1.7-.1-.2-.4-.3-.9-.5z"/>
+              </svg>
+            </a>
+            <button class="pr-icono" type="button" id="pr-sh-link"
+                    aria-label="Copiar enlace del producto" title="Copiar enlace">
+              <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none"
+                   stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                <path d="M8.6 13.5l6.8 4"/><path d="M15.4 6.5l-6.8 4"/>
+              </svg>
+            </button>
           </div>
-
-          <dl class="pr-meta">
-            <div><dt>Categoría</dt><dd id="pr-cat">—</dd></div>
-            <div id="pr-meta-marca" hidden><dt>Marca</dt><dd id="pr-cat-marca">—</dd></div>
-          </dl>
         </div>
       </div>
     </section>
@@ -201,15 +202,15 @@
     </svg>
   </a>
 
-  <script src="assets/vendor/supabase.js?v=66"></script>
-  <script src="js/supabase-config.js?v=66"></script>
-  <script src="js/data.js?v=66"></script>
-  <script src="js/store.js?v=66"></script>
-  <script src="js/confirm.js?v=66"></script>
-  <script src="js/cart.js?v=66"></script>
-  <script src="js/ui.js?v=66"></script>
-  <script src="js/search.js?v=66"></script>
-  <script src="js/main.js?v=66"></script>
-  <script src="js/producto.js?v=66"></script>
+  <script src="assets/vendor/supabase.js?v=67"></script>
+  <script src="js/supabase-config.js?v=67"></script>
+  <script src="js/data.js?v=67"></script>
+  <script src="js/store.js?v=67"></script>
+  <script src="js/confirm.js?v=67"></script>
+  <script src="js/cart.js?v=67"></script>
+  <script src="js/ui.js?v=67"></script>
+  <script src="js/search.js?v=67"></script>
+  <script src="js/main.js?v=67"></script>
+  <script src="js/producto.js?v=67"></script>
 </body>
 </html>

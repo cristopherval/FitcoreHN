@@ -164,7 +164,6 @@ const Producto = (() => {
 
   /* ---------- Ficha ---------- */
   const pintar = () => {
-    const marca = nombreMarca(prod.marca);
     const cat = nombreCategoria(prod.categoria);
     const oferta = prod.precioAnterior && prod.precioAnterior > prod.precio;
 
@@ -188,27 +187,20 @@ const Producto = (() => {
       b.textContent = `-${dcto}%`; b.hidden = false;
     }
 
-    if (marca) {
-      const m = document.getElementById("pr-marca");
-      m.textContent = marca; m.hidden = false;
-      m.href = `index.html#productos`;
-      document.getElementById("pr-meta-marca").hidden = false;
-      document.getElementById("pr-cat-marca").textContent = marca;
-    }
-    document.getElementById("pr-cat").innerHTML = cat
-      ? `<a href="${urlCategoria(prod.categoria)}">${cat}</a>` : "—";
+    // La marca y la categoría ya no se muestran en la ficha: la categoría
+    // está en las migas de pan y la marca seguía apareciendo dos veces.
+    // Se siguen usando para el título, la descripción y los datos
+    // estructurados, que es donde de verdad sirven.
 
     // WhatsApp con el producto ya mencionado
     const msg = `Hola ${CONFIG.marca}! Me interesa: ${prod.nombre} (${fmt(prod.precio)}).`;
     document.getElementById("pr-wa").href =
       `https://wa.me/${CONFIG.whatsapp}?text=${encodeURIComponent(msg)}`;
 
-    // Compartir
+    // Compartir por WhatsApp (el otro icono solo copia el enlace)
     const url = urlCanonica();
     document.getElementById("pr-sh-wa").href =
       `https://wa.me/?text=${encodeURIComponent(prod.nombre + " — " + fmt(prod.precio) + " " + url)}`;
-    document.getElementById("pr-sh-fb").href =
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
 
     pintarGaleria();
   };
@@ -242,9 +234,12 @@ const Producto = (() => {
     document.getElementById("pr-sh-link").addEventListener("click", async (e) => {
       try {
         await navigator.clipboard.writeText(urlCanonica());
+        // El botón ahora es un icono: cambiarle el texto borraría el dibujo,
+        // así que la confirmación se da con un destello de color y el título.
         const b = e.currentTarget;
-        b.textContent = "¡Copiado!";
-        setTimeout(() => (b.textContent = "Copiar enlace"), 1800);
+        b.classList.add("is-ok");
+        b.title = "¡Enlace copiado!";
+        setTimeout(() => { b.classList.remove("is-ok"); b.title = "Copiar enlace"; }, 1800);
       } catch (err) { /* sin portapapeles: copia la URL a mano */ }
     });
   };

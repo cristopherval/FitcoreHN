@@ -1234,16 +1234,12 @@ img, video { max-width: 100%; }
 .pr-mini.is-active { border-color: var(--accent); border-width: 2px; }
 
 /* ---- Información ---- */
-.pr-marca { display: inline-block; font-family: var(--ff-display); font-size: .78rem; text-transform: uppercase; letter-spacing: 1.4px; color: var(--accent); margin-bottom: 6px; }
 .pr-nombre { font-family: var(--ff-display); font-size: clamp(1.6rem, 4.5vw, 2.3rem); line-height: 1.15; margin-bottom: 14px; }
 
 .pr-precios { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
 .pr-precio { font-family: var(--ff-display); font-size: 2.1rem; color: var(--accent); }
 .pr-precio-old { font-size: 1.05rem; color: var(--text-dim); text-decoration: line-through; }
 .pr-dcto { background: var(--accent); color: var(--accent-ink); font-size: .8rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
-
-.pr-stock { display: flex; align-items: center; gap: 8px; font-size: .86rem; color: var(--text-dim); margin-bottom: 20px; }
-.pr-punto { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
 .pr-desc { color: var(--text-dim); line-height: 1.75; margin-bottom: 24px; }
 
@@ -1254,17 +1250,12 @@ img, video { max-width: 100%; }
 .qty--lg .qty__num { min-width: 34px; font-size: 1rem; }
 .pr-add { flex: 1; min-width: 180px; }
 
-/* ---- Compartir ---- */
-.pr-compartir { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); font-size: .84rem; }
-.pr-compartir__txt { color: var(--text-dim); }
-.pr-compartir a, .pr-compartir button { color: var(--text-dim); background: none; border: 0; padding: 0; font-size: .84rem; font-family: var(--ff-body); cursor: pointer; text-decoration: underline; }
-.pr-compartir a:hover, .pr-compartir button:hover { color: var(--accent); }
-
-/* ---- Metadatos ---- */
-.pr-meta { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 8px; }
-.pr-meta > div { display: flex; gap: 10px; font-size: .86rem; }
-.pr-meta dt { color: var(--text-dim); min-width: 84px; }
-.pr-meta dd a { color: var(--accent); }
+/* ---- Compartir: solo dos iconos ---- */
+.pr-compartir { display: flex; align-items: center; gap: 10px; margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--border); }
+.pr-icono { display: grid; place-items: center; width: 42px; height: 42px; border: 1px solid var(--border-2); border-radius: 50%; background: none; color: var(--text-dim); cursor: pointer; padding: 0; transition: border-color .2s, color .2s, transform .2s; }
+.pr-icono:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+/* Confirmación al copiar el enlace, sin ocupar espacio fijo en la página. */
+.pr-icono.is-ok { border-color: var(--accent); color: var(--accent); }
 
 /* ---- Tarjetas del catálogo ahora enlazan ----
    OJO: no poner display aqui. .card__media ya es grid con place-items:center

@@ -1220,7 +1220,11 @@ img, video { max-width: 100%; }
 
 /* ---- Galería ---- */
 .pr-foto { position: relative; background: var(--media-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; display: grid; place-items: center; aspect-ratio: 1 / 1; }
-.pr-foto img { width: 100%; height: 100%; object-fit: contain; padding: 18px; }
+/* Posicionada en absoluto a proposito: con height:100% el navegador no
+   puede resolver el porcentaje porque la altura del contenedor sale de
+   aspect-ratio, y la imagen tomaba su alto natural (487px en una caja de
+   345) desbordando y recortandose. Con inset:0 si resuelve. */
+.pr-foto img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; padding: 18px; }
 .pr-foto .card__badge { top: 14px; left: 14px; }
 
 .pr-miniaturas { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
@@ -1262,8 +1266,10 @@ img, video { max-width: 100%; }
 .pr-meta dt { color: var(--text-dim); min-width: 84px; }
 .pr-meta dd a { color: var(--accent); }
 
-/* ---- Tarjetas del catálogo ahora enlazan ---- */
-.card__media { display: block; }
+/* ---- Tarjetas del catálogo ahora enlazan ----
+   OJO: no poner display aqui. .card__media ya es grid con place-items:center
+   y es lo que centra la foto; pisarlo con display:block la manda a la
+   esquina superior izquierda. Un <a> funciona igual siendo grid. */
 .card__title a { color: inherit; }
 .card__title a:hover { color: var(--accent); }
 
@@ -1295,7 +1301,10 @@ img, video { max-width: 100%; }
 .card { cursor: pointer; }
 .card__title a::after { content: ""; position: absolute; inset: 0; z-index: 1; }
 /* El boton y la insignia quedan por encima del enlace estirado. */
-.card__footer .btn, .card__badge { position: relative; z-index: 2; }
+/* Solo el boton necesita subir de capa. La insignia NO se toca: ya es
+   position:absolute con z-index:2, y ponerla relative la sacaba de su
+   esquina y la mandaba al flujo normal. */
+.card__footer .btn { position: relative; z-index: 2; }
 .card__footer .btn { cursor: pointer; }
 
 /* ---- Resultado de busqueda enlazado ---- */

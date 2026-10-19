@@ -1310,3 +1310,19 @@ img, video { max-width: 100%; }
    grid con place-items:center y es lo que centra la foto; pisarla con
    display:block la deja pegada a la izquierda. Un <a> centra igual siendo
    grid. Este mismo error se cometió dos veces: no repetirlo. */
+
+/* ---- Relacionados: cuadrícula compacta ----
+   No usan la clase "reveal" a propósito: se pintan después de que el
+   observador de animaciones ya corrió, así que nacerían invisibles. */
+.rel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; }
+.rel-card { position: relative; display: flex; flex-direction: column; gap: 8px; padding: 14px 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); color: inherit; transition: border-color .2s, transform .2s, box-shadow .2s; }
+.rel-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: var(--shadow-sm); }
+.rel-card__badge { position: absolute; top: 10px; right: 10px; z-index: 2; background: var(--accent); color: var(--accent-ink); font-family: var(--ff-display); font-weight: 700; font-size: .72rem; padding: 3px 8px; border-radius: 999px; }
+/* La foto manda: fondo claro, cuadrada y con aire para que se vea completa. */
+.rel-card__media { display: grid; place-items: center; background: var(--media-bg); border-radius: var(--radius-sm); aspect-ratio: 1 / 1; padding: 12px; overflow: hidden; }
+.rel-card__media img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; }
+.rel-card__name { font-size: .82rem; font-weight: 600; line-height: 1.35; color: var(--text); }
+.rel-card:hover .rel-card__name { color: var(--accent); }
+.rel-card__precios { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-top: auto; }
+.rel-card__precio { font-family: var(--ff-display); font-size: 1.05rem; color: var(--accent); }
+.rel-card__old { font-size: .78rem; color: var(--text-dim); text-decoration: line-through; }

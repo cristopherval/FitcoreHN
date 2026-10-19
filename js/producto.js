@@ -206,17 +206,47 @@ const Producto = (() => {
   };
 
   /* ---------- Relacionados ---------- */
+  /* Tarjeta compacta: foto grande y clara, nombre y precio. Sin descripción
+     ni botón, que en una fila secundaria solo estorban. */
+  const tarjetaRelacionada = (p) => {
+    const oferta = p.precioAnterior && p.precioAnterior > p.precio;
+    const dcto = oferta ? Math.round((1 - p.precio / p.precioAnterior) * 100) : 0;
+    const url = p.slug
+      ? `producto.html?p=${encodeURIComponent(p.slug)}`
+      : `producto.html?id=${encodeURIComponent(p.id)}`;
+    return `
+      <a class="rel-card" href="${url}">
+        ${oferta ? `<span class="rel-card__badge">-${dcto}%</span>` : ""}
+        <span class="rel-card__media">
+          <img src="${p.imagen}" alt="${p.nombre}" loading="lazy">
+        </span>
+        <span class="rel-card__name">${p.nombre}</span>
+        <span class="rel-card__precios">
+          <span class="rel-card__precio">${fmt(p.precio)}</span>
+          ${oferta ? `<span class="rel-card__old">${fmt(p.precioAnterior)}</span>` : ""}
+        </span>
+      </a>`;
+  };
+
   const pintarRelacionados = () => {
     const cat = nombreCategoria(prod.categoria);
-    const lista = Store.getProductos()
-      .filter(p => p.categoria === prod.categoria && String(p.id) !== String(prod.id))
-      .slice(0, 4);
+    let lista = Store.getProductos()
+      .filter(p => p.categoria === prod.categoria && String(p.id) !== String(prod.id));
+
+    // Si la categoría tiene pocos, se completa con otros productos antes
+    // que dejar la fila a medias o vacía.
+    if (lista.length < 4) {
+      const otros = Store.getProductos()
+        .filter(p => String(p.id) !== String(prod.id) && p.categoria !== prod.categoria);
+      lista = lista.concat(otros);
+    }
+    lista = lista.slice(0, 6);
     if (!lista.length) return;
 
     document.getElementById("pr-rel-titulo").textContent =
       cat ? `Más en ${cat}` : "Productos relacionados";
     document.getElementById("pr-rel-grid").innerHTML =
-      lista.map((p, i) => UI.tarjetaProducto(p, i)).join("");
+      lista.map(tarjetaRelacionada).join("");
     document.getElementById("pr-relacionados").hidden = false;
   };
 

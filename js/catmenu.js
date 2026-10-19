@@ -57,8 +57,7 @@ const CatMenu = (() => {
           <span class="catmenu__nombre">${c.nombre}</span>
           <span class="catmenu__n">${n}</span>
         </a>`;
-    }).join("") +
-      `<a class="catmenu__todas" href="categorias.html">Ver todas con fotos →</a>`;
+    }).join("");
 
     pintado = true;
   };

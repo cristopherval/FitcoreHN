@@ -51,7 +51,9 @@ const Store = (() => {
 
   const mapCategoria = (c) => ({
     id: c.id, nombre: c.nombre, descripcion: c.descripcion || "",
-    imagen: c.imagen_url || ""
+    imagen: c.imagen_url || "",
+    // Clave del icono del mosaico (ver js/iconos.js).
+    icono: c.icono || "bote"
   });
 
   const mapMarca = (m) => ({ id: m.id, nombre: m.nombre });

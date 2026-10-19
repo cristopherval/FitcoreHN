@@ -127,9 +127,12 @@ const UI = (() => {
       // Página dedicada por categoría (mejor SEO); si es nueva, usa la genérica.
       const href = (typeof CATEGORIA_PAGES !== "undefined" && CATEGORIA_PAGES[c.id])
         || `categoria.html?cat=${encodeURIComponent(c.id)}`;
+      // El icono lo eliges en el panel. Si la biblioteca no cargara,
+      // se omite y la tarjeta sigue funcionando.
+      const ico = (typeof iconoSVG === "function") ? iconoSVG(c.icono, 34) : "";
       return `
         <a class="cat reveal ${i % 2 === 0 ? "reveal--left" : "reveal--right"}" href="${href}" style="--rd:${i * 160}ms" aria-label="Ver ${c.nombre}">
-          <div class="cat__media"><img src="${img}" alt="${prod ? prod.nombre : c.nombre}" loading="lazy"></div>
+          <span class="cat__icono">${ico}</span>
           <div class="cat__info">
             <h3 class="cat__name">${c.nombre}</h3>
             <p class="cat__count">${items.length} producto${items.length !== 1 ? "s" : ""}${desde}</p>

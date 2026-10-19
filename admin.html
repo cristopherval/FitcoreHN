@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=73">
+  <link rel="stylesheet" href="css/styles.css?v=74">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -360,6 +360,15 @@
           <label for="fc-desc">Descripción (opcional)</label>
           <textarea id="fc-desc" rows="2" placeholder="Frase corta que describe la categoría"></textarea>
         </div>
+        <!-- Selector de icono: lo pinta adminpanel.js leyendo js/iconos.js,
+             asi que agregar un icono nuevo alla lo hace aparecer aqui solo. -->
+        <div class="form__row">
+          <label>Icono de la categoría</label>
+          <small class="muted">Es lo que se ve en el mosaico de la portada.</small>
+          <input type="hidden" id="fc-icono">
+          <div class="icon-picker" id="fc-iconos"></div>
+        </div>
+
         <div class="form__row">
           <label for="fc-foto">Imagen de la categoría (opcional)</label>
           <input id="fc-foto" type="file" accept="image/*">
@@ -396,11 +405,12 @@
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/vendor/supabase.js?v=73"></script>
-  <script src="js/supabase-config.js?v=73"></script>
-  <script src="js/data.js?v=73"></script>
-  <script src="js/confirm.js?v=73"></script>
-  <script src="js/adminpanel.js?v=73"></script>
-  <script src="js/adminpedidos.js?v=73"></script>
+  <script src="assets/vendor/supabase.js?v=74"></script>
+  <script src="js/supabase-config.js?v=74"></script>
+  <script src="js/data.js?v=74"></script>
+  <script src="js/confirm.js?v=74"></script>
+  <script src="js/iconos.js?v=74"></script>
+  <script src="js/adminpanel.js?v=74"></script>
+  <script src="js/adminpedidos.js?v=74"></script>
 </body>
 </html>

@@ -156,6 +156,34 @@ const Admin = (() => {
   /* ---------- Categorías: formulario ---------- */
   const catModal = () => document.getElementById("cat-modal");
 
+
+  /* ---------- Selector de icono de categoría ---------- */
+  /* Los dibujos viven en js/iconos.js. Agregar uno allá lo hace aparecer
+     acá solo, sin tocar este archivo ni el HTML. */
+
+  const pintarIconos = (elegido) => {
+    const cont = document.getElementById("fc-iconos");
+    if (!cont || typeof ICONOS === "undefined") return;
+
+    const claves = Object.keys(ICONOS);
+    const actual = claves.includes(elegido) ? elegido : claves[0];
+    document.getElementById("fc-icono").value = actual;
+
+    cont.innerHTML = claves.map(k => `
+      <button type="button" class="icon-opt${k === actual ? " is-active" : ""}"
+              data-icono="${k}" title="${ICONOS[k].nombre}"
+              aria-label="${ICONOS[k].nombre}">
+        ${iconoSVG(k, 24)}
+      </button>`).join("");
+
+    cont.querySelectorAll("[data-icono]").forEach(b => {
+      b.addEventListener("click", () => {
+        document.getElementById("fc-icono").value = b.dataset.icono;
+        cont.querySelectorAll(".icon-opt").forEach(x =>
+          x.classList.toggle("is-active", x === b));
+      });
+    });
+  };
   const abrirFormCat = (id) => {
     const c = id ? categorias.find(x => x.id === id) : null;
     document.getElementById("cat-modal-title").textContent = c ? "Editar categoría" : "Agregar categoría";
@@ -167,6 +195,8 @@ const Admin = (() => {
     const prev = document.getElementById("fc-preview");
     if (c && c.imagen_url) { prev.src = c.imagen_url; prev.hidden = false; }
     else { prev.hidden = true; prev.removeAttribute("src"); }
+
+    pintarIconos(c ? c.icono : null);
 
     catModal().classList.add("is-open");
   };
@@ -196,6 +226,9 @@ const Admin = (() => {
 
       btn.disabled = true; btn.textContent = "Guardando…";
       try {
+        // Icono elegido en el selector (clave de js/iconos.js).
+        const icono = document.getElementById("fc-icono").value || "bote";
+
         // Reusa la subida al bucket del formulario de productos.
         let imagen_url;
         if (file) imagen_url = await subirFoto(file);

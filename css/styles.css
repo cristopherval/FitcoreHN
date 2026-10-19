@@ -1367,3 +1367,26 @@ img, video { max-width: 100%; }
   }
   .catmenu.is-open { transform: translate(-50%, 0); }
 }
+
+/* =========================================================================
+   25. CATEGORÍAS CON ICONO (mosaico de la portada + selector del panel)
+   -------------------------------------------------------------------------
+   El mosaico pasó de la foto de un producto a un icono: la foto del primer
+   producto no representa a la categoría y además cambiaba sola al reordenar
+   productos. El icono es estable y se ve nítido en cualquier pantalla.
+   ========================================================================= */
+.cat__icono {
+  display: grid; place-items: center;
+  width: 76px; height: 76px; margin: 26px auto 4px;
+  border-radius: 50%; color: var(--accent);
+  border: 2px solid var(--accent);
+  background: var(--accent-soft);
+  transition: transform .3s var(--ease), background .3s;
+}
+.cat:hover .cat__icono { transform: scale(1.07); background: #fff; }
+
+/* ---- Selector de iconos en el panel ---- */
+.icon-picker { display: grid; grid-template-columns: repeat(auto-fill, minmax(46px, 1fr)); gap: 8px; margin-top: 8px; }
+.icon-opt { display: grid; place-items: center; aspect-ratio: 1/1; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-dim); cursor: pointer; padding: 0; transition: border-color .2s, color .2s, background .2s; }
+.icon-opt:hover { border-color: var(--accent); color: var(--accent); }
+.icon-opt.is-active { border-color: var(--accent); border-width: 2px; color: var(--accent); background: var(--accent-soft); }

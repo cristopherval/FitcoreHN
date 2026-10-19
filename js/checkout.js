@@ -126,9 +126,19 @@ const Checkout = (() => {
     activarCopiar(cont);
   };
 
-  /* Copiar al portapapeles, compartido por cuentas e identidad. */
+  /* Copiar al portapapeles, compartido por cuentas e identidad.
+     Recorre los botones que lleven data-copiar dentro del contenedor. */
   const activarCopiar = (cont) => {
-    activarCopiar(cont);
+    cont.querySelectorAll("[data-copiar]").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(btn.dataset.copiar);
+          const antes = btn.textContent;
+          btn.textContent = "¡Copiado!";
+          setTimeout(() => (btn.textContent = antes), 1800);
+        } catch (e) { /* navegadores viejos: lo copia a mano */ }
+      });
+    });
   };
   /* ---------- Cuentas bancarias ---------- */
   const pintarCuentas = () => {
@@ -150,16 +160,7 @@ const Checkout = (() => {
         <span class="pd-cuenta__meta">${c.tipo}</span>
       </div>`).join("");
 
-    cont.querySelectorAll("[data-copiar]").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(btn.dataset.copiar);
-          const antes = btn.textContent;
-          btn.textContent = "¡Copiado!";
-          setTimeout(() => (btn.textContent = antes), 1800);
-        } catch (e) { /* navegadores viejos: lo copia a mano */ }
-      });
-    });
+    activarCopiar(cont);
   };
 
   /* ---------- Zonas de envío ---------- */

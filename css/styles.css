@@ -771,11 +771,14 @@ img, video { max-width: 100%; }
   /* #2 — Ofertas: flechas SUTILES superpuestas (indican que se puede deslizar) */
   .carousel { gap: 0; position: relative; }
   .carousel__viewport { width: 100%; }
+  /* Van sobre la FOTO, no sobre el centro de la tarjeta: con top:50% caían
+     encima del título, que en móvil ocupa dos líneas. La foto mide 200px,
+     así que 100px la centra justo ahí, donde además deslizar es intuitivo. */
   .carousel__arrow {
-    display: grid; position: absolute; top: 50%; transform: translateY(-50%);
+    display: grid; position: absolute; top: 100px; transform: translateY(-50%);
     width: 34px; height: 34px; font-size: 1.5rem; z-index: 3;
-    background: rgba(255,255,255,.5); color: var(--text); backdrop-filter: blur(2px);
-    border: none; box-shadow: none; opacity: .55;
+    background: rgba(255,255,255,.72); color: var(--text); backdrop-filter: blur(2px);
+    border: none; box-shadow: 0 2px 8px rgba(17,19,24,.12); opacity: .75;
   }
   .carousel__arrow--prev { left: 4px; }
   .carousel__arrow--next { right: 4px; animation: nudge 2s ease-in-out infinite; opacity: .7; }

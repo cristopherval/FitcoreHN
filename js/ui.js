@@ -249,6 +249,18 @@ const UI = (() => {
     document.head.appendChild(s);
   };
 
+  /* El video del destacado lleva a su producto. El slug va en el HTML, pero
+     si ese producto deja de existir (se renombra o se da de baja) el enlace
+     cae en la pagina de creatinas en vez de dar un producto no encontrado. */
+  const enlazarDestacado = () => {
+    const a = document.getElementById("creatine-spot-link");
+    if (!a) return;
+    const slug = a.dataset.slug;
+    const prod = Store.getProductos().find(p => p.slug === slug);
+    if (prod) a.href = urlProducto(prod);
+    else a.href = a.dataset.fallback || "creatinas.html";
+  };
+
   /* Punto de entrada para la home. */
   const initHome = () => {
     renderCarrusel();
@@ -256,6 +268,7 @@ const UI = (() => {
     renderProductos();
     renderTestimonios();
     renderShowcase();
+    enlazarDestacado();
     initCommon();
     injectProductsJsonLd(Store.getProductos(), "Catálogo FITCORE HN");
   };

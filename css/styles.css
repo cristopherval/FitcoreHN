@@ -679,6 +679,10 @@ body.admin-on .navbar { top: 48px; }
 /* Video: fondo transparente para fundirse con el blanco del propio video */
 .feature-spot__media { order: -1; position: relative; background: transparent; }
 .feature-spot__video { display: block; width: 100%; height: auto; border-radius: var(--radius); }
+/* El video es un enlace al producto: se comporta como bloque y reacciona al toque. */
+a.feature-spot__media { display: block; cursor: pointer; }
+a.feature-spot__media .feature-spot__video { transition: transform .35s var(--ease); }
+a.feature-spot__media:hover .feature-spot__video { transform: scale(1.03); }
 
 /* Lista de beneficios (tema claro) */
 .feature-list { display: flex; flex-direction: column; gap: 2px; }

@@ -1337,13 +1337,16 @@ img, video { max-width: 100%; }
    anclada abajo, justo encima de esa barra; en escritorio, como desplegable
    bajo la cabecera.
    ========================================================================= */
+/* En celular ocupa TODA la pantalla: con varias categorias, una hoja
+   pequena obliga a desplazar dentro de un recuadro. A pantalla completa
+   se recorre como una lista normal. En escritorio vuelve a ser
+   desplegable (ver la media query mas abajo). */
 .catmenu {
-  position: fixed; left: 12px; right: 12px; bottom: 74px; z-index: 80;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: var(--radius); box-shadow: var(--shadow);
-  max-height: 68vh; overflow-y: auto;
-  opacity: 0; visibility: hidden; transform: translateY(12px);
-  transition: opacity .2s var(--ease), transform .2s var(--ease), visibility .2s;
+  position: fixed; inset: 0; z-index: 90;
+  background: var(--surface);
+  display: flex; flex-direction: column;
+  opacity: 0; visibility: hidden; transform: translateY(14px);
+  transition: opacity .22s var(--ease), transform .22s var(--ease), visibility .22s;
 }
 .catmenu.is-open { opacity: 1; visibility: visible; transform: none; }
 
@@ -1400,3 +1403,32 @@ img, video { max-width: 100%; }
 .cat .cat__icono { margin: 28px auto 14px; }
 .cat .cat__name { font-size: 1.15rem; font-family: var(--ff-display); text-transform: uppercase; letter-spacing: .5px; margin: 0; padding: 0 16px; }
 .cat:hover .cat__name { color: var(--accent); }
+
+/* ---- Menú de categorías a pantalla completa (celular) ----
+   Cabecera oscura y fija arriba, lista ocupando el resto y desplazándose
+   sola. El relleno inferior deja ver el último ítem por encima de la barra
+   de navegación del celular. */
+.catmenu__head {
+  background: var(--dark); color: #fff; border-bottom: 0;
+  padding: 18px; font-size: 1rem; flex-shrink: 0; position: static;
+}
+.catmenu__close { color: rgba(255,255,255,.75); font-size: 1.3rem; }
+.catmenu__close:hover { color: #fff; }
+.catmenu__lista { flex: 1; overflow-y: auto; padding-bottom: 86px; }
+.catmenu__item { padding: 18px; font-size: 1rem; }
+
+@media (min-width: 900px) {
+  /* En escritorio vuelve a ser un desplegable bajo la cabecera. */
+  .catmenu {
+    inset: auto; left: 50%; top: 72px;
+    width: 300px; max-height: 72vh; display: block;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); overflow-y: auto;
+    transform: translate(-50%, 12px);
+  }
+  .catmenu.is-open { transform: translate(-50%, 0); }
+  .catmenu__head { background: var(--surface); color: var(--text); border-bottom: 1px solid var(--border); padding: 14px 16px; font-size: .85rem; position: sticky; top: 0; }
+  .catmenu__close { color: var(--text-dim); font-size: 1rem; }
+  .catmenu__lista { padding-bottom: 0; overflow: visible; }
+  .catmenu__item { padding: 14px 16px; font-size: .95rem; }
+}

@@ -67,6 +67,8 @@ const CatMenu = (() => {
   const abrir = () => {
     pintar();
     panel.classList.add("is-open");
+    // Evita que el fondo se desplace detras del menu a pantalla completa.
+    document.body.style.overflow = "hidden";
     document.querySelectorAll("[data-catmenu]").forEach(b =>
       b.setAttribute("aria-expanded", "true"));
   };
@@ -74,6 +76,7 @@ const CatMenu = (() => {
   const cerrar = () => {
     if (!panel) return;
     panel.classList.remove("is-open");
+    document.body.style.overflow = "";
     document.querySelectorAll("[data-catmenu]").forEach(b =>
       b.setAttribute("aria-expanded", "false"));
   };

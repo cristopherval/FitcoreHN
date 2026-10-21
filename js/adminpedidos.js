@@ -88,22 +88,22 @@ const AdminPedidos = (() => {
       const e = ESTADOS[p.estado] || { txt: p.estado, clase: "" };
       return `
         <tr data-id="${p.id}">
-          <td><strong>#${p.numero}</strong></td>
-          <td class="muted">${fecha(p.creado_at)}</td>
-          <td>
+          <td data-label="Pedido"><strong>#${p.numero}</strong></td>
+          <td data-label="Fecha" class="muted">${fecha(p.creado_at)}</td>
+          <td data-label="Cliente">
             ${p.cliente_nombre}
             <br><small class="muted">${p.cliente_telefono}</small>
           </td>
-          <td><small>${p.zona_nombre || "—"}</small></td>
-          <td><strong>${fmt(p.total)}</strong></td>
-          <td>
+          <td data-label="Entrega"><small>${p.zona_nombre || "—"}</small></td>
+          <td data-label="Total"><strong>${fmt(p.total)}</strong></td>
+          <td data-label="Estado">
             <span class="pd-badge ${e.clase}">${e.txt}</span>
             ${(p.estado === "nueva" && p.metodo_pago === "transferencia" && !p.voucher_path)
                 ? '<br><span class="pd-badge is-error ped-sincomp">Sin comprobante</span>' : ""}
             ${p.metodo_pago === "whatsapp"
                 ? '<br><span class="pd-badge ped-sincomp">Por WhatsApp</span>' : ""}
           </td>
-          <td>
+          <td data-label="" class="acciones">
             <button class="btn btn--ghost btn--sm" data-ver="${p.id}">Ver</button>
           </td>
         </tr>`;

@@ -399,7 +399,12 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 .table th, .table td { text-align: left; padding: 12px 10px; border-bottom: 1px solid var(--border); font-size: .9rem; }
 .table th { font-family: var(--ff-display); text-transform: uppercase; letter-spacing: 1px; font-size: .76rem; color: var(--text-dim); }
 .table .thumb { width: 48px; height: 48px; object-fit: contain; background: var(--media-bg); border-radius: 6px; padding: 3px; }
-.acciones { display: flex; gap: 8px; white-space: nowrap; }
+/* Sin display:flex: un <td> flex se sale del renglon de la tabla y su linea
+   inferior se dibuja a su propia altura, desalineada del resto. Los botones
+   se alinean solos siendo en linea. */
+.acciones { white-space: nowrap; }
+.acciones > * { vertical-align: middle; }
+.acciones > * + * { margin-left: 8px; }
 
 .modal { position: fixed; inset: 0; background: rgba(8,9,12,.5); backdrop-filter: blur(3px); display: grid; place-items: center; padding: 20px; z-index: 100; opacity: 0; visibility: hidden; transition: .25s; }
 .modal.is-open { opacity: 1; visibility: visible; }
@@ -961,7 +966,9 @@ img, video { max-width: 100%; }
   .table .thumb { width: 96px; height: 96px; }
 
   .celda-secciones { flex-wrap: wrap; justify-content: flex-end; }
+  /* Aqui la celda si es flex (la tabla es tarjetas): manda el gap. */
   .acciones { flex-wrap: wrap; }
+  .acciones > * + * { margin-left: 0; }
   .acciones .btn { flex: 1 1 40%; justify-content: center; }
 
   /* --- Formulario en pantalla completa y cómodo --- */

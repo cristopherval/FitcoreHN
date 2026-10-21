@@ -58,6 +58,11 @@ const Cart = (() => {
     render();
   };
 
+  /* URL de la ficha del producto (slug si existe, si no el id). */
+  const urlFicha = (l) => l.slug
+    ? `producto.html?p=${encodeURIComponent(l.slug)}`
+    : `producto.html?id=${encodeURIComponent(l.id)}`;
+
   /* Devuelve líneas enriquecidas con datos del producto + subtotal. */
   const lineas = () => {
     return Store.getCarrito().map(item => {
@@ -94,9 +99,9 @@ const Cart = (() => {
     } else {
       cont.innerHTML = els.map(l => `
         <article class="cart-item" data-id="${l.id}">
-          <img class="cart-item__img" src="${l.imagen}" alt="${l.nombre}" loading="lazy" width="64" height="64">
+          <a class="cart-item__foto" href="${urlFicha(l)}" aria-label="Ver ${l.nombre}"><img class="cart-item__img" src="${l.imagen}" alt="${l.nombre}" loading="lazy" width="64" height="64"></a>
           <div class="cart-item__info">
-            <h4 class="cart-item__name">${l.nombre}</h4>
+            <h4 class="cart-item__name"><a href="${urlFicha(l)}">${l.nombre}</a></h4>
             <span class="cart-item__price">${fmt(l.precio)}</span>
             <div class="qty">
               <button class="qty__btn" data-action="dec" aria-label="Quitar uno">−</button>

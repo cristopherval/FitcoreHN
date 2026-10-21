@@ -314,6 +314,9 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 .cart-empty__hint { font-size: .82rem; }
 
 .cart-item { display: grid; grid-template-columns: 64px 1fr auto; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--border); }
+.cart-item__foto { display: block; }
+.cart-item__name a { color: inherit; }
+.cart-item__name a:hover { color: var(--accent); }
 .cart-item__img { width: 64px; height: 64px; object-fit: contain; background: var(--media-bg); border-radius: var(--radius-sm); padding: 4px; }
 .cart-item__name { font-size: .92rem; font-family: var(--ff-body); font-weight: 600; text-transform: none; letter-spacing: 0; line-height: 1.2; }
 .cart-item__price { font-size: .8rem; color: var(--text-dim); }

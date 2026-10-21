@@ -56,7 +56,7 @@ const Finanzas = (() => {
   const cargar = async () => {
     const [ped, prod, zon] = await Promise.all([
       sb.from("pedidos").select("*").eq("estado", "entregada").order("creado_at", { ascending: false }),
-      sb.from("productos").select("id,nombre,precio").order("nombre", { ascending: true }),
+      sb.from("productos").select("id,nombre,precio,imagen_url").order("nombre", { ascending: true }),
       sb.from("zonas_envio").select("*").order("orden", { ascending: true })
     ]);
 
@@ -161,34 +161,32 @@ const Finanzas = (() => {
     if (!cont) return;
 
     if (!lineas.length) {
-      cont.innerHTML = `<p class="muted">Sin productos. Agrega al menos uno.</p>`;
+      cont.innerHTML = `<p class="muted">Sin productos. Pulsa "Elegir productos".</p>`;
       recalcular();
       return;
     }
 
-    cont.innerHTML = lineas.map((l, i) => `
+    cont.innerHTML = lineas.map((l, i) => {
+      const p = catalogo.find(x => x.id === l.producto_id);
+      const foto = (p && p.imagen_url) || "";
+      return `
       <div class="venta-linea" data-i="${i}">
-        <select data-campo="producto" aria-label="Producto">
-          <option value="">— Elegir producto —</option>
-          ${catalogo.map(p => `<option value="${p.id}" ${p.id === l.producto_id ? "selected" : ""}>${p.nombre}</option>`).join("")}
-        </select>
+        <span class="venta-linea__prod">
+          ${foto ? `<img class="thumb" src="${foto}" alt="">` : `<span class="thumb"></span>`}
+          <span class="venta-linea__nombre">${l.nombre || "(sin nombre)"}</span>
+        </span>
         <input type="number" data-campo="cantidad" min="1" step="1" value="${l.cantidad}" aria-label="Cantidad">
         <input type="number" data-campo="precio" min="0" step="1" value="${l.precio}" aria-label="Precio unitario">
         <span class="venta-linea__sub">${fmt(l.precio * l.cantidad)}</span>
         <button type="button" class="btn-ojo" data-quitar="${i}" title="Quitar" aria-label="Quitar producto">✕</button>
-      </div>`).join("");
+      </div>`;
+    }).join("");
 
     cont.querySelectorAll("[data-campo]").forEach(el => {
       el.addEventListener("change", () => {
         const i = Number(el.closest(".venta-linea").dataset.i);
         const campo = el.dataset.campo;
-        if (campo === "producto") {
-          const p = catalogo.find(x => x.id === el.value);
-          lineas[i].producto_id = el.value || null;
-          lineas[i].nombre = p ? p.nombre : "";
-          // Al elegir producto se trae su precio actual, pero queda editable.
-          if (p) lineas[i].precio = Number(p.precio);
-        } else if (campo === "cantidad") {
+        if (campo === "cantidad") {
           lineas[i].cantidad = Math.max(1, Number(el.value) || 1);
         } else {
           lineas[i].precio = Math.max(0, Number(el.value) || 0);
@@ -215,6 +213,63 @@ const Finanzas = (() => {
     document.getElementById("v-envio-txt").textContent = fmt(envio);
     document.getElementById("v-total").textContent = fmt(sub + envio);
     return { sub, envio, total: sub + envio };
+  };
+
+  /* ---------- Selector de productos ----------
+     Una lista con foto, nombre y precio donde se marcan varios de una vez.
+     Lo que ya está en la venta aparece marcado: desmarcarlo lo quita. */
+  let seleccion = new Set();
+
+  const pickerModal = () => document.getElementById("picker-modal");
+
+  const pintarPicker = () => {
+    const q = (document.getElementById("pp-buscar").value || "").trim().toLowerCase();
+    const lista = q ? catalogo.filter(p => p.nombre.toLowerCase().includes(q)) : catalogo;
+    const cont = document.getElementById("pp-lista");
+
+    cont.innerHTML = lista.length
+      ? lista.map(p => `
+          <button type="button" class="pp-item${seleccion.has(p.id) ? " is-sel" : ""}" data-pick="${p.id}">
+            ${p.imagen_url ? `<img class="thumb" src="${p.imagen_url}" alt="">` : `<span class="thumb"></span>`}
+            <span class="pp-item__nombre">${p.nombre}</span>
+            <span class="pp-item__precio">${fmt(p.precio)}</span>
+            <span class="pp-item__check" aria-hidden="true">✓</span>
+          </button>`).join("")
+      : `<p class="muted">Ningún producto coincide.</p>`;
+
+    cont.querySelectorAll("[data-pick]").forEach(b =>
+      b.addEventListener("click", () => {
+        const id = b.dataset.pick;
+        if (seleccion.has(id)) seleccion.delete(id); else seleccion.add(id);
+        pintarPicker();
+      }));
+
+    const n = seleccion.size;
+    document.getElementById("pp-conteo").textContent =
+      n === 0 ? "Ninguno seleccionado" : (n === 1 ? "1 producto" : `${n} productos`);
+  };
+
+  const abrirPicker = () => {
+    seleccion = new Set(lineas.filter(l => l.producto_id).map(l => l.producto_id));
+    document.getElementById("pp-buscar").value = "";
+    pintarPicker();
+    pickerModal().classList.add("is-open");
+  };
+
+  const cerrarPicker = () => pickerModal().classList.remove("is-open");
+
+  /* Al confirmar: se conservan las líneas que siguen marcadas (con su
+     cantidad y su precio ya tocados) y se agregan las nuevas. */
+  const aplicarPicker = () => {
+    const quedan = lineas.filter(l => l.producto_id && seleccion.has(l.producto_id));
+    const yaEstan = new Set(quedan.map(l => l.producto_id));
+    const nuevas = [...seleccion].filter(id => !yaEstan.has(id)).map(id => {
+      const p = catalogo.find(x => x.id === id);
+      return { producto_id: id, nombre: p.nombre, precio: Number(p.precio), cantidad: 1 };
+    });
+    lineas = [...quedan, ...nuevas];
+    cerrarPicker();
+    pintarLineas();
   };
 
   /* ---------- Abrir / cerrar el formulario ---------- */
@@ -265,7 +320,7 @@ const Finanzas = (() => {
         precio: Number(i.precio), cantidad: Number(i.cantidad)
       }));
     } else {
-      lineas = [{ producto_id: null, nombre: "", precio: 0, cantidad: 1 }];
+      lineas = [];
     }
     pintarLineas();
 
@@ -378,10 +433,11 @@ const Finanzas = (() => {
     document.getElementById("venta-close").addEventListener("click", cerrar);
     document.getElementById("btn-cancel-venta").addEventListener("click", cerrar);
     document.getElementById("v-envio").addEventListener("input", recalcular);
-    document.getElementById("v-add-linea").addEventListener("click", () => {
-      lineas.push({ producto_id: null, nombre: "", precio: 0, cantidad: 1 });
-      pintarLineas();
-    });
+    document.getElementById("v-add-linea").addEventListener("click", abrirPicker);
+    document.getElementById("pp-close").addEventListener("click", cerrarPicker);
+    document.getElementById("pp-cancel").addEventListener("click", cerrarPicker);
+    document.getElementById("pp-ok").addEventListener("click", aplicarPicker);
+    document.getElementById("pp-buscar").addEventListener("input", pintarPicker);
 
     const enlazar = (id, evento, fn) => {
       const el = document.getElementById(id);

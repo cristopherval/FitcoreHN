@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=89">
+  <link rel="stylesheet" href="css/styles.css?v=90">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -592,7 +592,7 @@
         <div class="form__row form__row--full">
           <label>Productos</label>
           <div class="venta-lineas" id="v-lineas"></div>
-          <button type="button" class="btn btn--ghost btn--sm" id="v-add-linea">+ Agregar producto</button>
+          <button type="button" class="btn btn--ghost btn--sm" id="v-add-linea">+ Elegir productos</button>
         </div>
 
         <div class="form__row form__row--full">
@@ -617,14 +617,31 @@
     </div>
   </div>
 
-  <script src="assets/vendor/supabase.js?v=89"></script>
-  <script src="js/supabase-config.js?v=89"></script>
-  <script src="js/data.js?v=89"></script>
-  <script src="js/confirm.js?v=89"></script>
-  <script src="js/iconos.js?v=89"></script>
-  <script src="js/admintabs.js?v=89"></script>
-  <script src="js/adminpanel.js?v=89"></script>
-  <script src="js/adminpedidos.js?v=89"></script>
-  <script src="js/adminfinanzas.js?v=89"></script>
+  <!-- ===== MODAL: elegir productos para una venta ===== -->
+  <div class="modal" id="picker-modal">
+    <div class="modal__box modal__box--wide">
+      <button type="button" class="modal__close" id="pp-close" aria-label="Cerrar">✕</button>
+      <h3 class="modal__title">Elegir productos</h3>
+      <input type="search" id="pp-buscar" class="pp-buscar" placeholder="Buscar por nombre…" autocomplete="off">
+      <div class="pp-lista" id="pp-lista"></div>
+      <div class="pp-pie">
+        <span class="muted" id="pp-conteo">Ninguno seleccionado</span>
+        <div class="pp-pie__botones">
+          <button type="button" class="btn btn--ghost btn--sm" id="pp-cancel">Cancelar</button>
+          <button type="button" class="btn btn--accent btn--sm" id="pp-ok">Listo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/vendor/supabase.js?v=90"></script>
+  <script src="js/supabase-config.js?v=90"></script>
+  <script src="js/data.js?v=90"></script>
+  <script src="js/confirm.js?v=90"></script>
+  <script src="js/iconos.js?v=90"></script>
+  <script src="js/admintabs.js?v=90"></script>
+  <script src="js/adminpanel.js?v=90"></script>
+  <script src="js/adminpedidos.js?v=90"></script>
+  <script src="js/adminfinanzas.js?v=90"></script>
 </body>
 </html>

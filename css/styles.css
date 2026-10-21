@@ -1878,3 +1878,9 @@ img, video { max-width: 100%; }
   .cli-compra { grid-template-columns: 48px minmax(0, 1fr) auto; }
   .cli-compra .pd-badge { grid-column: 2; justify-self: start; }
 }
+
+/* Credito del desarrollador, bajo el aviso de derechos. Discreto a proposito:
+   acompana, no compite con la marca de la tienda. */
+.footer__autor { margin-top: 4px; font-size: .78rem; }
+.footer__autor a { color: #a9adb4; border-bottom: 1px solid rgba(255,255,255,.18); }
+.footer__autor a:hover { color: var(--accent); border-bottom-color: var(--accent); }

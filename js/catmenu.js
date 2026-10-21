@@ -42,7 +42,6 @@ const CatMenu = (() => {
   const pintar = () => {
     if (pintado || typeof Store === "undefined") return;
     const cats = Store.getCategorias();
-    const productos = Store.getProductos();
     const cont = panel.querySelector(".catmenu__lista");
 
     if (!cats.length) {
@@ -50,14 +49,10 @@ const CatMenu = (() => {
       return;
     }
 
-    cont.innerHTML = cats.map(c => {
-      const n = productos.filter(p => p.categoria === c.id).length;
-      return `
-        <a class="catmenu__item" href="${urlCategoria(c.id)}">
-          <span class="catmenu__nombre">${c.nombre}</span>
-          <span class="catmenu__n">${n}</span>
-        </a>`;
-    }).join("");
+    cont.innerHTML = cats.map(c => `
+      <a class="catmenu__item" href="${urlCategoria(c.id)}">
+        <span class="catmenu__nombre">${c.nombre}</span>
+      </a>`).join("");
 
     pintado = true;
   };

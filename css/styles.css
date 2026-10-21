@@ -365,7 +365,7 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 /* Formularios (compartido contacto + admin) */
 .form { display: flex; flex-direction: column; gap: 16px; margin-top: 18px; }
 .form--grid { display: grid; gap: 16px; grid-template-columns: 1fr 1fr; }
-.form__row { display: flex; flex-direction: column; gap: 6px; }
+.form__row { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .form__row--full { grid-column: 1 / -1; }
 .form__row--check { justify-content: center; }
 .form__row label { font-size: .82rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; font-family: var(--ff-display); }
@@ -1723,3 +1723,8 @@ img, video { max-width: 100%; }
   .table--ventas td[data-label="Pago"] { order: 6; flex: 1 1 auto; font-size: .78rem; color: var(--text-dim); }
   .table--ventas td.acciones { order: 7; flex: 0 0 auto; margin-left: auto; }
 }
+
+/* El formulario de venta lleva dos columnas y ademas los renglones de
+   producto: con el ancho de los otros modales quedaba apretado. */
+#venta-modal .modal__box--wide { max-width: 780px; }
+#venta-modal .venta-linea { min-width: 0; }

@@ -32,8 +32,14 @@ const Finanzas = (() => {
      excluido, para no perder ni duplicar la venta del último día. */
   const rango = () => {
     const hoy = new Date();
-    const y = hoy.getFullYear(), m = hoy.getMonth();
+    const y = hoy.getFullYear(), m = hoy.getMonth(), d = hoy.getDate();
     switch (vista.periodo) {
+      case "hoy":        return [new Date(y, m, d), new Date(y, m, d + 1)];
+      // La semana empieza el lunes: getDay() da 0 para domingo.
+      case "semana": {
+        const lunes = new Date(y, m, d - ((hoy.getDay() + 6) % 7));
+        return [lunes, new Date(y, m, lunes.getDate() + 7)];
+      }
       case "mes":        return [new Date(y, m, 1), new Date(y, m + 1, 1)];
       case "mes-pasado": return [new Date(y, m - 1, 1), new Date(y, m, 1)];
       case "anio":       return [new Date(y, 0, 1), new Date(y + 1, 0, 1)];
@@ -56,7 +62,7 @@ const Finanzas = (() => {
   const cargar = async () => {
     const [ped, prod, zon] = await Promise.all([
       sb.from("pedidos").select("*").eq("estado", "entregada").order("creado_at", { ascending: false }),
-      sb.from("productos").select("id,nombre,precio,imagen_url").order("nombre", { ascending: true }),
+      sb.from("productos").select("id,nombre,precio,costo,imagen_url").order("nombre", { ascending: true }),
       sb.from("zonas_envio").select("*").order("orden", { ascending: true })
     ]);
 
@@ -68,8 +74,34 @@ const Finanzas = (() => {
     ventas = ped.data || [];
     catalogo = prod.data || [];
     zonas = zon.data || [];
+    await cargarCostos();
     pintar();
   };
+
+  /* Por cada venta, cuánto se cobró en producto y cuánto costó. El envío no
+     entra: no es mercadería, se cobra para cubrir la entrega. */
+  let costoPorVenta = {};
+
+  const cargarCostos = async () => {
+    costoPorVenta = {};
+    const ids = ventas.map(v => v.id);
+    if (!ids.length) return;
+
+    const { data, error } = await sb.from("pedido_items")
+      .select("pedido_id,precio,costo,cantidad").in("pedido_id", ids);
+
+    // Si falta la columna (no se corrió costos.sql) se sigue sin utilidades.
+    if (error) { costosListos = false; return; }
+    costosListos = true;
+
+    (data || []).forEach(i => {
+      const r = costoPorVenta[i.pedido_id] || (costoPorVenta[i.pedido_id] = { venta: 0, costo: 0 });
+      r.venta += Number(i.precio) * Number(i.cantidad);
+      r.costo += Number(i.costo || 0) * Number(i.cantidad);
+    });
+  };
+
+  let costosListos = true;
 
   /* ---------- Lista y resumen ---------- */
   const filtradas = () => {
@@ -88,28 +120,89 @@ const Finanzas = (() => {
   const pintarResumen = (lista) => {
     const cont = document.getElementById("fin-resumen");
     if (!cont) return;
+
     const total = lista.reduce((a, v) => a + Number(v.total || 0), 0);
     const envios = lista.reduce((a, v) => a + Number(v.envio || 0), 0);
-    const n = lista.length;
-    // El promedio sin ventas es 0, no "NaN".
-    const promedio = n ? Math.round(total / n) : 0;
+    const costo = lista.reduce((a, v) => a + ((costoPorVenta[v.id] || {}).costo || 0), 0);
+    const enProducto = lista.reduce((a, v) => a + ((costoPorVenta[v.id] || {}).venta || 0), 0);
+    const utilidad = enProducto - costo;
+    const margen = enProducto ? Math.round((utilidad / enProducto) * 100) : 0;
+
+    // Sin costos cargados la utilidad sería igual a la venta, que es mentira.
+    const hayCostos = costosListos && costo > 0;
 
     cont.innerHTML = `
       <div class="fin-card fin-card--fuerte">
+        <span class="fin-card__label">Utilidad</span>
+        <strong class="fin-card__valor">${hayCostos ? fmt(utilidad) : "—"}</strong>
+        <span class="fin-card__pie">${hayCostos
+          ? `${margen}% de lo vendido · + ${fmt(envios)} de envíos`
+          : "Pon el costo de tus productos para verla"}</span>
+      </div>
+      <div class="fin-card">
         <span class="fin-card__label">Vendido</span>
         <strong class="fin-card__valor">${fmt(total)}</strong>
+        <span class="fin-card__pie">${lista.length} venta${lista.length !== 1 ? "s" : ""}</span>
       </div>
       <div class="fin-card">
-        <span class="fin-card__label">Ventas</span>
-        <strong class="fin-card__valor">${n}</strong>
+        <span class="fin-card__label">Te costó</span>
+        <strong class="fin-card__valor">${hayCostos ? fmt(costo) : "—"}</strong>
+        <span class="fin-card__pie">la mercadería</span>
       </div>
       <div class="fin-card">
-        <span class="fin-card__label">Promedio</span>
-        <strong class="fin-card__valor">${fmt(promedio)}</strong>
-      </div>
-      <div class="fin-card">
-        <span class="fin-card__label">Cobrado en envíos</span>
-        <strong class="fin-card__valor">${fmt(envios)}</strong>
+        <span class="fin-card__label">Promedio por venta</span>
+        <strong class="fin-card__valor">${fmt(lista.length ? Math.round(total / lista.length) : 0)}</strong>
+        <span class="fin-card__pie">&nbsp;</span>
+      </div>`;
+
+    pintarDesglose(lista, hayCostos);
+  };
+
+  /* La utilidad repartida en el tiempo: por día cuando el periodo es corto,
+     por mes cuando se mira el año entero. */
+  const pintarDesglose = (lista, hayCostos) => {
+    const cont = document.getElementById("fin-desglose");
+    if (!cont) return;
+
+    if (vista.periodo === "hoy" || !lista.length) { cont.innerHTML = ""; return; }
+
+    const porMes = vista.periodo === "anio" || vista.periodo === "todo";
+    const grupos = new Map();
+
+    lista.forEach(v => {
+      const f = new Date(v.creado_at);
+      const clave = porMes
+        ? `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, "0")}`
+        : f.toISOString().slice(0, 10);
+      const etiqueta = porMes
+        ? f.toLocaleDateString("es-HN", { month: "long", year: "numeric" })
+        : f.toLocaleDateString("es-HN", { weekday: "short", day: "2-digit", month: "short" });
+
+      const g = grupos.get(clave) || { etiqueta, total: 0, costo: 0, producto: 0, n: 0 };
+      g.total += Number(v.total || 0);
+      g.costo += ((costoPorVenta[v.id] || {}).costo || 0);
+      g.producto += ((costoPorVenta[v.id] || {}).venta || 0);
+      g.n++;
+      grupos.set(clave, g);
+    });
+
+    const filas = [...grupos.entries()].sort((a, b) => b[0].localeCompare(a[0]));
+    const tope = Math.max(...filas.map(([, g]) => hayCostos ? (g.producto - g.costo) : g.total), 1);
+
+    cont.innerHTML = `
+      <h3 class="fin-desglose__titulo">${hayCostos ? "Utilidad" : "Vendido"} por ${porMes ? "mes" : "día"}</h3>
+      <div class="fin-desglose__filas">
+        ${filas.map(([, g]) => {
+          const valor = hayCostos ? (g.producto - g.costo) : g.total;
+          const pct = Math.max(2, Math.round((valor / tope) * 100));
+          return `
+            <div class="fin-barra">
+              <span class="fin-barra__dia">${g.etiqueta}</span>
+              <span class="fin-barra__pista"><span class="fin-barra__fill" style="width:${pct}%"></span></span>
+              <span class="fin-barra__valor">${fmt(valor)}</span>
+              <span class="fin-barra__n">${g.n}</span>
+            </div>`;
+        }).join("")}
       </div>`;
   };
 
@@ -166,7 +259,13 @@ const Finanzas = (() => {
       return;
     }
 
-    cont.innerHTML = lineas.map((l, i) => {
+    // Tres casillas de números seguidas no se distinguen solas.
+    const cabecera = `
+      <div class="venta-linea venta-linea--cab" aria-hidden="true">
+        <span></span><span>Cant.</span><span>Precio</span><span>Costo</span><span></span><span></span>
+      </div>`;
+
+    cont.innerHTML = cabecera + lineas.map((l, i) => {
       const p = catalogo.find(x => x.id === l.producto_id);
       const foto = (p && p.imagen_url) || "";
       return `
@@ -176,7 +275,8 @@ const Finanzas = (() => {
           <span class="venta-linea__nombre">${l.nombre || "(sin nombre)"}</span>
         </span>
         <input type="number" data-campo="cantidad" min="1" step="1" value="${l.cantidad}" aria-label="Cantidad">
-        <input type="number" data-campo="precio" min="0" step="1" value="${l.precio}" aria-label="Precio unitario">
+        <input type="number" data-campo="precio" min="0" step="1" value="${l.precio}" aria-label="Precio de venta">
+        <input type="number" data-campo="costo" min="0" step="1" value="${l.costo || 0}" aria-label="Costo de compra" class="venta-linea__costo">
         <span class="venta-linea__sub">${fmt(l.precio * l.cantidad)}</span>
         <button type="button" class="btn-ojo" data-quitar="${i}" title="Quitar" aria-label="Quitar producto">✕</button>
       </div>`;
@@ -188,6 +288,8 @@ const Finanzas = (() => {
         const campo = el.dataset.campo;
         if (campo === "cantidad") {
           lineas[i].cantidad = Math.max(1, Number(el.value) || 1);
+        } else if (campo === "costo") {
+          lineas[i].costo = Math.max(0, Number(el.value) || 0);
         } else {
           lineas[i].precio = Math.max(0, Number(el.value) || 0);
         }
@@ -207,12 +309,17 @@ const Finanzas = (() => {
   const completas = () => lineas.filter(l => l.producto_id && l.cantidad > 0);
 
   const recalcular = () => {
-    const sub = completas().reduce((a, l) => a + l.precio * l.cantidad, 0);
+    const l = completas();
+    const sub = l.reduce((a, x) => a + x.precio * x.cantidad, 0);
+    const costo = l.reduce((a, x) => a + (x.costo || 0) * x.cantidad, 0);
     const envio = Number(document.getElementById("v-envio").value) || 0;
+
     document.getElementById("v-subtotal").textContent = fmt(sub);
     document.getElementById("v-envio-txt").textContent = fmt(envio);
     document.getElementById("v-total").textContent = fmt(sub + envio);
-    return { sub, envio, total: sub + envio };
+    document.getElementById("v-costo").textContent = fmt(costo);
+    document.getElementById("v-utilidad").textContent = fmt(sub - costo);
+    return { sub, envio, total: sub + envio, costo };
   };
 
   /* ---------- Selector de productos ----------
@@ -265,7 +372,8 @@ const Finanzas = (() => {
     const yaEstan = new Set(quedan.map(l => l.producto_id));
     const nuevas = [...seleccion].filter(id => !yaEstan.has(id)).map(id => {
       const p = catalogo.find(x => x.id === id);
-      return { producto_id: id, nombre: p.nombre, precio: Number(p.precio), cantidad: 1 };
+      return { producto_id: id, nombre: p.nombre, precio: Number(p.precio),
+               costo: Number(p.costo) || 0, cantidad: 1 };
     });
     lineas = [...quedan, ...nuevas];
     cerrarPicker();
@@ -317,7 +425,8 @@ const Finanzas = (() => {
       const { data } = await sb.from("pedido_items").select("*").eq("pedido_id", v.id);
       lineas = (data || []).map(i => ({
         producto_id: i.producto_id, nombre: i.nombre,
-        precio: Number(i.precio), cantidad: Number(i.cantidad)
+        precio: Number(i.precio), costo: Number(i.costo) || 0,
+        cantidad: Number(i.cantidad)
       }));
     } else {
       lineas = [];
@@ -382,7 +491,8 @@ const Finanzas = (() => {
     const { error: errItems } = await sb.from("pedido_items").insert(
       validas.map(l => ({
         pedido_id: pedidoId, producto_id: l.producto_id, nombre: l.nombre,
-        precio: l.precio, cantidad: l.cantidad, subtotal: l.precio * l.cantidad
+        precio: l.precio, costo: l.costo || 0,
+        cantidad: l.cantidad, subtotal: l.precio * l.cantidad
       })));
 
     btn.disabled = false;

@@ -1673,7 +1673,7 @@ img, video { max-width: 100%; }
 .venta-lineas { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
 .venta-linea {
   display: grid; align-items: center; gap: 8px;
-  grid-template-columns: minmax(0, 1fr) 72px 96px auto 34px;
+  grid-template-columns: minmax(0, 1fr) 64px 86px 86px auto 34px;
 }
 .venta-linea select,
 .venta-linea input {
@@ -1696,12 +1696,13 @@ img, video { max-width: 100%; }
      sin dejar los campos ilegibles. */
   .venta-linea {
     grid-template-columns: 1fr 1fr auto;
-    grid-template-areas: "prod prod quitar" "cant precio sub";
+    grid-template-areas: "prod prod quitar" "cant precio costo" "sub sub sub";
     padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);
   }
   .venta-linea select { grid-area: prod; }
   .venta-linea [data-campo="cantidad"] { grid-area: cant; }
   .venta-linea [data-campo="precio"] { grid-area: precio; }
+  .venta-linea [data-campo="costo"] { grid-area: costo; }
   .venta-linea__sub { grid-area: sub; text-align: right; }
   .venta-linea [data-quitar] { grid-area: quitar; justify-self: end; }
   .fin-card__valor { font-size: 1.25rem; }
@@ -1785,3 +1786,48 @@ img, video { max-width: 100%; }
   .pp-pie__botones { flex: 1 1 100%; }
   .pp-pie__botones .btn { flex: 1 1 50%; justify-content: center; }
 }
+
+/* ---- Costo y utilidad ----
+   FITCORE revende: lo que entra no es lo que gana. El costo viaja con cada
+   linea de la venta, copiado al momento de vender, para que cambiarlo
+   despues no altere lo que ya se gano. */
+.venta-linea__costo { border-color: var(--border-2) !important; }
+.venta-totales__util { border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; }
+.venta-totales__util strong { font-family: var(--ff-display); font-size: 1.2rem; color: var(--accent); }
+
+.fin-card__pie { font-size: .74rem; color: var(--text-dim); line-height: 1.3; }
+.fin-card--fuerte .fin-card__pie { color: rgba(255,255,255,.8); }
+
+/* ---- Desglose en el tiempo ---- */
+.fin-desglose { margin: 18px 0 4px; }
+.fin-desglose__titulo {
+  font-size: .78rem; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--text-dim); font-family: var(--ff-display); margin-bottom: 10px;
+}
+.fin-desglose__filas { display: flex; flex-direction: column; gap: 6px; }
+.fin-barra {
+  display: grid; align-items: center; gap: 10px;
+  grid-template-columns: 120px minmax(0, 1fr) 90px 28px;
+  font-size: .84rem;
+}
+.fin-barra__dia { color: var(--text-dim); text-transform: capitalize; }
+.fin-barra__pista { background: var(--surface-2); border-radius: 999px; height: 10px; overflow: hidden; }
+.fin-barra__fill { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+.fin-barra__valor { font-family: var(--ff-display); color: var(--text); text-align: right; }
+/* Cuantas ventas hubo ese dia: contexto sin ocupar otra columna ancha. */
+.fin-barra__n { color: var(--text-dim); font-size: .74rem; text-align: right; }
+
+@media (max-width: 640px) {
+  .fin-barra { grid-template-columns: 92px minmax(0, 1fr) 76px; }
+  .fin-barra__n { display: none; }
+  .fin-barra__dia { font-size: .78rem; }
+}
+
+/* Rotulos de las casillas de la linea de venta. */
+.venta-linea--cab {
+  font-size: .68rem; text-transform: uppercase; letter-spacing: .8px;
+  color: var(--text-dim); font-family: var(--ff-display);
+  padding: 0 0 2px; border: 0;
+}
+.venta-linea--cab span { text-align: left; }
+@media (max-width: 640px) { .venta-linea--cab { display: none; } }

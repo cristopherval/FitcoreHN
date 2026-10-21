@@ -587,6 +587,8 @@ const Admin = (() => {
     // Precio normal = el tachado si hay promo; si no, el precio de venta.
     document.getElementById("f-normal").value = p ? (p.precio_anterior || p.precio) : "";
     document.getElementById("f-promo").value = (p && p.precio_anterior) ? p.precio : "";
+    document.getElementById("f-costo").value = p ? (Number(p.costo) || "") : "";
+    pintarMargen();
     document.getElementById("f-cat").value = p ? p.categoria_id : (categorias[0] && categorias[0].id) || "";
     const selMarca = document.getElementById("f-marca");
     if (selMarca) selMarca.value = (p && p.marca_id) ? p.marca_id : "";
@@ -610,6 +612,22 @@ const Admin = (() => {
     }
 
     modal().classList.add("is-open");
+  };
+
+  /* Muestra la ganancia por unidad mientras se escriben precio y costo. */
+  const pintarMargen = () => {
+    const el = document.getElementById("f-margen");
+    if (!el) return;
+    const costo = Number(document.getElementById("f-costo").value) || 0;
+    const promo = Number(document.getElementById("f-promo").value) || 0;
+    const normal = Number(document.getElementById("f-normal").value) || 0;
+    const venta = promo || normal;
+    if (!costo || !venta) { el.textContent = ""; return; }
+    const gana = venta - costo;
+    const pct = Math.round((gana / venta) * 100);
+    el.textContent = gana >= 0
+      ? `Ganas ${fmt(gana)} por unidad (${pct}% del precio de venta).`
+      : `Cuidado: lo estarías vendiendo ${fmt(Math.abs(gana))} por debajo del costo.`;
   };
 
   const cerrarForm = () => modal().classList.remove("is-open");
@@ -780,6 +798,7 @@ const Admin = (() => {
       const normal = Number(document.getElementById("f-normal").value);
       const promoRaw = document.getElementById("f-promo").value;
       const promo = promoRaw ? Number(promoRaw) : null;
+      const costo = Number(document.getElementById("f-costo").value) || 0;
       const categoria_id = document.getElementById("f-cat").value;
       const marca_sel = document.getElementById("f-marca");
       const marca_id = (marca_sel && marca_sel.value) ? marca_sel.value : null;
@@ -801,14 +820,14 @@ const Admin = (() => {
         if (file) imagen_url = await subirFoto(file);
 
         if (id) {
-          const patch = { nombre, descripcion, precio, precio_anterior, categoria_id, marca_id, destacado, en_ofertas };
+          const patch = { nombre, descripcion, precio, precio_anterior, costo, categoria_id, marca_id, destacado, en_ofertas };
           if (imagen_url) patch.imagen_url = imagen_url;
           const { error } = await sb.from("productos").update(patch).eq("id", id);
           if (error) throw error;
           toast("Producto actualizado.");
         } else {
           const { error } = await sb.from("productos").insert({
-            nombre, descripcion, precio, precio_anterior, categoria_id, marca_id,
+            nombre, descripcion, precio, precio_anterior, costo, categoria_id, marca_id,
             destacado, en_ofertas,
             imagen_url: imagen_url || "assets/atleta-espalda.png",
             orden: productos.length
@@ -854,6 +873,8 @@ const Admin = (() => {
 
     // Botones "✕" para cerrar cada modal.
     document.getElementById("prod-close").addEventListener("click", cerrarForm);
+    ["f-costo", "f-normal", "f-promo"].forEach(id =>
+      document.getElementById(id)?.addEventListener("input", pintarMargen));
     document.getElementById("cat-close").addEventListener("click", cerrarFormCat);
     document.getElementById("marca-close").addEventListener("click", cerrarFormMarca);
 

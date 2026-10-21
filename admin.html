@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=90">
+  <link rel="stylesheet" href="css/styles.css?v=91">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -123,13 +123,17 @@
         <!-- Resumen del periodo elegido. -->
         <div class="fin-resumen" id="fin-resumen"></div>
 
+        <div class="fin-desglose" id="fin-desglose"></div>
+
         <details class="admin-filtrador" id="fin-filtrador">
           <summary>Filtrar</summary>
           <div class="admin-orden">
             <label class="admin-orden__campo">
               <span>Periodo</span>
               <select id="fin-periodo">
-                <option value="mes">Este mes</option>
+                <option value="hoy">Hoy</option>
+                <option value="semana">Esta semana</option>
+                <option value="mes" selected>Este mes</option>
                 <option value="mes-pasado">Mes pasado</option>
                 <option value="anio">Este año</option>
                 <option value="todo">Todo</option>
@@ -409,6 +413,12 @@
           <input id="f-promo" type="number" min="0" step="1" placeholder="1297">
         </div>
 
+        <div class="form__row form__row--full">
+          <label for="f-costo">Costo de compra (L.) <small class="muted">— lo que te cuesta a ti; no se muestra en la tienda</small></label>
+          <input id="f-costo" type="number" min="0" step="1" placeholder="0">
+          <small class="muted" id="f-margen"></small>
+        </div>
+
         <!-- ¿DÓNDE APARECE? -->
         <fieldset class="form__row form__row--full admin-secciones">
           <legend>¿Dónde quieres que aparezca?</legend>
@@ -599,7 +609,9 @@
           <div class="venta-totales">
             <div><span>Subtotal</span><strong id="v-subtotal">L. 0</strong></div>
             <div><span>Envío</span><strong id="v-envio-txt">L. 0</strong></div>
-            <div class="venta-totales__total"><span>Total</span><strong id="v-total">L. 0</strong></div>
+            <div class="venta-totales__total"><span>Total que cobras</span><strong id="v-total">L. 0</strong></div>
+            <div><span>Lo que te costó</span><strong id="v-costo">L. 0</strong></div>
+            <div class="venta-totales__util"><span>Tu utilidad</span><strong id="v-utilidad">L. 0</strong></div>
           </div>
         </div>
 
@@ -634,14 +646,14 @@
     </div>
   </div>
 
-  <script src="assets/vendor/supabase.js?v=90"></script>
-  <script src="js/supabase-config.js?v=90"></script>
-  <script src="js/data.js?v=90"></script>
-  <script src="js/confirm.js?v=90"></script>
-  <script src="js/iconos.js?v=90"></script>
-  <script src="js/admintabs.js?v=90"></script>
-  <script src="js/adminpanel.js?v=90"></script>
-  <script src="js/adminpedidos.js?v=90"></script>
-  <script src="js/adminfinanzas.js?v=90"></script>
+  <script src="assets/vendor/supabase.js?v=91"></script>
+  <script src="js/supabase-config.js?v=91"></script>
+  <script src="js/data.js?v=91"></script>
+  <script src="js/confirm.js?v=91"></script>
+  <script src="js/iconos.js?v=91"></script>
+  <script src="js/admintabs.js?v=91"></script>
+  <script src="js/adminpanel.js?v=91"></script>
+  <script src="js/adminpedidos.js?v=91"></script>
+  <script src="js/adminfinanzas.js?v=91"></script>
 </body>
 </html>

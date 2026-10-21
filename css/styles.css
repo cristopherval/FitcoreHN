@@ -1392,3 +1392,11 @@ img, video { max-width: 100%; }
 .icon-opt { display: grid; place-items: center; aspect-ratio: 1/1; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text-dim); cursor: pointer; padding: 0; transition: border-color .2s, color .2s, background .2s; }
 .icon-opt:hover { border-color: var(--accent); color: var(--accent); }
 .icon-opt.is-active { border-color: var(--accent); border-width: 2px; color: var(--accent); background: var(--accent-soft); }
+
+/* ---- Tarjeta de categoría: solo icono y nombre ----
+   Pasó de ficha (foto + conteo + precio + enlace) a simple acceso. Con la
+   tarjeta tan corta, el contenido se centra y se le da aire parejo. */
+.cat { align-items: center; text-align: center; padding-bottom: 26px; }
+.cat .cat__icono { margin: 28px auto 14px; }
+.cat .cat__name { font-size: 1.15rem; font-family: var(--ff-display); text-transform: uppercase; letter-spacing: .5px; margin: 0; padding: 0 16px; }
+.cat:hover .cat__name { color: var(--accent); }

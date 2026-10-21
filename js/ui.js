@@ -113,27 +113,20 @@ const UI = (() => {
     // pasar de foto grande a icono ocupan poco, así que ya no hace falta
     // esconder ninguna.
     const cats = Store.getCategorias();
-    const productos = Store.getProductos();
 
-    // Cada tarjeta muestra un PRODUCTO representativo de la categoría
-    // y enlaza a su propia página (categoria.html).
+    // Cada tarjeta es solo el icono y el nombre: es un acceso, no una ficha.
+    // El conteo y el precio se quitaron para que se lea de un vistazo.
     cont.innerHTML = cats.map((c, i) => {
-      const items = productos.filter(p => p.categoria === c.id);
-      const desde = items.length ? ` · desde ${fmt(Math.min(...items.map(p => p.precio)))}` : "";
-      // Página dedicada por categoría (mejor SEO); si es nueva, usa la genérica.
+      // Página dedicada por categoría (mejor SEO); si es nueva, la genérica.
       const href = (typeof CATEGORIA_PAGES !== "undefined" && CATEGORIA_PAGES[c.id])
         || `categoria.html?cat=${encodeURIComponent(c.id)}`;
-      // El icono lo eliges en el panel. Si la biblioteca no cargara,
-      // se omite y la tarjeta sigue funcionando.
+      // El icono lo eliges en el panel. Si la biblioteca no cargara, se
+      // omite y la tarjeta sigue funcionando.
       const ico = (typeof iconoSVG === "function") ? iconoSVG(c.icono, 34) : "";
       return `
         <a class="cat reveal ${i % 2 === 0 ? "reveal--left" : "reveal--right"}" href="${href}" style="--rd:${i * 160}ms" aria-label="Ver ${c.nombre}">
           <span class="cat__icono">${ico}</span>
-          <div class="cat__info">
-            <h3 class="cat__name">${c.nombre}</h3>
-            <p class="cat__count">${items.length} producto${items.length !== 1 ? "s" : ""}${desde}</p>
-            <span class="cat__toggle">Ver categoría <span class="cat__arrow">→</span></span>
-          </div>
+          <h3 class="cat__name">${c.nombre}</h3>
         </a>`;
     }).join("");
     revelarVisibles();

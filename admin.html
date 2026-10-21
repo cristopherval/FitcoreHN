@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=85">
+  <link rel="stylesheet" href="css/styles.css?v=86">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -60,6 +60,7 @@
         <button class="admin-tab" data-tab="categorias">Categorías</button>
         <button class="admin-tab" data-tab="marcas">Marcas</button>
         <button class="admin-tab" data-tab="envios">Envíos</button>
+        <button class="admin-tab" data-tab="finanzas">Finanzas</button>
       </div>
     </nav>
 
@@ -216,6 +217,63 @@
             </thead>
             <tbody id="marca-tabla-body">
               <tr><td colspan="3" class="muted">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== FINANZAS ===== -->
+      <section class="admin-section" data-panel="finanzas" hidden>
+        <div class="admin-section__head">
+          <h2 class="admin-wrap__title">Finanzas</h2>
+          <button class="btn btn--accent btn--sm" id="btn-add-venta">+ Registrar venta</button>
+        </div>
+        <p class="muted admin-wrap__hint">
+          Las ventas que <strong>sí se concretaron</strong>: las que entraron por la tienda y
+          marcaste entregadas, más las que cargues vos de mostrador. Aquí puedes corregir
+          cualquier dato o borrar una que no debía estar.
+        </p>
+
+        <!-- Resumen del periodo elegido. -->
+        <div class="fin-resumen" id="fin-resumen"></div>
+
+        <details class="admin-filtrador" id="fin-filtrador">
+          <summary>Filtrar</summary>
+          <div class="admin-orden">
+            <label class="admin-orden__campo">
+              <span>Periodo</span>
+              <select id="fin-periodo">
+                <option value="mes">Este mes</option>
+                <option value="mes-pasado">Mes pasado</option>
+                <option value="anio">Este año</option>
+                <option value="todo">Todo</option>
+              </select>
+            </label>
+            <label class="admin-orden__campo">
+              <span>Origen</span>
+              <select id="fin-origen">
+                <option value="">Todas</option>
+                <option value="tienda">De la tienda</option>
+                <option value="mostrador">De mostrador</option>
+              </select>
+            </label>
+            <label class="admin-orden__campo">
+              <span>Buscar</span>
+              <input type="search" id="fin-buscar" placeholder="Cliente o nº de venta…" autocomplete="off">
+            </label>
+          </div>
+        </details>
+
+        <div class="table-wrap">
+          <table class="table table--compacta table--ventas">
+            <thead>
+              <tr>
+                <th>Venta</th><th>Fecha</th><th>Cliente</th>
+                <th>Origen</th><th>Total</th><th>Pago</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="fin-tabla-body">
+              <tr><td colspan="7" class="muted">Cargando…</td></tr>
             </tbody>
           </table>
         </div>
@@ -474,13 +532,89 @@
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/vendor/supabase.js?v=85"></script>
-  <script src="js/supabase-config.js?v=85"></script>
-  <script src="js/data.js?v=85"></script>
-  <script src="js/confirm.js?v=85"></script>
-  <script src="js/iconos.js?v=85"></script>
-  <script src="js/admintabs.js?v=85"></script>
-  <script src="js/adminpanel.js?v=85"></script>
-  <script src="js/adminpedidos.js?v=85"></script>
+  <!-- ===== MODAL: registrar o corregir una venta ===== -->
+  <div class="modal" id="venta-modal">
+    <div class="modal__box modal__box--wide">
+      <button type="button" class="modal__close" id="venta-close" aria-label="Cerrar">✕</button>
+      <h3 class="modal__title" id="venta-modal-title">Registrar venta</h3>
+      <form id="venta-form" class="form form--grid">
+        <input type="hidden" id="v-id">
+
+        <div class="form__row">
+          <label for="v-nombre">Cliente</label>
+          <input id="v-nombre" type="text" required placeholder="Nombre y apellido">
+        </div>
+        <div class="form__row">
+          <label for="v-tel">Teléfono</label>
+          <input id="v-tel" type="text" required placeholder="9988-7766">
+        </div>
+
+        <div class="form__row">
+          <label for="v-fecha">Fecha de la venta</label>
+          <input id="v-fecha" type="datetime-local" required>
+        </div>
+        <div class="form__row">
+          <label for="v-pago">Forma de pago</label>
+          <select id="v-pago">
+            <option value="efectivo">Efectivo</option>
+            <option value="transferencia">Transferencia</option>
+            <option value="tarjeta">Tarjeta</option>
+            <option value="whatsapp">Coordinada por WhatsApp</option>
+          </select>
+        </div>
+
+        <div class="form__row">
+          <label for="v-zona">Entrega</label>
+          <select id="v-zona"></select>
+        </div>
+        <div class="form__row">
+          <label for="v-envio">Costo de envío (L.)</label>
+          <input id="v-envio" type="number" min="0" step="1" value="0">
+        </div>
+
+        <div class="form__row form__row--full">
+          <label for="v-dir">Dirección o punto de entrega <small class="muted">(opcional)</small></label>
+          <input id="v-dir" type="text" placeholder="Opcional">
+        </div>
+
+        <!-- Productos de la venta: el precio se trae del catálogo pero se
+             puede corregir, porque un pedido viejo guarda lo que se cobró. -->
+        <div class="form__row form__row--full">
+          <label>Productos</label>
+          <div class="venta-lineas" id="v-lineas"></div>
+          <button type="button" class="btn btn--ghost btn--sm" id="v-add-linea">+ Agregar producto</button>
+        </div>
+
+        <div class="form__row form__row--full">
+          <div class="venta-totales">
+            <div><span>Subtotal</span><strong id="v-subtotal">L. 0</strong></div>
+            <div><span>Envío</span><strong id="v-envio-txt">L. 0</strong></div>
+            <div class="venta-totales__total"><span>Total</span><strong id="v-total">L. 0</strong></div>
+          </div>
+        </div>
+
+        <div class="form__row form__row--full">
+          <label for="v-nota">Nota interna <small class="muted">(solo la ves tú)</small></label>
+          <textarea id="v-nota" rows="2" placeholder="Ej. pagó la mitad el lunes"></textarea>
+        </div>
+
+        <div class="form__actions form__row--full">
+          <button type="submit" class="btn btn--accent" id="btn-save-venta">Guardar venta</button>
+          <button type="button" class="btn btn--ghost" id="btn-cancel-venta">Cancelar</button>
+          <button type="button" class="btn btn--danger btn--sm form__actions__borrar" id="btn-del-venta" hidden>Eliminar venta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/vendor/supabase.js?v=86"></script>
+  <script src="js/supabase-config.js?v=86"></script>
+  <script src="js/data.js?v=86"></script>
+  <script src="js/confirm.js?v=86"></script>
+  <script src="js/iconos.js?v=86"></script>
+  <script src="js/admintabs.js?v=86"></script>
+  <script src="js/adminpanel.js?v=86"></script>
+  <script src="js/adminpedidos.js?v=86"></script>
+  <script src="js/adminfinanzas.js?v=86"></script>
 </body>
 </html>

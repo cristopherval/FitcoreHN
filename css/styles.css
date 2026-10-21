@@ -1649,3 +1649,77 @@ img, video { max-width: 100%; }
   .table--pedidos td[data-label="Estado"] br { display: none; }
   .table--pedidos td.acciones { order: 6; flex: 0 0 auto; margin-left: auto; }
 }
+
+/* ============ 28. PANEL: FINANZAS ============
+   Lo que ya se cobro, sumado. Las tarjetas de arriba responden al periodo
+   elegido, no al historico completo.
+   ========================================================================= */
+.fin-resumen {
+  display: grid; gap: 12px; margin: 18px 0 6px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.fin-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.fin-card__label { font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); }
+.fin-card__valor { font-family: var(--ff-display); font-size: 1.5rem; color: var(--text); line-height: 1.1; }
+.fin-card--fuerte { background: var(--accent); border-color: var(--accent); }
+.fin-card--fuerte .fin-card__label { color: rgba(255,255,255,.75); }
+.fin-card--fuerte .fin-card__valor { color: var(--accent-ink); }
+
+/* ---- Productos de una venta ---- */
+.venta-lineas { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.venta-linea {
+  display: grid; align-items: center; gap: 8px;
+  grid-template-columns: minmax(0, 1fr) 72px 96px auto 34px;
+}
+.venta-linea select,
+.venta-linea input {
+  width: 100%; min-width: 0; padding: 8px 10px;
+  border: 1px solid var(--border); border-radius: var(--radius-sm);
+  background: var(--surface); font: inherit; font-size: .88rem; color: var(--text);
+}
+.venta-linea__sub { font-family: var(--ff-display); color: var(--accent); white-space: nowrap; font-size: .92rem; }
+
+.venta-totales {
+  background: var(--surface-2); border-radius: var(--radius);
+  padding: 14px 16px; display: flex; flex-direction: column; gap: 6px;
+}
+.venta-totales > div { display: flex; justify-content: space-between; gap: 14px; font-size: .9rem; }
+.venta-totales__total { border-top: 1px solid var(--border); padding-top: 8px; margin-top: 2px; }
+.venta-totales__total strong { font-family: var(--ff-display); font-size: 1.2rem; color: var(--accent); }
+
+@media (max-width: 640px) {
+  /* En celular cada renglon de producto se apila: cinco columnas no caben
+     sin dejar los campos ilegibles. */
+  .venta-linea {
+    grid-template-columns: 1fr 1fr auto;
+    grid-template-areas: "prod prod quitar" "cant precio sub";
+    padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+  }
+  .venta-linea select { grid-area: prod; }
+  .venta-linea [data-campo="cantidad"] { grid-area: cant; }
+  .venta-linea [data-campo="precio"] { grid-area: precio; }
+  .venta-linea__sub { grid-area: sub; text-align: right; }
+  .venta-linea [data-quitar] { grid-area: quitar; justify-self: end; }
+  .fin-card__valor { font-size: 1.25rem; }
+}
+
+/* ---- Ventas en celular: numero y total arriba, el resto debajo ---- */
+@media (max-width: 900px) {
+  .table--ventas tr { flex-wrap: wrap; row-gap: 4px; align-items: baseline; }
+
+  .table--ventas td[data-label="Venta"] { order: 1; flex: 0 0 auto; font-size: .95rem; }
+  .table--ventas td[data-label="Fecha"] { order: 2; flex: 1 1 auto; font-size: .76rem; }
+  .table--ventas td[data-label="Total"] { order: 3; flex: 0 0 auto; color: var(--accent); font-size: .95rem; }
+
+  .table--ventas td[data-label="Cliente"] { order: 4; flex: 1 1 100%; min-width: 0; font-size: .9rem; }
+  .table--ventas td[data-label="Cliente"] br { display: none; }
+  .table--ventas td[data-label="Cliente"] small { margin-left: 6px; }
+
+  .table--ventas td[data-label="Origen"] { order: 5; flex: 0 0 auto; }
+  .table--ventas td[data-label="Pago"] { order: 6; flex: 1 1 auto; font-size: .78rem; color: var(--text-dim); }
+  .table--ventas td.acciones { order: 7; flex: 0 0 auto; margin-left: auto; }
+}

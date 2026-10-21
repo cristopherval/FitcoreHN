@@ -59,6 +59,9 @@ const Admin = (() => {
     await cargarDatos();
     // Los pedidos y los envíos los maneja adminpedidos.js (archivo aparte).
     if (typeof AdminPedidos !== "undefined") AdminPedidos.cargar();
+    // Finanzas se carga sola al entrar a su pestaña, pero si la sesión se
+    // abrió estando ya en #finanzas nadie le habría avisado.
+    if (typeof AdminTabs !== "undefined") AdminTabs.reavisar();
   };
 
   const logout = async () => {
@@ -859,7 +862,8 @@ const Admin = (() => {
     if (data && data.session) mostrarPanel();
   };
 
-  return { init };
+  // `toast` se comparte con las otras secciones del panel (finanzas).
+  return { init, toast };
 })();
 
 document.addEventListener("DOMContentLoaded", Admin.init);

@@ -12,7 +12,7 @@
    ========================================================================= */
 
 const AdminTabs = (() => {
-  const VALIDAS = ["pedidos", "productos", "categorias", "marcas", "envios"];
+  const VALIDAS = ["pedidos", "productos", "categorias", "marcas", "envios", "finanzas"];
   const INICIAL = "pedidos";
 
   const paneles = () => document.querySelectorAll("[data-panel]");
@@ -83,7 +83,13 @@ const AdminTabs = (() => {
     el.hidden = !n;
   };
 
-  return { init, mostrar, setPendientes };
+  /* Repite el aviso de la sección visible (tras iniciar sesión, por ejemplo). */
+  const reavisar = () => {
+    const activa = [...botones()].find(b => b.classList.contains("is-active"));
+    avisar(activa ? activa.dataset.tab : INICIAL);
+  };
+
+  return { init, mostrar, setPendientes, reavisar };
 })();
 
 document.addEventListener("DOMContentLoaded", AdminTabs.init);

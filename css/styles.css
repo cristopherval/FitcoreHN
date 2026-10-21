@@ -1831,3 +1831,50 @@ img, video { max-width: 100%; }
 }
 .venta-linea--cab span { text-align: left; }
 @media (max-width: 640px) { .venta-linea--cab { display: none; } }
+
+/* ============ 29. PANEL: CLIENTES ============
+   La ficha existe para no reescribir el nombre en cada venta y para saber
+   quien repite. El total gastado no se guarda: se suma de sus pedidos.
+   ========================================================================= */
+
+/* ---- Sugerencias al escribir el cliente en una venta ---- */
+.v-sugiere { position: relative; }
+.v-sugiere__lista {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 5;
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); box-shadow: var(--shadow);
+  overflow: hidden; margin-top: 4px;
+}
+.v-sugiere__item {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+  width: 100%; text-align: left; cursor: pointer;
+  padding: 9px 12px; border: 0; border-bottom: 1px solid var(--border);
+  background: none; font: inherit; font-size: .88rem; color: var(--text);
+}
+.v-sugiere__item:last-child { border-bottom: 0; }
+.v-sugiere__item:hover { background: var(--accent-soft); color: var(--accent-2); }
+
+/* ---- Historial dentro de la ficha ---- */
+.cli-historial { display: flex; flex-direction: column; gap: 6px; max-height: 30vh; overflow-y: auto; }
+.cli-compra {
+  display: grid; align-items: center; gap: 10px;
+  grid-template-columns: 54px minmax(0, 1fr) auto auto;
+  padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-size: .86rem;
+}
+.cli-compra__num { font-family: var(--ff-display); }
+.cli-compra__total { font-family: var(--ff-display); color: var(--accent); white-space: nowrap; }
+
+/* ---- Clientes en celular: nombre y total arriba, el resto debajo ---- */
+@media (max-width: 900px) {
+  .table--clientes tr { flex-wrap: wrap; row-gap: 4px; align-items: baseline; }
+  .table--clientes td[data-label="Cliente"] { order: 1; flex: 1 1 auto; min-width: 0; font-size: .92rem; }
+  .table--clientes td[data-label="Total"] { order: 2; flex: 0 0 auto; color: var(--accent); }
+  .table--clientes td[data-label="Teléfono"] { order: 3; flex: 0 0 auto; font-size: .8rem; }
+  .table--clientes td[data-label="Compras"] { order: 4; flex: 0 0 auto; font-size: .8rem; color: var(--text-dim); }
+  .table--clientes td[data-label="Compras"]::after { content: " compras"; }
+  .table--clientes td[data-label="Última"] { order: 5; flex: 1 1 auto; font-size: .78rem; }
+  .table--clientes td.acciones { order: 6; flex: 0 0 auto; margin-left: auto; }
+  .cli-compra { grid-template-columns: 48px minmax(0, 1fr) auto; }
+  .cli-compra .pd-badge { grid-column: 2; justify-self: start; }
+}

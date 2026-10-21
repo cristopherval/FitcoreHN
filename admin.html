@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=91">
+  <link rel="stylesheet" href="css/styles.css?v=92">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -57,6 +57,7 @@
           Pedidos <span class="admin-tab__n" id="tab-ped-n" hidden>0</span>
         </button>
         <button class="admin-tab" data-tab="finanzas">Finanzas</button>
+        <button class="admin-tab" data-tab="clientes">Clientes</button>
         <button class="admin-tab" data-tab="productos">Productos</button>
         <button class="admin-tab" data-tab="categorias">Categorías</button>
         <button class="admin-tab" data-tab="marcas">Marcas</button>
@@ -164,6 +165,48 @@
             </thead>
             <tbody id="fin-tabla-body">
               <tr><td colspan="7" class="muted">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ===== CLIENTES ===== -->
+      <section class="admin-section" data-panel="clientes" hidden>
+        <div class="admin-section__head">
+          <h2 class="admin-wrap__title">Clientes</h2>
+          <button class="btn btn--accent btn--sm" id="btn-add-cliente">+ Agregar cliente</button>
+        </div>
+        <p class="muted admin-wrap__hint">
+          Se llenan solos: cada compra registra a quien la hizo. Aquí ves cuánto te ha
+          comprado cada uno, puedes corregir sus datos y dejarte notas.
+        </p>
+
+        <div class="admin-orden">
+          <label class="admin-orden__campo">
+            <span>Buscar</span>
+            <input type="search" id="cli-buscar" placeholder="Nombre o teléfono…" autocomplete="off">
+          </label>
+          <label class="admin-orden__campo">
+            <span>Ordenar por</span>
+            <select id="cli-orden">
+              <option value="gastado">Lo que más ha comprado</option>
+              <option value="reciente">Compra más reciente</option>
+              <option value="nombre">Nombre (A → Z)</option>
+            </select>
+          </label>
+          <span class="admin-orden__conteo muted" id="cli-conteo"></span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table table--compacta table--clientes">
+            <thead>
+              <tr>
+                <th>Cliente</th><th>Teléfono</th><th>Compras</th>
+                <th>Total</th><th>Última</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="cli-tabla-body">
+              <tr><td colspan="6" class="muted">Cargando…</td></tr>
             </tbody>
           </table>
         </div>
@@ -553,9 +596,11 @@
       <form id="venta-form" class="form form--grid">
         <input type="hidden" id="v-id">
 
-        <div class="form__row">
+        <div class="form__row v-sugiere">
           <label for="v-nombre">Cliente</label>
-          <input id="v-nombre" type="text" required placeholder="Nombre y apellido">
+          <input id="v-nombre" type="text" required placeholder="Nombre y apellido" autocomplete="off">
+          <!-- Sugerencias de clientes ya registrados (ver adminfinanzas.js). -->
+          <div class="v-sugiere__lista" id="v-sugerencias" hidden></div>
         </div>
         <div class="form__row">
           <label for="v-tel">Teléfono</label>
@@ -629,6 +674,46 @@
     </div>
   </div>
 
+  <!-- ===== MODAL: ficha del cliente ===== -->
+  <div class="modal" id="cliente-modal">
+    <div class="modal__box modal__box--wide">
+      <button type="button" class="modal__close" id="cli-close" aria-label="Cerrar">✕</button>
+      <h3 class="modal__title" id="cli-modal-title">Agregar cliente</h3>
+      <form id="cliente-form" class="form form--grid">
+        <input type="hidden" id="c-id">
+        <div class="form__row">
+          <label for="c-nombre">Nombre</label>
+          <input id="c-nombre" type="text" required placeholder="Nombre y apellido">
+        </div>
+        <div class="form__row">
+          <label for="c-tel">Teléfono</label>
+          <input id="c-tel" type="text" placeholder="9988-7766">
+        </div>
+        <div class="form__row">
+          <label for="c-ident">Identidad <small class="muted">(opcional)</small></label>
+          <input id="c-ident" type="text" placeholder="0801...">
+        </div>
+        <div class="form__row">
+          <label for="c-dir">Dirección <small class="muted">(opcional)</small></label>
+          <input id="c-dir" type="text" placeholder="Col. Kennedy, bloque 3…">
+        </div>
+        <div class="form__row form__row--full">
+          <label for="c-notas">Notas <small class="muted">(solo las ves tú)</small></label>
+          <textarea id="c-notas" rows="2" placeholder="Ej. entrena en el gym de la 5a, prefiere recibir por la tarde"></textarea>
+        </div>
+        <div class="form__row form__row--full" id="c-historial-wrap" hidden>
+          <label>Sus compras</label>
+          <div class="cli-historial" id="c-historial"></div>
+        </div>
+        <div class="form__actions form__row--full">
+          <button type="submit" class="btn btn--accent" id="btn-save-cliente">Guardar</button>
+          <button type="button" class="btn btn--ghost" id="btn-cancel-cliente">Cancelar</button>
+          <button type="button" class="btn btn--danger btn--sm form__actions__borrar" id="btn-del-cliente" hidden>Eliminar cliente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- ===== MODAL: elegir productos para una venta ===== -->
   <div class="modal" id="picker-modal">
     <div class="modal__box modal__box--wide">
@@ -646,14 +731,15 @@
     </div>
   </div>
 
-  <script src="assets/vendor/supabase.js?v=91"></script>
-  <script src="js/supabase-config.js?v=91"></script>
-  <script src="js/data.js?v=91"></script>
-  <script src="js/confirm.js?v=91"></script>
-  <script src="js/iconos.js?v=91"></script>
-  <script src="js/admintabs.js?v=91"></script>
-  <script src="js/adminpanel.js?v=91"></script>
-  <script src="js/adminpedidos.js?v=91"></script>
-  <script src="js/adminfinanzas.js?v=91"></script>
+  <script src="assets/vendor/supabase.js?v=92"></script>
+  <script src="js/supabase-config.js?v=92"></script>
+  <script src="js/data.js?v=92"></script>
+  <script src="js/confirm.js?v=92"></script>
+  <script src="js/iconos.js?v=92"></script>
+  <script src="js/admintabs.js?v=92"></script>
+  <script src="js/adminpanel.js?v=92"></script>
+  <script src="js/adminpedidos.js?v=92"></script>
+  <script src="js/adminclientes.js?v=92"></script>
+  <script src="js/adminfinanzas.js?v=92"></script>
 </body>
 </html>

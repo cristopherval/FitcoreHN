@@ -20,6 +20,7 @@ const Finanzas = (() => {
   let lineas = [];        // líneas de la venta que se está editando
   let catalogo = [];      // productos, para los selectores
   let zonas = [];
+  let registro = [];      // clientes ya registrados, para sugerir
   let editando = null;    // el pedido abierto, o null si es nueva
   const vista = { periodo: "mes", origen: "", buscar: "" };
 
@@ -60,10 +61,13 @@ const Finanzas = (() => {
 
   /* ---------- Carga ---------- */
   const cargar = async () => {
-    const [ped, prod, zon] = await Promise.all([
+    const [ped, prod, zon, cli] = await Promise.all([
       sb.from("pedidos").select("*").eq("estado", "entregada").order("creado_at", { ascending: false }),
       sb.from("productos").select("id,nombre,precio,costo,imagen_url").order("nombre", { ascending: true }),
-      sb.from("zonas_envio").select("*").order("orden", { ascending: true })
+      sb.from("zonas_envio").select("*").order("orden", { ascending: true }),
+      // Para sugerir clientes al armar una venta. Si todavía no se corrió
+      // clientes.sql, simplemente no hay sugerencias.
+      sb.from("clientes").select("id,nombre,telefono,direccion,identidad")
     ]);
 
     if (ped.error) {
@@ -74,6 +78,7 @@ const Finanzas = (() => {
     ventas = ped.data || [];
     catalogo = prod.data || [];
     zonas = zon.data || [];
+    registro = cli.error ? [] : (cli.data || []);
     await cargarCostos();
     pintar();
   };
@@ -322,6 +327,54 @@ const Finanzas = (() => {
     return { sub, envio, total: sub + envio, costo };
   };
 
+  /* ---------- Sugerencias de cliente ----------
+     Al escribir el nombre (o el teléfono) aparecen los clientes ya
+     registrados. Elegir uno rellena sus datos y enlaza la venta a su ficha,
+     para que su historial quede completo. */
+  let clienteId = null;
+
+  const cajaSugerencias = () => document.getElementById("v-sugerencias");
+
+  const ocultarSugerencias = () => {
+    const c = cajaSugerencias();
+    if (c) { c.hidden = true; c.innerHTML = ""; }
+  };
+
+  const sugerir = () => {
+    const caja = cajaSugerencias();
+    if (!caja) return;
+    const q = document.getElementById("v-nombre").value.trim().toLowerCase();
+
+    // Con menos de dos letras la lista sería casi el registro entero.
+    if (q.length < 2) { ocultarSugerencias(); return; }
+
+    const hits = registro.filter(c =>
+      c.nombre.toLowerCase().includes(q) || (c.telefono || "").includes(q)).slice(0, 6);
+
+    if (!hits.length) { ocultarSugerencias(); return; }
+
+    caja.innerHTML = hits.map(c => `
+      <button type="button" class="v-sugiere__item" data-cli="${c.id}">
+        <span>${c.nombre}</span>
+        <small class="muted">${c.telefono || "sin teléfono"}</small>
+      </button>`).join("");
+    caja.hidden = false;
+
+    caja.querySelectorAll("[data-cli]").forEach(b =>
+      b.addEventListener("click", () => {
+        const c = registro.find(x => x.id === b.dataset.cli);
+        if (!c) return;
+        clienteId = c.id;
+        document.getElementById("v-nombre").value = c.nombre;
+        document.getElementById("v-tel").value = c.telefono || "";
+        // La dirección solo se propone si el campo está vacío: si ya
+        // escribiste otra, manda la que escribiste.
+        const dir = document.getElementById("v-dir");
+        if (!dir.value.trim()) dir.value = c.direccion || "";
+        ocultarSugerencias();
+      }));
+  };
+
   /* ---------- Selector de productos ----------
      Una lista con foto, nombre y precio donde se marcan varios de una vez.
      Lo que ya está en la venta aparece marcado: desmarcarlo lo quita. */
@@ -410,6 +463,8 @@ const Finanzas = (() => {
     document.getElementById("venta-modal-title").textContent = titulo;
     document.getElementById("v-estado").value = v ? v.estado : estadoNuevo;
     document.getElementById("v-id").value = v ? v.id : "";
+    clienteId = v ? (v.cliente_id || null) : null;
+    ocultarSugerencias();
     document.getElementById("v-nombre").value = v ? (v.cliente_nombre || "") : "";
     document.getElementById("v-tel").value = v ? (v.cliente_telefono || "") : "";
     document.getElementById("v-fecha").value = paraInput(v ? v.creado_at : null);
@@ -468,6 +523,10 @@ const Finanzas = (() => {
       creado_at: fecha.toISOString(),
       entregada_at: fecha.toISOString()
     };
+    // Si se eligió un cliente del registro, la venta queda enlazada a su
+    // ficha. Si no, el disparador de la base crea o encuentra la ficha por
+    // el teléfono (ver clientes.sql).
+    if (clienteId) datos.cliente_id = clienteId;
 
     const btn = document.getElementById("btn-save-venta");
     btn.disabled = true;
@@ -530,6 +589,7 @@ const Finanzas = (() => {
      dos. Pedidos puede no estar cargado todavía: por eso la comprobación. */
   const refrescar = async () => {
     await cargar();
+    if (typeof Clientes !== "undefined" && Clientes.cargar) Clientes.cargar();
     if (typeof AdminPedidos !== "undefined" && AdminPedidos.cargar) AdminPedidos.cargar();
   };
 
@@ -543,6 +603,14 @@ const Finanzas = (() => {
     document.getElementById("venta-close").addEventListener("click", cerrar);
     document.getElementById("btn-cancel-venta").addEventListener("click", cerrar);
     document.getElementById("v-envio").addEventListener("input", recalcular);
+
+    const nombre = document.getElementById("v-nombre");
+    nombre.addEventListener("input", () => { clienteId = null; sugerir(); });
+    nombre.addEventListener("focus", sugerir);
+    // Al tocar fuera se cierran; el click en una sugerencia alcanza a correr.
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".v-sugiere")) ocultarSugerencias();
+    });
     document.getElementById("v-add-linea").addEventListener("click", abrirPicker);
     document.getElementById("pp-close").addEventListener("click", cerrarPicker);
     document.getElementById("pp-cancel").addEventListener("click", cerrarPicker);

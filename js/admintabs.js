@@ -12,7 +12,7 @@
    ========================================================================= */
 
 const AdminTabs = (() => {
-  const VALIDAS = ["pedidos", "finanzas", "productos", "categorias", "marcas", "envios"];
+  const VALIDAS = ["pedidos", "finanzas", "clientes", "productos", "categorias", "marcas", "envios"];
   const INICIAL = "pedidos";
 
   const paneles = () => document.querySelectorAll("[data-panel]");

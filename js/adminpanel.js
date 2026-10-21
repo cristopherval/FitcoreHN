@@ -365,38 +365,135 @@ const Admin = (() => {
     await cargarDatos();
   };
 
-  /* ---------- Tabla ---------- */
+  /* ---------- Tabla de productos ----------
+     Con el catálogo creciendo, una lista en el orden interno de la base no
+     sirve para encontrar nada. Aquí se filtra, se ordena y se agrupa antes
+     de pintar; todo en memoria, sin volver a consultar la nube. */
+  const vista = { orden: "nombre-asc", agrupar: "", buscar: "" };
+
+  const porNombre = (a, b) =>
+    a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" });
+
+  /* El texto que se compara al ordenar/agrupar por categoría o marca.
+     "—" (sin asignar) se fuerza al final con un carácter alto. */
+  const clave = (p, campo) => {
+    const n = campo === "marca" ? nombreMarca(p.marca_id) : nombreCat(p.categoria_id);
+    return n === "—" ? "￿" : n;
+  };
+
+  const filtrar = (lista) => {
+    const q = vista.buscar.trim().toLowerCase();
+    if (!q) return lista;
+    return lista.filter(p =>
+      p.nombre.toLowerCase().includes(q) ||
+      nombreMarca(p.marca_id).toLowerCase().includes(q) ||
+      nombreCat(p.categoria_id).toLowerCase().includes(q));
+  };
+
+  const ordenar = (lista) => {
+    const l = [...lista];
+    switch (vista.orden) {
+      case "nombre-desc":   return l.sort((a, b) => porNombre(b, a));
+      case "precio-asc":    return l.sort((a, b) => a.precio - b.precio || porNombre(a, b));
+      case "precio-desc":   return l.sort((a, b) => b.precio - a.precio || porNombre(a, b));
+      case "categoria-asc": return l.sort((a, b) => clave(a, "categoria").localeCompare(clave(b, "categoria"), "es") || porNombre(a, b));
+      case "marca-asc":     return l.sort((a, b) => clave(a, "marca").localeCompare(clave(b, "marca"), "es") || porNombre(a, b));
+      case "reciente":      return l.sort((a, b) => new Date(b.creado_at || 0) - new Date(a.creado_at || 0));
+      default:              return l.sort(porNombre);
+    }
+  };
+
+  const filaProducto = (p) => {
+    const secciones = [];
+    secciones.push(`<span class="pill">${nombreCat(p.categoria_id)}</span>`);
+    if (p.destacado) secciones.push(`<span class="pill pill--ok">Más vendidos</span>`);
+    if (p.en_ofertas) secciones.push(`<span class="pill pill--ok">Ofertas</span>`);
+    return `
+      <tr>
+        <td data-label="Foto"><img class="thumb" src="${p.imagen_url || ""}" alt="${p.nombre}"></td>
+        <td data-label="Nombre"><strong>${p.nombre}</strong></td>
+        <td data-label="Categoría">${nombreCat(p.categoria_id)}${p.marca_id ? ` · ${nombreMarca(p.marca_id)}` : ""}</td>
+        <td data-label="Normal">${fmt(p.precio_anterior || p.precio)}</td>
+        <td data-label="Promo">${p.precio_anterior ? `<span class="promo-tag">${fmt(p.precio)}</span>` : "—"}</td>
+        <td data-label="Dónde aparece" class="celda-secciones">${secciones.join(" ")}</td>
+        <td data-label="Acciones" class="acciones">
+          <button class="btn btn--ghost btn--xs" data-edit="${p.id}">Editar</button>
+          <button class="btn btn--danger btn--xs" data-del="${p.id}">Eliminar</button>
+        </td>
+      </tr>`;
+  };
+
+  /* Cabecera que separa un grupo del siguiente cuando se agrupa. */
+  const filaGrupo = (titulo, n) => `
+    <tr class="tabla-grupo">
+      <td colspan="7">${titulo} <span class="tabla-grupo__n">${n}</span></td>
+    </tr>`;
+
   const pintarTabla = () => {
     const body = document.getElementById("tabla-body");
+    if (!body) return;
+    const conteo = document.getElementById("prod-conteo");
+
     if (!productos.length) {
       body.innerHTML = `<tr><td colspan="7" class="muted">No hay productos. Pulsa "+ Agregar producto".</td></tr>`;
+      if (conteo) conteo.textContent = "";
       return;
     }
-    body.innerHTML = productos.map(p => {
-      const secciones = [];
-      secciones.push(`<span class="pill">${nombreCat(p.categoria_id)}</span>`);
-      if (p.destacado) secciones.push(`<span class="pill pill--ok">Más vendidos</span>`);
-      if (p.en_ofertas) secciones.push(`<span class="pill pill--ok">Ofertas</span>`);
-      return `
-        <tr>
-          <td data-label="Foto"><img class="thumb" src="${p.imagen_url || ""}" alt="${p.nombre}"></td>
-          <td data-label="Nombre"><strong>${p.nombre}</strong></td>
-          <td data-label="Categoría">${nombreCat(p.categoria_id)}${p.marca_id ? ` · ${nombreMarca(p.marca_id)}` : ""}</td>
-          <td data-label="Normal">${fmt(p.precio_anterior || p.precio)}</td>
-          <td data-label="Promo">${p.precio_anterior ? `<span class="promo-tag">${fmt(p.precio)}</span>` : "—"}</td>
-          <td data-label="Dónde aparece" class="celda-secciones">${secciones.join(" ")}</td>
-          <td data-label="Acciones" class="acciones">
-            <button class="btn btn--ghost btn--xs" data-edit="${p.id}">Editar</button>
-            <button class="btn btn--danger btn--xs" data-del="${p.id}">Eliminar</button>
-          </td>
-        </tr>`;
-    }).join("");
+
+    const lista = ordenar(filtrar(productos));
+
+    if (conteo) {
+      conteo.textContent = lista.length === productos.length
+        ? `${productos.length} producto${productos.length !== 1 ? "s" : ""}`
+        : `${lista.length} de ${productos.length}`;
+    }
+
+    if (!lista.length) {
+      body.innerHTML = `<tr><td colspan="7" class="muted">Ningún producto coincide con la búsqueda.</td></tr>`;
+      return;
+    }
+
+    if (!vista.agrupar) {
+      body.innerHTML = lista.map(filaProducto).join("");
+    } else {
+      // Ya vienen ordenados por ese campo, así que basta con recorrer
+      // y abrir una cabecera cada vez que cambia el grupo.
+      const campo = vista.agrupar;
+      const nombreDe = (p) => campo === "marca" ? nombreMarca(p.marca_id) : nombreCat(p.categoria_id);
+      const porGrupo = [...lista].sort((a, b) =>
+        clave(a, campo).localeCompare(clave(b, campo), "es") || porNombre(a, b));
+      let html = "", actual = null, buffer = [];
+      const cerrar = () => {
+        if (actual === null) return;
+        html += filaGrupo(actual === "—" ? (campo === "marca" ? "Sin marca" : "Sin categoría") : actual, buffer.length);
+        html += buffer.join("");
+        buffer = [];
+      };
+      porGrupo.forEach(p => {
+        const g = nombreDe(p);
+        if (g !== actual) { cerrar(); actual = g; }
+        buffer.push(filaProducto(p));
+      });
+      cerrar();
+      body.innerHTML = html;
+    }
 
     body.querySelectorAll("[data-edit]").forEach(b =>
       b.addEventListener("click", () => abrirForm(b.dataset.edit)));
     body.querySelectorAll("[data-del]").forEach(b =>
       b.addEventListener("click", () => eliminar(b.dataset.del)));
   };
+
+  /* Los controles de la barra sólo redibujan: no tocan la base. */
+  const initControlesTabla = () => {
+    const orden = document.getElementById("prod-orden");
+    const agrupar = document.getElementById("prod-agrupar");
+    const buscar = document.getElementById("prod-buscar");
+    if (orden) orden.addEventListener("change", () => { vista.orden = orden.value; pintarTabla(); });
+    if (agrupar) agrupar.addEventListener("change", () => { vista.agrupar = agrupar.value; pintarTabla(); });
+    if (buscar) buscar.addEventListener("input", () => { vista.buscar = buscar.value; pintarTabla(); });
+  };
+
 
   /* ---------- Formulario ---------- */
   const modal = () => document.getElementById("prod-modal");
@@ -662,6 +759,7 @@ const Admin = (() => {
     initGaleria();
     initFormCat();
     initFormMarca();
+    initControlesTabla();
     document.getElementById("btn-add").addEventListener("click", () => abrirForm(null));
     document.getElementById("btn-add-cat").addEventListener("click", () => abrirFormCat(null));
     document.getElementById("btn-add-marca").addEventListener("click", () => abrirFormMarca(null));

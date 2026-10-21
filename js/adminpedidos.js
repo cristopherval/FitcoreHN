@@ -56,6 +56,9 @@ const AdminPedidos = (() => {
   /* Insignia con las compras que todavía no despachaste. */
   const pintarContador = () => {
     const n = pedidos.filter(p => p.estado === "nueva").length;
+    // El mismo número en la pestaña: así se ve aunque estés en otra sección.
+    if (typeof AdminTabs !== "undefined") AdminTabs.setPendientes(n);
+
     const el = document.getElementById("ped-contador");
     if (!el) return;
     el.hidden = n === 0;

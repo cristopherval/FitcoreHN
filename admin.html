@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=81">
+  <link rel="stylesheet" href="css/styles.css?v=82">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -45,17 +45,28 @@
       <div class="container admin-topbar__inner">
         <span class="logo">FIT<span class="logo__accent">CORE</span><small>ADMIN</small></span>
         <div class="admin-topbar__actions">
-          <button class="btn btn--accent btn--sm" id="btn-add">+ Agregar producto</button>
           <a class="btn btn--ghost btn--sm" href="index.html">Ver tienda</a>
           <button class="btn btn--ghost btn--sm" id="btn-logout">Salir</button>
         </div>
       </div>
     </header>
 
+    <nav class="admin-tabs" id="admin-tabs" aria-label="Secciones del panel">
+      <div class="container admin-tabs__inner">
+        <button class="admin-tab is-active" data-tab="pedidos" aria-current="page">
+          Pedidos <span class="admin-tab__n" id="tab-ped-n" hidden>0</span>
+        </button>
+        <button class="admin-tab" data-tab="productos">Productos</button>
+        <button class="admin-tab" data-tab="categorias">Categorías</button>
+        <button class="admin-tab" data-tab="marcas">Marcas</button>
+        <button class="admin-tab" data-tab="envios">Envíos</button>
+      </div>
+    </nav>
+
     <main class="container admin-wrap">
 
       <!-- ===== PEDIDOS ===== -->
-      <section class="admin-section admin-section--first">
+      <section class="admin-section admin-section--first" data-panel="pedidos">
         <div class="admin-section__head">
           <h1 class="admin-wrap__title">
             Pedidos
@@ -93,27 +104,63 @@
         </div>
       </section>
 
-      <h1 class="admin-wrap__title">Productos</h1>
-      <p class="muted admin-wrap__hint">
-        Los cambios se guardan en la nube y <strong>se ven al instante</strong> en la tienda. No hace falta publicar nada.
-      </p>
+      <!-- ===== PRODUCTOS ===== -->
+      <section class="admin-section" data-panel="productos" hidden>
+        <div class="admin-section__head">
+          <h2 class="admin-wrap__title">Productos</h2>
+          <button class="btn btn--accent btn--sm" id="btn-add">+ Agregar producto</button>
+        </div>
+        <p class="muted admin-wrap__hint">
+          Los cambios se guardan en la nube y <strong>se ven al instante</strong> en la tienda. No hace falta publicar nada.
+        </p>
 
-      <div class="table-wrap">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Foto</th><th>Nombre</th><th>Categoría</th>
-              <th>Normal</th><th>Promo</th><th>Dónde aparece</th><th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-body">
-            <tr><td colspan="7" class="muted">Cargando…</td></tr>
-          </tbody>
-        </table>
-      </div>
+        <!-- Orden y agrupacion: con el catalogo creciendo, encontrar un
+             producto a ojo deja de funcionar. -->
+        <div class="admin-orden">
+          <label class="admin-orden__campo">
+            <span>Buscar</span>
+            <input type="search" id="prod-buscar" placeholder="Nombre o marca…" autocomplete="off">
+          </label>
+          <label class="admin-orden__campo">
+            <span>Ordenar por</span>
+            <select id="prod-orden">
+              <option value="nombre-asc">Nombre (A → Z)</option>
+              <option value="nombre-desc">Nombre (Z → A)</option>
+              <option value="precio-asc">Precio (menor a mayor)</option>
+              <option value="precio-desc">Precio (mayor a menor)</option>
+              <option value="categoria-asc">Categoría (A → Z)</option>
+              <option value="marca-asc">Marca (A → Z)</option>
+              <option value="reciente">Más recientes primero</option>
+            </select>
+          </label>
+          <label class="admin-orden__campo">
+            <span>Agrupar por</span>
+            <select id="prod-agrupar">
+              <option value="">Sin agrupar</option>
+              <option value="categoria">Categoría</option>
+              <option value="marca">Marca</option>
+            </select>
+          </label>
+          <span class="admin-orden__conteo muted" id="prod-conteo"></span>
+        </div>
+
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Foto</th><th>Nombre</th><th>Categoría</th>
+                <th>Normal</th><th>Promo</th><th>Dónde aparece</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-body">
+              <tr><td colspan="7" class="muted">Cargando…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       <!-- ===== CATEGORÍAS ===== -->
-      <section class="admin-section">
+      <section class="admin-section" data-panel="categorias" hidden>
         <div class="admin-section__head">
           <h2 class="admin-wrap__title">Categorías</h2>
           <button class="btn btn--accent btn--sm" id="btn-add-cat">+ Agregar categoría</button>
@@ -135,7 +182,7 @@
       </section>
 
       <!-- ===== MARCAS ===== -->
-      <section class="admin-section">
+      <section class="admin-section" data-panel="marcas" hidden>
         <div class="admin-section__head">
           <h2 class="admin-wrap__title">Marcas</h2>
           <button class="btn btn--accent btn--sm" id="btn-add-marca">+ Agregar marca</button>
@@ -157,7 +204,7 @@
       </section>
 
       <!-- ===== ENVÍOS ===== -->
-      <section class="admin-section">
+      <section class="admin-section" data-panel="envios" hidden>
         <div class="admin-section__head">
           <h2 class="admin-wrap__title">Envíos</h2>
           <div class="admin-section__botones">
@@ -405,12 +452,13 @@
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/vendor/supabase.js?v=81"></script>
-  <script src="js/supabase-config.js?v=81"></script>
-  <script src="js/data.js?v=81"></script>
-  <script src="js/confirm.js?v=81"></script>
-  <script src="js/iconos.js?v=81"></script>
-  <script src="js/adminpanel.js?v=81"></script>
-  <script src="js/adminpedidos.js?v=81"></script>
+  <script src="assets/vendor/supabase.js?v=82"></script>
+  <script src="js/supabase-config.js?v=82"></script>
+  <script src="js/data.js?v=82"></script>
+  <script src="js/confirm.js?v=82"></script>
+  <script src="js/iconos.js?v=82"></script>
+  <script src="js/admintabs.js?v=82"></script>
+  <script src="js/adminpanel.js?v=82"></script>
+  <script src="js/adminpedidos.js?v=82"></script>
 </body>
 </html>

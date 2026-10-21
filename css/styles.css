@@ -1467,3 +1467,62 @@ img, video { max-width: 100%; }
   .grid--bestsellers .card__footer .btn { width: 100%; justify-content: center; padding: 8px 10px; font-size: .74rem; }
   .grid--bestsellers .card__badge { top: 8px; left: 8px; font-size: .66rem; padding: 3px 7px; }
 }
+/* ============ 26. PANEL: MENU DE SECCIONES ============
+   El panel mostraba las cinco tablas una debajo de otra y habia que
+   recorrer todo el catalogo para llegar a Envios. Ahora cada una es una
+   pestana y solo se ve la elegida.
+   ========================================================================= */
+.admin-tabs { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 64px; z-index: 29; }
+.admin-tabs__inner { display: flex; gap: 4px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.admin-tabs__inner::-webkit-scrollbar { display: none; }
+
+.admin-tab {
+  flex: 0 0 auto;
+  background: none; border: 0; cursor: pointer;
+  padding: 14px 16px; border-bottom: 3px solid transparent;
+  font-family: var(--ff-display); text-transform: uppercase;
+  letter-spacing: .8px; font-size: .82rem; color: var(--text-dim);
+  display: inline-flex; align-items: center; gap: 7px;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.admin-tab:hover { color: var(--text); background: var(--surface-2); }
+.admin-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+.admin-tab__n { background: var(--accent); color: var(--accent-ink); font-size: .7rem; border-radius: 999px; padding: 1px 7px; line-height: 1.5; }
+
+/* Cada panel ya es la unica seccion visible: sobra la linea divisoria y el
+   aire que las separaba cuando iban encadenadas. */
+.admin-wrap [data-panel] { margin-top: 0; padding-top: 0; border-top: 0; }
+
+/* ---- Barra de orden, agrupacion y busqueda ---- */
+.admin-orden { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin: 14px 0 18px; }
+.admin-orden__campo { display: flex; flex-direction: column; gap: 5px; flex: 1 1 180px; min-width: 0; max-width: 280px; }
+.admin-orden__campo > span { font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-dim); }
+.admin-orden__campo select,
+.admin-orden__campo input { width: 100%; padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); font: inherit; font-size: .9rem; color: var(--text); }
+.admin-orden__campo select:focus,
+.admin-orden__campo input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+.admin-orden__conteo { flex: 0 0 auto; padding-bottom: 10px; font-size: .82rem; }
+
+/* ---- Cabecera que separa los grupos dentro de la tabla ---- */
+.tabla-grupo td {
+  background: var(--surface-2); font-family: var(--ff-display);
+  text-transform: uppercase; letter-spacing: 1px; font-size: .78rem;
+  color: var(--text); padding: 10px 14px;
+}
+.tabla-grupo__n { color: var(--text-dim); font-family: var(--ff-body); letter-spacing: 0; font-size: .78rem; }
+
+/* ---- El panel aprovecha el ancho de la pantalla ----
+   La tienda se lee mejor con la medida corta de siempre, pero aqui son
+   tablas de siete columnas: en un monitor grande el espacio sobrante
+   obligaba a partir celdas que cabian de sobra. */
+.admin-page .container { max-width: min(1700px, 96vw); }
+
+@media (max-width: 900px) {
+  /* La barra superior crece al apilarse, asi que fijar las pestanas las
+     montaria encima: aqui se quedan en el flujo normal. */
+  .admin-tabs { position: static; }
+  .admin-tab { padding: 12px 11px; font-size: .74rem; letter-spacing: .4px; }
+  .admin-orden { gap: 10px; }
+  .admin-orden__campo { flex: 1 1 100%; max-width: none; }
+  .admin-orden__conteo { padding-bottom: 0; }
+}

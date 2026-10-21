@@ -58,6 +58,16 @@ const Store = (() => {
 
   const mapMarca = (m) => ({ id: m.id, nombre: m.nombre });
 
+  /* Los productos ocultos ni siquiera se descargan. Si la columna "visible"
+     todavía no existe (falta correr el SQL), se vuelve a pedir sin ese
+     filtro para que la tienda siga funcionando igual. */
+  const leerProductos = async () => {
+    const q = () => sb.from("productos").select("*").order("orden", { ascending: true });
+    const r = await q().eq("visible", true);
+    if (r.error && /visible/i.test(r.error.message || "")) return q();
+    return r;
+  };
+
   /* Carga el catálogo desde Supabase. */
   const cargar = async () => {
     if (typeof sb === "undefined" || !sb) {
@@ -67,7 +77,7 @@ const Store = (() => {
     try {
       const [cats, prods, mrcs] = await Promise.all([
         sb.from("categorias").select("*").order("orden", { ascending: true }),
-        sb.from("productos").select("*").order("orden", { ascending: true }),
+        leerProductos(),
         sb.from("marcas").select("*").order("orden", { ascending: true })
       ]);
 

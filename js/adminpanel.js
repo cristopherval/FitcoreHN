@@ -80,6 +80,7 @@ const Admin = (() => {
     // "marcas" es opcional: si aún no creaste la tabla, el panel sigue funcionando.
     marcas = (m.error) ? [] : (m.data || []);
     if (m.error) toast("Marcas no disponibles: crea la tabla en Supabase (revisa las instrucciones).");
+    pintarFiltroCategorias();
     pintarTabla();
     pintarTablaCategorias();
     pintarTablaMarcas();
@@ -119,26 +120,30 @@ const Admin = (() => {
       const tipo = fija
         ? `<span class="pill pill--ok">Principal</span>`
         : `<span class="pill">Secundaria</span>`;
-      // Las principales se pueden editar (nombre/imagen) pero NO borrar.
-      const borrar = fija ? "" : `<button class="btn btn--danger btn--xs" data-del-cat="${c.id}">Eliminar</button>`;
+      // Eliminar pasó al formulario de edición; en la lista sólo queda abrirlo.
       return `
         <tr>
           <td data-label="Foto">${img ? `<img class="thumb" src="${img}" alt="${c.nombre}">` : "—"}</td>
-          <td data-label="Nombre"><strong>${c.nombre}</strong></td>
+          <td data-label="Nombre">
+            <strong>${c.nombre}</strong>
+            <!-- Resumen para móvil, donde la fila se reduce a foto y nombre. -->
+            <span class="fila-resumen">
+              <span class="fila-precio">${nProd} producto${nProd !== 1 ? "s" : ""}</span>
+              ${fija ? `<span class="pill pill--ok">Principal</span>` : ""}
+            </span>
+          </td>
           <td data-label="Descripción">${c.descripcion || "—"}</td>
           <td data-label="Productos">${nProd}</td>
           <td data-label="Tipo">${tipo}</td>
           <td data-label="Acciones" class="acciones">
             <button class="btn btn--ghost btn--xs" data-edit-cat="${c.id}">Editar</button>
-            ${borrar}
           </td>
         </tr>`;
     }).join("");
 
     body.querySelectorAll("[data-edit-cat]").forEach(b =>
       b.addEventListener("click", () => abrirFormCat(b.dataset.editCat)));
-    body.querySelectorAll("[data-del-cat]").forEach(b =>
-      b.addEventListener("click", () => eliminarCategoria(b.dataset.delCat)));
+
   };
 
   /* Convierte un nombre en un id estable (slug): "Aminoácidos" -> "aminoacidos". */
@@ -197,6 +202,13 @@ const Admin = (() => {
     else { prev.hidden = true; prev.removeAttribute("src"); }
 
     pintarIconos(c ? c.icono : null);
+
+    // Eliminar sólo al editar, y nunca en las tres principales.
+    const del = document.getElementById("btn-del-cat");
+    if (del) {
+      del.hidden = !c || esPrincipal(c.id);
+      del.onclick = () => { cerrarFormCat(); eliminarCategoria(c.id); };
+    }
 
     catModal().classList.add("is-open");
   };
@@ -365,11 +377,16 @@ const Admin = (() => {
     await cargarDatos();
   };
 
+  /* Ojo abierto / tachado para el botón de ocultar. Van aquí y no en
+     iconos.js porque sólo los usa el panel. */
+  const OJO_ABIERTO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg>`;
+  const OJO_CERRADO = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.9 9.9 0 0 1 12 5.5c6.4 0 10 6.5 10 6.5a18 18 0 0 1-3.3 4.1"/><path d="M6.4 7.6A17.6 17.6 0 0 0 2 12s3.6 6.5 10 6.5a9.8 9.8 0 0 0 4-.8"/><path d="M9.5 10.3a2.8 2.8 0 0 0 3.9 3.9"/></svg>`;
+
   /* ---------- Tabla de productos ----------
      Con el catálogo creciendo, una lista en el orden interno de la base no
      sirve para encontrar nada. Aquí se filtra, se ordena y se agrupa antes
      de pintar; todo en memoria, sin volver a consultar la nube. */
-  const vista = { orden: "nombre-asc", agrupar: "", buscar: "" };
+  const vista = { orden: "nombre-asc", agrupar: "", buscar: "", cat: "", min: "", max: "" };
 
   const porNombre = (a, b) =>
     a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" });
@@ -383,11 +400,19 @@ const Admin = (() => {
 
   const filtrar = (lista) => {
     const q = vista.buscar.trim().toLowerCase();
-    if (!q) return lista;
-    return lista.filter(p =>
-      p.nombre.toLowerCase().includes(q) ||
-      nombreMarca(p.marca_id).toLowerCase().includes(q) ||
-      nombreCat(p.categoria_id).toLowerCase().includes(q));
+    const min = vista.min === "" ? null : Number(vista.min);
+    const max = vista.max === "" ? null : Number(vista.max);
+    return lista.filter(p => {
+      if (vista.cat && p.categoria_id !== vista.cat) return false;
+      // El precio que se compara es el que paga el cliente (el de promo
+      // cuando la hay), que es el que ella ve en la lista.
+      if (min !== null && Number(p.precio) < min) return false;
+      if (max !== null && Number(p.precio) > max) return false;
+      if (!q) return true;
+      return p.nombre.toLowerCase().includes(q) ||
+             nombreMarca(p.marca_id).toLowerCase().includes(q) ||
+             nombreCat(p.categoria_id).toLowerCase().includes(q);
+    });
   };
 
   const ordenar = (lista) => {
@@ -409,16 +434,28 @@ const Admin = (() => {
     if (p.destacado) secciones.push(`<span class="pill pill--ok">Más vendidos</span>`);
     if (p.en_ofertas) secciones.push(`<span class="pill pill--ok">Ofertas</span>`);
     return `
-      <tr>
+      <tr class="${p.visible === false ? "fila-oculta" : ""}">
         <td data-label="Foto"><img class="thumb" src="${p.imagen_url || ""}" alt="${p.nombre}"></td>
-        <td data-label="Nombre"><strong>${p.nombre}</strong></td>
+        <td data-label="Nombre">
+          <strong>${p.nombre}</strong>
+          <!-- Resumen para móvil: ahí la fila sólo muestra foto, nombre y precio. -->
+          <span class="fila-resumen">
+            <span class="fila-precio">${fmt(p.precio)}</span>
+            ${p.precio_anterior ? `<span class="fila-precio--old">${fmt(p.precio_anterior)}</span>` : ""}
+            ${p.visible === false ? `<span class="pill pill--off">Oculto</span>` : ""}
+          </span>
+        </td>
         <td data-label="Categoría">${nombreCat(p.categoria_id)}${p.marca_id ? ` · ${nombreMarca(p.marca_id)}` : ""}</td>
         <td data-label="Normal">${fmt(p.precio_anterior || p.precio)}</td>
         <td data-label="Promo">${p.precio_anterior ? `<span class="promo-tag">${fmt(p.precio)}</span>` : "—"}</td>
         <td data-label="Dónde aparece" class="celda-secciones">${secciones.join(" ")}</td>
         <td data-label="Acciones" class="acciones">
           <button class="btn btn--ghost btn--xs" data-edit="${p.id}">Editar</button>
-          <button class="btn btn--danger btn--xs" data-del="${p.id}">Eliminar</button>
+          <button class="btn-ojo${p.visible === false ? " is-off" : ""}" data-ver="${p.id}"
+                  title="${p.visible === false ? "Mostrar en la tienda" : "Ocultar de la tienda"}"
+                  aria-label="${p.visible === false ? "Mostrar en la tienda" : "Ocultar de la tienda"}">
+            ${p.visible === false ? OJO_CERRADO : OJO_ABIERTO}
+          </button>
         </td>
       </tr>`;
   };
@@ -480,20 +517,60 @@ const Admin = (() => {
 
     body.querySelectorAll("[data-edit]").forEach(b =>
       b.addEventListener("click", () => abrirForm(b.dataset.edit)));
-    body.querySelectorAll("[data-del]").forEach(b =>
-      b.addEventListener("click", () => eliminar(b.dataset.del)));
+    body.querySelectorAll("[data-ver]").forEach(b =>
+      b.addEventListener("click", () => alternarVisible(b.dataset.ver)));
+  };
+
+  /* La lista de categorías del filtro se rellena con las que existen. */
+  const pintarFiltroCategorias = () => {
+    const sel = document.getElementById("prod-filtro-cat");
+    if (!sel) return;
+    const elegida = vista.cat;
+    sel.innerHTML = `<option value="">Todas</option>` +
+      categorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
+    // Si la categoría elegida se borró, el filtro vuelve a "Todas".
+    sel.value = categorias.some(c => c.id === elegida) ? elegida : "";
+    vista.cat = sel.value;
   };
 
   /* Los controles de la barra sólo redibujan: no tocan la base. */
   const initControlesTabla = () => {
-    const orden = document.getElementById("prod-orden");
-    const agrupar = document.getElementById("prod-agrupar");
-    const buscar = document.getElementById("prod-buscar");
-    if (orden) orden.addEventListener("change", () => { vista.orden = orden.value; pintarTabla(); });
-    if (agrupar) agrupar.addEventListener("change", () => { vista.agrupar = agrupar.value; pintarTabla(); });
-    if (buscar) buscar.addEventListener("input", () => { vista.buscar = buscar.value; pintarTabla(); });
+    const enlazar = (id, evento, fn) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener(evento, () => { fn(el.value); pintarTabla(); });
+    };
+    enlazar("prod-orden", "change", v => vista.orden = v);
+    enlazar("prod-agrupar", "change", v => vista.agrupar = v);
+    enlazar("prod-buscar", "input", v => vista.buscar = v);
+    enlazar("prod-filtro-cat", "change", v => vista.cat = v);
+    enlazar("prod-min", "input", v => vista.min = v);
+    enlazar("prod-max", "input", v => vista.max = v);
+
+    // En escritorio hay sitio de sobra: los filtros arrancan abiertos. En
+    // celular se quedan plegados para que la lista empiece arriba.
+    const filtrador = document.getElementById("prod-filtrador");
+    if (filtrador && window.innerWidth > 900) filtrador.open = true;
   };
 
+
+  /* Enciende o apaga un producto en la tienda. Es un solo campo, así que se
+     actualiza directo y se refleja al instante sin recargar todo. */
+  const alternarVisible = async (id) => {
+    const p = productos.find(x => String(x.id) === String(id));
+    if (!p) return;
+    const nuevo = p.visible === false;   // si estaba oculto, se muestra
+    const { error } = await sb.from("productos").update({ visible: nuevo }).eq("id", id);
+    if (error) {
+      // Si todavía no se corrió el SQL que agrega la columna, se avisa claro.
+      toast(/visible/i.test(error.message)
+        ? "Falta agregar la columna \"visible\" en la base (productos-visible.sql)."
+        : "No se pudo cambiar: " + error.message);
+      return;
+    }
+    p.visible = nuevo;
+    toast(nuevo ? "Producto visible en la tienda." : "Producto oculto de la tienda.");
+    pintarTabla();
+  };
 
   /* ---------- Formulario ---------- */
   const modal = () => document.getElementById("prod-modal");
@@ -521,6 +598,13 @@ const Admin = (() => {
     // Carga la galeria del producto (vacia y deshabilitada si es nuevo).
     galEstado("");
     galCargar(p ? p.id : null);
+
+    // Eliminar sólo tiene sentido sobre un producto que ya existe.
+    const del = document.getElementById("btn-del");
+    if (del) {
+      del.hidden = !p;
+      del.onclick = () => { cerrarForm(); eliminar(p.id); };
+    }
 
     modal().classList.add("is-open");
   };

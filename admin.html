@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=82">
+  <link rel="stylesheet" href="css/styles.css?v=83">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -116,36 +116,54 @@
 
         <!-- Orden y agrupacion: con el catalogo creciendo, encontrar un
              producto a ojo deja de funcionar. -->
-        <div class="admin-orden">
-          <label class="admin-orden__campo">
-            <span>Buscar</span>
-            <input type="search" id="prod-buscar" placeholder="Nombre o marca…" autocomplete="off">
-          </label>
-          <label class="admin-orden__campo">
-            <span>Ordenar por</span>
-            <select id="prod-orden">
-              <option value="nombre-asc">Nombre (A → Z)</option>
-              <option value="nombre-desc">Nombre (Z → A)</option>
-              <option value="precio-asc">Precio (menor a mayor)</option>
-              <option value="precio-desc">Precio (mayor a menor)</option>
-              <option value="categoria-asc">Categoría (A → Z)</option>
-              <option value="marca-asc">Marca (A → Z)</option>
-              <option value="reciente">Más recientes primero</option>
-            </select>
-          </label>
-          <label class="admin-orden__campo">
-            <span>Agrupar por</span>
-            <select id="prod-agrupar">
-              <option value="">Sin agrupar</option>
-              <option value="categoria">Categoría</option>
-              <option value="marca">Marca</option>
-            </select>
-          </label>
-          <span class="admin-orden__conteo muted" id="prod-conteo"></span>
-        </div>
+        <!-- En celular ocupaba media pantalla antes de la lista, asi que
+             va plegado; en escritorio se abre solo (ver adminpanel.js). -->
+        <details class="admin-filtrador" id="prod-filtrador">
+          <summary>Filtrar y ordenar</summary>
+          <div class="admin-orden">
+            <label class="admin-orden__campo">
+              <span>Buscar</span>
+              <input type="search" id="prod-buscar" placeholder="Nombre o marca…" autocomplete="off">
+            </label>
+            <label class="admin-orden__campo">
+              <span>Ordenar por</span>
+              <select id="prod-orden">
+                <option value="nombre-asc">Nombre (A → Z)</option>
+                <option value="nombre-desc">Nombre (Z → A)</option>
+                <option value="precio-asc">Precio (menor a mayor)</option>
+                <option value="precio-desc">Precio (mayor a menor)</option>
+                <option value="categoria-asc">Categoría (A → Z)</option>
+                <option value="marca-asc">Marca (A → Z)</option>
+                <option value="reciente">Más recientes primero</option>
+              </select>
+            </label>
+            <label class="admin-orden__campo">
+              <span>Categoría</span>
+              <select id="prod-filtro-cat">
+                <option value="">Todas</option>
+              </select>
+            </label>
+            <label class="admin-orden__campo admin-orden__campo--rango">
+              <span>Precio</span>
+              <span class="admin-rango">
+                <input type="number" id="prod-min" min="0" step="1" placeholder="Desde" aria-label="Precio desde" inputmode="numeric">
+                <input type="number" id="prod-max" min="0" step="1" placeholder="Hasta" aria-label="Precio hasta" inputmode="numeric">
+              </span>
+            </label>
+            <label class="admin-orden__campo">
+              <span>Agrupar por</span>
+              <select id="prod-agrupar">
+                <option value="">Sin agrupar</option>
+                <option value="categoria">Categoría</option>
+                <option value="marca">Marca</option>
+              </select>
+            </label>
+            <span class="admin-orden__conteo muted" id="prod-conteo"></span>
+          </div>
+        </details>
 
         <div class="table-wrap">
-          <table class="table">
+          <table class="table table--compacta">
             <thead>
               <tr>
                 <th>Foto</th><th>Nombre</th><th>Categoría</th>
@@ -170,7 +188,7 @@
         </p>
 
         <div class="table-wrap">
-          <table class="table">
+          <table class="table table--compacta">
             <thead>
               <tr><th>Foto</th><th>Nombre</th><th>Descripción</th><th>Productos</th><th>Tipo</th><th>Acciones</th></tr>
             </thead>
@@ -387,6 +405,9 @@
         <div class="form__actions form__row--full">
           <button type="submit" class="btn btn--accent" id="btn-save">Guardar producto</button>
           <button type="button" class="btn btn--ghost" id="btn-cancel">Cancelar</button>
+          <!-- Eliminar vive aquí, lejos del listado: borrar de un toque
+               por equivocación era demasiado fácil. Sólo sale al editar. -->
+          <button type="button" class="btn btn--danger btn--sm form__actions__borrar" id="btn-del" hidden>Eliminar producto</button>
         </div>
       </form>
     </div>
@@ -425,6 +446,7 @@
         <div class="form__actions">
           <button type="submit" class="btn btn--accent" id="btn-save-cat">Guardar categoría</button>
           <button type="button" class="btn btn--ghost" id="btn-cancel-cat">Cancelar</button>
+          <button type="button" class="btn btn--danger btn--sm form__actions__borrar" id="btn-del-cat" hidden>Eliminar categoría</button>
         </div>
       </form>
     </div>
@@ -452,13 +474,13 @@
   <!-- Toast -->
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
-  <script src="assets/vendor/supabase.js?v=82"></script>
-  <script src="js/supabase-config.js?v=82"></script>
-  <script src="js/data.js?v=82"></script>
-  <script src="js/confirm.js?v=82"></script>
-  <script src="js/iconos.js?v=82"></script>
-  <script src="js/admintabs.js?v=82"></script>
-  <script src="js/adminpanel.js?v=82"></script>
-  <script src="js/adminpedidos.js?v=82"></script>
+  <script src="assets/vendor/supabase.js?v=83"></script>
+  <script src="js/supabase-config.js?v=83"></script>
+  <script src="js/data.js?v=83"></script>
+  <script src="js/confirm.js?v=83"></script>
+  <script src="js/iconos.js?v=83"></script>
+  <script src="js/admintabs.js?v=83"></script>
+  <script src="js/adminpanel.js?v=83"></script>
+  <script src="js/adminpedidos.js?v=83"></script>
 </body>
 </html>

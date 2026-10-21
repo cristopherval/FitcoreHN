@@ -281,13 +281,13 @@ const AdminPedidos = (() => {
 
     body.innerHTML = zonas.map(z => `
       <tr data-zona="${z.id}">
-        <td><input type="text" class="admin-inline" data-campo="nombre" value="${esc(z.nombre)}"></td>
-        <td><input type="text" class="admin-inline" data-campo="descripcion" value="${esc(z.descripcion)}" placeholder="Opcional: condiciones de la entrega"></td>
-        <td><input type="number" class="admin-inline admin-inline--num" data-campo="costo" min="0" step="1" value="${Number(z.costo)}"></td>
-        <td class="center"><input type="checkbox" data-campo="pide_direccion" ${z.pide_direccion ? "checked" : ""}></td>
-        <td class="center"><input type="checkbox" data-campo="pide_identidad" ${z.pide_identidad ? "checked" : ""}></td>
-        <td class="center"><input type="checkbox" data-campo="activo" ${z.activo ? "checked" : ""}></td>
-        <td><button class="btn btn--ghost btn--sm" data-borrar-zona="${z.id}">Borrar</button></td>
+        <td data-label="Zona"><input type="text" class="admin-inline" data-campo="nombre" value="${esc(z.nombre)}"></td>
+        <td data-label="Detalle"><input type="text" class="admin-inline" data-campo="descripcion" value="${esc(z.descripcion)}" placeholder="Opcional: condiciones de la entrega"></td>
+        <td data-label="Costo (L.)"><input type="number" class="admin-inline admin-inline--num" data-campo="costo" min="0" step="1" value="${Number(z.costo)}"></td>
+        <td class="center" data-label="Pide dirección"><input type="checkbox" data-campo="pide_direccion" ${z.pide_direccion ? "checked" : ""}></td>
+        <td class="center" data-label="Pide identidad"><input type="checkbox" data-campo="pide_identidad" ${z.pide_identidad ? "checked" : ""}></td>
+        <td class="center" data-label="Activa"><input type="checkbox" data-campo="activo" ${z.activo ? "checked" : ""}></td>
+        <td data-label="" class="acciones"><button class="btn btn--ghost btn--sm" data-borrar-zona="${z.id}">Borrar</button></td>
       </tr>`).join("");
 
     body.querySelectorAll("[data-borrar-zona]").forEach(b =>

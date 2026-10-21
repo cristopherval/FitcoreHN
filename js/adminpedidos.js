@@ -373,6 +373,13 @@ const AdminPedidos = (() => {
     if (!sb) return;
 
     document.getElementById("btn-recargar-ped")?.addEventListener("click", cargar);
+
+    // Cargar un pedido a mano (venta por WhatsApp, apartado, etc.). Usa el
+    // mismo formulario que Finanzas, pero el registro nace en "nueva" para
+    // que siga el circuito normal de entrega.
+    document.getElementById("btn-add-pedido")?.addEventListener("click", () => {
+      if (typeof Finanzas !== "undefined") Finanzas.abrir(null, "nueva");
+    });
     document.getElementById("btn-guardar-zonas")?.addEventListener("click", guardarZonas);
     document.getElementById("btn-add-zona")?.addEventListener("click", agregarZona);
 

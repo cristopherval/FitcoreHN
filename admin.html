@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=88">
+  <link rel="stylesheet" href="css/styles.css?v=89">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -74,7 +74,10 @@
             <!-- Contador de los que están esperando que los revises. -->
             <span class="admin-pill" id="ped-contador" hidden>0 por revisar</span>
           </h1>
-          <button class="btn btn--ghost btn--sm" id="btn-recargar-ped">↻ Actualizar</button>
+          <div class="admin-section__botones">
+            <button class="btn btn--accent btn--sm" id="btn-add-pedido">+ Registrar pedido</button>
+            <button class="btn btn--ghost btn--sm" id="btn-recargar-ped">↻ Actualizar</button>
+          </div>
         </div>
         <p class="muted admin-wrap__hint">
           Cada compra llega con el comprobante adjunto y los datos del cliente.
@@ -550,7 +553,7 @@
         </div>
 
         <div class="form__row">
-          <label for="v-fecha">Fecha de la venta</label>
+          <label for="v-fecha">Fecha</label>
           <input id="v-fecha" type="datetime-local" required>
         </div>
         <div class="form__row">
@@ -563,6 +566,13 @@
           </select>
         </div>
 
+        <div class="form__row">
+          <label for="v-estado">Estado</label>
+          <select id="v-estado">
+            <option value="entregada">Entregada — ya la tiene el cliente</option>
+            <option value="nueva">Nueva — falta entregarla</option>
+          </select>
+        </div>
         <div class="form__row">
           <label for="v-zona">Entrega</label>
           <select id="v-zona"></select>
@@ -607,14 +617,14 @@
     </div>
   </div>
 
-  <script src="assets/vendor/supabase.js?v=88"></script>
-  <script src="js/supabase-config.js?v=88"></script>
-  <script src="js/data.js?v=88"></script>
-  <script src="js/confirm.js?v=88"></script>
-  <script src="js/iconos.js?v=88"></script>
-  <script src="js/admintabs.js?v=88"></script>
-  <script src="js/adminpanel.js?v=88"></script>
-  <script src="js/adminpedidos.js?v=88"></script>
-  <script src="js/adminfinanzas.js?v=88"></script>
+  <script src="assets/vendor/supabase.js?v=89"></script>
+  <script src="js/supabase-config.js?v=89"></script>
+  <script src="js/data.js?v=89"></script>
+  <script src="js/confirm.js?v=89"></script>
+  <script src="js/iconos.js?v=89"></script>
+  <script src="js/admintabs.js?v=89"></script>
+  <script src="js/adminpanel.js?v=89"></script>
+  <script src="js/adminpedidos.js?v=89"></script>
+  <script src="js/adminfinanzas.js?v=89"></script>
 </body>
 </html>

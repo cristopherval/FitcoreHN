@@ -218,6 +218,13 @@ const Finanzas = (() => {
   };
 
   /* ---------- Abrir / cerrar el formulario ---------- */
+
+  /* Un pedido que todavía no está entregado no vive en `ventas`, así que
+     se pide suelto cuando se abre desde la sección de Pedidos. */
+  const traer = async (id) => {
+    const { data } = await sb.from("pedidos").select("*").eq("id", id).single();
+    return data || null;
+  };
   const modal = () => document.getElementById("venta-modal");
   const cerrar = () => modal().classList.remove("is-open");
 
@@ -228,11 +235,17 @@ const Finanzas = (() => {
     if (elegida) sel.value = elegida;
   };
 
-  const abrir = async (id) => {
-    const v = id ? ventas.find(x => x.id === id) : null;
+  const abrir = async (id, estadoNuevo = "entregada") => {
+    // Al editar, `id` puede venir de Finanzas (ya está en memoria) o de
+    // Pedidos, que trabaja con otra lista.
+    const v = id ? (ventas.find(x => x.id === id) || await traer(id)) : null;
     editando = v;
 
-    document.getElementById("venta-modal-title").textContent = v ? `Venta #${v.numero}` : "Registrar venta";
+    const titulo = v
+      ? `${v.estado === "entregada" ? "Venta" : "Pedido"} #${v.numero}`
+      : (estadoNuevo === "nueva" ? "Registrar pedido" : "Registrar venta");
+    document.getElementById("venta-modal-title").textContent = titulo;
+    document.getElementById("v-estado").value = v ? v.estado : estadoNuevo;
     document.getElementById("v-id").value = v ? v.id : "";
     document.getElementById("v-nombre").value = v ? (v.cliente_nombre || "") : "";
     document.getElementById("v-tel").value = v ? (v.cliente_telefono || "") : "";
@@ -286,7 +299,7 @@ const Finanzas = (() => {
       zona_id: zonaId,
       zona_nombre: zonaNombre,
       subtotal: sub, envio, total,
-      estado: "entregada",
+      estado: document.getElementById("v-estado").value,
       nota_admin: document.getElementById("v-nota").value.trim() || null,
       creado_at: fecha.toISOString(),
       entregada_at: fecha.toISOString()
@@ -320,9 +333,12 @@ const Finanzas = (() => {
     btn.disabled = false;
     if (errItems) { toast("La venta se guardó, pero sus productos no: " + errItems.message); return; }
 
-    toast(editando ? "Venta actualizada." : "Venta registrada.");
+    const esPedido = datos.estado === "nueva";
+    toast(editando
+      ? (esPedido ? "Pedido actualizado." : "Venta actualizada.")
+      : (esPedido ? "Pedido registrado." : "Venta registrada."));
     cerrar();
-    await cargar();
+    await refrescar();
   };
 
   /* Mensaje claro cuando falta correr el SQL de esta sección. */
@@ -340,9 +356,16 @@ const Finanzas = (() => {
     if (!ok) return;
     const { error } = await sb.from("pedidos").delete().eq("id", id);
     if (error) { toast("No se pudo eliminar: " + error.message); return; }
-    toast("Venta eliminada.");
+    toast("Registro eliminado.");
     cerrar();
+    await refrescar();
+  };
+
+  /* Un registro cambia de lista según su estado, así que se refrescan las
+     dos. Pedidos puede no estar cargado todavía: por eso la comprobación. */
+  const refrescar = async () => {
     await cargar();
+    if (typeof AdminPedidos !== "undefined" && AdminPedidos.cargar) AdminPedidos.cargar();
   };
 
   /* ---------- Arranque ---------- */
@@ -380,7 +403,7 @@ const Finanzas = (() => {
     });
   };
 
-  return { init, cargar };
+  return { init, cargar, abrir };
 })();
 
 document.addEventListener("DOMContentLoaded", Finanzas.init);

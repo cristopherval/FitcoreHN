@@ -111,7 +111,7 @@ h1, h2, h3, h4 { font-family: var(--ff-display); font-weight: 700; line-height: 
 .grid { display: grid; gap: 22px; }
 .grid--products { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 /* Más vendidos: filas parejas (4 en escritorio · 2 en tablet · 1 en móvil) */
-.grid--bestsellers { grid-template-columns: 1fr; }
+.grid--bestsellers { grid-template-columns: repeat(2, 1fr); }
 @media (min-width: 560px) { .grid--bestsellers { grid-template-columns: repeat(2, 1fr); } }
 @media (min-width: 980px) { .grid--bestsellers { grid-template-columns: repeat(4, 1fr); } }
 
@@ -1430,4 +1430,36 @@ img, video { max-width: 100%; }
   .catmenu__close { color: var(--text-dim); font-size: 1rem; }
   .catmenu__lista { padding-bottom: 0; overflow: visible; }
   .catmenu__item { padding: 14px 16px; font-size: .95rem; }
+}
+
+
+/* ============ 25. CUADRICULA COMPACTA EN CELULAR ============
+   Con una tarjeta por fila habia que desplazar mucho para ver pocos
+   productos, y las de categoria quedaban como franjas muy altas. En dos
+   columnas entran de un vistazo. Las medidas van en % y rem para que
+   acompanen cualquier ancho, desde 320px hasta la tablet.
+   ========================================================================= */
+@media (max-width: 639px) {
+  /* Categorias: cuadradas, dos por fila. */
+  .cat-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .cat { aspect-ratio: 1 / 1; justify-content: center; padding-bottom: 0; }
+  .cat .cat__icono { width: 56px; height: 56px; margin: 0 auto 10px; }
+  .cat .cat__icono svg { width: 26px; height: 26px; }
+  .cat .cat__name { font-size: .88rem; letter-spacing: .3px; padding: 0 8px; }
+}
+
+@media (max-width: 559px) {
+  /* Mas vendidos: dos columnas con la tarjeta reducida a lo esencial. */
+  .grid--bestsellers { gap: 12px; }
+  .grid--bestsellers .card__media { padding: 10px; }
+  .grid--bestsellers .card__body { padding: 10px 11px 12px; }
+  .grid--bestsellers .card__cat { font-size: .62rem; letter-spacing: 1px; margin-bottom: 4px; }
+  .grid--bestsellers .card__title { font-size: .85rem; margin-bottom: 6px; }
+  .grid--bestsellers .card__desc { display: none; }
+  .grid--bestsellers .card__footer { flex-direction: column; align-items: stretch; gap: 8px; }
+  .grid--bestsellers .card__prices { flex-direction: row; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+  .grid--bestsellers .card__price { font-size: 1.02rem; }
+  .grid--bestsellers .card__price--old { font-size: .72rem; }
+  .grid--bestsellers .card__footer .btn { width: 100%; justify-content: center; padding: 8px 10px; font-size: .74rem; }
+  .grid--bestsellers .card__badge { top: 8px; left: 8px; font-size: .66rem; padding: 3px 7px; }
 }

@@ -428,25 +428,14 @@ const Admin = (() => {
       case "marca-asc":     return l.sort((a, b) => clave(a, "marca").localeCompare(clave(b, "marca"), "es") || porNombre(a, b));
       case "reciente":      return l.sort((a, b) => new Date(b.creado_at || 0) - new Date(a.creado_at || 0));
       case "nombre-asc":    return l.sort(porNombre);
-      // "orden" es el de la tienda: el que ella acomoda con las flechas.
+      // "orden" es el de la tienda: el que ella acomoda arrastrando.
       default:              return l.sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
     }
   };
 
-  // Mover de puesto solo significa algo cuando la lista está en el orden de
-  // la tienda. Agrupada, lo que se ve no es la secuencia real.
+  // Arrastrar solo significa algo con la lista en el orden de la tienda.
+  // Agrupada, lo que se ve no es la secuencia real.
   const sePuedeMover = () => vista.orden === "orden" && !vista.agrupar;
-
-  const flechas = (p, i, total) => {
-    if (!sePuedeMover()) return "";
-    return `
-      <span class="mover">
-        <button class="btn-mover" data-sube="${p.id}" ${i === 0 ? "disabled" : ""}
-                title="Subir" aria-label="Subir ${p.nombre}">▲</button>
-        <button class="btn-mover" data-baja="${p.id}" ${i === total - 1 ? "disabled" : ""}
-                title="Bajar" aria-label="Bajar ${p.nombre}">▼</button>
-      </span>`;
-  };
 
   const filaProducto = (p, i = 0, total = 0) => {
     const secciones = [];
@@ -454,7 +443,7 @@ const Admin = (() => {
     if (p.destacado) secciones.push(`<span class="pill pill--ok">Más vendidos</span>`);
     if (p.en_ofertas) secciones.push(`<span class="pill pill--ok">Ofertas</span>`);
     return `
-      <tr class="${p.visible === false ? "fila-oculta" : ""}">
+      <tr data-id="${p.id}" class="${p.visible === false ? "fila-oculta" : ""}${sePuedeMover() ? " fila-movible" : ""}">
         <td data-label="Foto"><img class="thumb" src="${p.imagen_url || ""}" alt="${p.nombre}"></td>
         <td data-label="Nombre">
           <strong>${p.nombre}</strong>
@@ -470,7 +459,6 @@ const Admin = (() => {
         <td data-label="Promo">${p.precio_anterior ? `<span class="promo-tag">${fmt(p.precio)}</span>` : "—"}</td>
         <td data-label="Dónde aparece" class="celda-secciones">${secciones.join(" ")}</td>
         <td data-label="Acciones" class="acciones">
-          ${flechas(p, i, total)}
           <button class="btn btn--ghost btn--xs" data-edit="${p.id}">Editar</button>
           <button class="btn-ojo${p.visible === false ? " is-off" : ""}" data-ver="${p.id}"
                   title="${p.visible === false ? "Mostrar en la tienda" : "Ocultar de la tienda"}"
@@ -498,8 +486,6 @@ const Admin = (() => {
       return;
     }
 
-    // Con las flechas puestas, en celular la fila necesita dos renglones:
-    // cuatro controles dejan el nombre en tres letras.
     const tabla = body.closest("table");
     if (tabla) tabla.classList.toggle("is-ordenando", sePuedeMover());
 
@@ -551,10 +537,7 @@ const Admin = (() => {
       b.addEventListener("click", () => abrirForm(b.dataset.edit)));
     body.querySelectorAll("[data-ver]").forEach(b =>
       b.addEventListener("click", () => alternarVisible(b.dataset.ver)));
-    body.querySelectorAll("[data-sube]").forEach(b =>
-      b.addEventListener("click", () => mover(b.dataset.sube, -1)));
-    body.querySelectorAll("[data-baja]").forEach(b =>
-      b.addEventListener("click", () => mover(b.dataset.baja, 1)));
+
   };
 
   /* Una pestaña por categoría, más "Todas" al final. La lista completa era
@@ -608,36 +591,110 @@ const Admin = (() => {
   };
 
 
-  /* Sube o baja un producto de puesto. Se intercambia el valor de `orden`
-     con el vecino que se ve en pantalla: así, filtrando por categoría, se
-     acomoda esa categoría sin tocar el orden relativo de las demás.
+  /* ---------- Reordenar arrastrando ----------
+     Las flechas obligaban a un toque por puesto: mover algo del final al
+     principio eran diez toques. Se arrastra la fila y listo.
 
-     El cambio se pinta antes de guardarlo —la lista responde al toque— y se
-     revierte si la nube lo rechaza. */
-  const mover = async (id, dir) => {
-    const lista = ordenar(filtrar(productos));
-    const i = lista.findIndex(p => String(p.id) === String(id));
-    const j = i + dir;
-    if (i < 0 || j < 0 || j >= lista.length) return;
+     Va con Pointer Events, que son los mismos para ratón y dedo. En el
+     teléfono hace falta mantener presionado un momento antes de que agarre:
+     si agarrara al primer toque, no se podría desplazar la lista.
+     ========================================================================= */
+  const ESPERA_TACTIL = 220;   // ms que hay que sostener con el dedo
+  const UMBRAL = 6;            // px de movimiento antes de considerarlo arrastre
 
-    const a = lista[i], b = lista[j];
-    const ordenA = a.orden ?? 0, ordenB = b.orden ?? 0;
-    if (ordenA === ordenB) { toast("Esos dos están en el mismo puesto; edítalos para separarlos."); return; }
+  let arr = null;              // estado del arrastre en curso
 
-    a.orden = ordenB; b.orden = ordenA;
+  /* Guarda la secuencia que quedó en pantalla. Se reparten entre las filas
+     los mismos valores de `orden` que ya tenían, ordenados: así se acomoda
+     esta categoría sin tocar el orden relativo de las demás. */
+  const guardarOrden = async (body) => {
+    const ids = [...body.querySelectorAll("tr[data-id]")].map(tr => tr.dataset.id);
+    const filas = ids.map(id => productos.find(p => String(p.id) === String(id))).filter(Boolean);
+    if (filas.length < 2) return;
+
+    const valores = filas.map(p => p.orden ?? 0).sort((a, b) => a - b);
+    const cambios = [];
+
+    filas.forEach((p, i) => {
+      if (p.orden !== valores[i]) { p.orden = valores[i]; cambios.push(p); }
+    });
+    if (!cambios.length) return;
+
+    const res = await Promise.all(cambios.map(p =>
+      sb.from("productos").update({ orden: p.orden }).eq("id", p.id)));
+
+    const err = res.find(r => r.error);
+    if (err) { toast("No se pudo guardar el orden: " + err.error.message); await cargarDatos(); return; }
+    toast("Orden guardado.");
     pintarTabla();
+  };
 
-    const [r1, r2] = await Promise.all([
-      sb.from("productos").update({ orden: ordenB }).eq("id", a.id),
-      sb.from("productos").update({ orden: ordenA }).eq("id", b.id)
-    ]);
+  const soltar = (body) => {
+    if (!arr) return;
+    const activo = arr.activo;
+    clearTimeout(arr.timer);
+    if (arr.fila) arr.fila.classList.remove("is-arrastrando");
+    document.body.classList.remove("arrastrando");
+    arr = null;
+    if (activo) guardarOrden(body);
+  };
 
-    const err = r1.error || r2.error;
-    if (err) {
-      a.orden = ordenA; b.orden = ordenB;
-      pintarTabla();
-      toast("No se pudo mover: " + err.message);
-    }
+  const initArrastre = () => {
+    const body = document.getElementById("tabla-body");
+    if (!body || body.dataset.arrastreListo) return;
+    body.dataset.arrastreListo = "1";
+
+    body.addEventListener("pointerdown", (e) => {
+      if (!sePuedeMover()) return;
+      // Los botones de la fila siguen siendo botones.
+      if (e.target.closest("button, a, input, select")) return;
+      const fila = e.target.closest("tr[data-id]");
+      if (!fila) return;
+
+      arr = { fila, y: e.clientY, activo: false, timer: null, tactil: e.pointerType !== "mouse" };
+
+      const agarrar = () => {
+        if (!arr) return;
+        arr.activo = true;
+        fila.classList.add("is-arrastrando");
+        document.body.classList.add("arrastrando");
+        try { fila.setPointerCapture(e.pointerId); } catch (_) { }
+      };
+
+      // Con el dedo: hay que sostener. Con el ratón: en cuanto se mueve.
+      if (arr.tactil) arr.timer = setTimeout(agarrar, ESPERA_TACTIL);
+      else arr.agarrar = agarrar;
+    });
+
+    body.addEventListener("pointermove", (e) => {
+      if (!arr) return;
+
+      if (!arr.activo) {
+        const d = Math.abs(e.clientY - arr.y);
+        // Si el dedo se mueve antes de tiempo, es que quería desplazar.
+        if (arr.tactil) { if (d > UMBRAL) { clearTimeout(arr.timer); arr = null; } return; }
+        if (d > UMBRAL && arr.agarrar) arr.agarrar();
+        if (!arr.activo) return;
+      }
+
+      const bajo = document.elementFromPoint(e.clientX, e.clientY);
+      const otra = bajo && bajo.closest("tr[data-id]");
+      if (!otra || otra === arr.fila || otra.parentNode !== arr.fila.parentNode) return;
+
+      // Antes o después, según de qué lado del centro vaya el puntero.
+      const caja = otra.getBoundingClientRect();
+      const despues = e.clientY > caja.top + caja.height / 2;
+      otra.parentNode.insertBefore(arr.fila, despues ? otra.nextSibling : otra);
+    });
+
+    // touchmove aparte: es el único que puede frenar el desplazamiento de
+    // la página mientras se arrastra.
+    body.addEventListener("touchmove", (e) => {
+      if (arr && arr.activo) e.preventDefault();
+    }, { passive: false });
+
+    ["pointerup", "pointercancel"].forEach(ev =>
+      body.addEventListener(ev, () => soltar(body)));
   };
 
   /* Enciende o apaga un producto en la tienda. Es un solo campo, así que se
@@ -950,6 +1007,7 @@ const Admin = (() => {
     initFormCat();
     initFormMarca();
     initControlesTabla();
+    initArrastre();
     document.getElementById("btn-add").addEventListener("click", () => abrirForm(null));
     document.getElementById("btn-add-cat").addEventListener("click", () => abrirFormCat(null));
     document.getElementById("btn-add-marca").addEventListener("click", () => abrirFormMarca(null));

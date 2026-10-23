@@ -105,12 +105,19 @@ const AdminPedidos = (() => {
           </td>
           <td data-label="" class="acciones">
             <button class="btn btn--ghost btn--sm" data-ver="${p.id}">Ver</button>
+            <button class="btn btn--ghost btn--sm" data-editar-ped="${p.id}">Editar</button>
           </td>
         </tr>`;
     }).join("");
 
     body.querySelectorAll("[data-ver]").forEach(b =>
       b.addEventListener("click", () => abrir(b.dataset.ver)));
+    // Corregir los datos (cliente, productos, precios…) usa el formulario
+    // completo, que vive en adminfinanzas.js.
+    body.querySelectorAll("[data-editar-ped]").forEach(b =>
+      b.addEventListener("click", () => {
+        if (typeof Finanzas !== "undefined") Finanzas.abrir(b.dataset.editarPed);
+      }));
   };
 
   /* ---------- Modal de detalle ---------- */
@@ -377,6 +384,13 @@ const AdminPedidos = (() => {
     // Cargar un pedido a mano (venta por WhatsApp, apartado, etc.). Usa el
     // mismo formulario que Finanzas, pero el registro nace en "nueva" para
     // que siga el circuito normal de entrega.
+    document.getElementById("pm-editar")?.addEventListener("click", () => {
+      if (!actual || typeof Finanzas === "undefined") return;
+      const id = actual.id;
+      cerrar();
+      Finanzas.abrir(id);
+    });
+
     document.getElementById("btn-add-pedido")?.addEventListener("click", () => {
       if (typeof Finanzas !== "undefined") Finanzas.abrir(null, "nueva");
     });

@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=98">
+  <link rel="stylesheet" href="css/styles.css?v=99">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -220,8 +220,9 @@
         </div>
         <p class="muted admin-wrap__hint">
           Los cambios se guardan en la nube y <strong>se ven al instante</strong> en la tienda. No hace falta publicar nada.
-          Con <strong>&ldquo;Mi orden en la tienda&rdquo;</strong> las flechas ▲▼ mueven cada producto: ese es el orden
-          que ve el cliente cuando deja &ldquo;Recomendado&rdquo; en esa categoría.
+          Con <strong>&ldquo;Mi orden en la tienda&rdquo;</strong> puedes <strong>arrastrar</strong> cada producto para
+          acomodarlo: en la computadora manteniendo pulsado y moviendo; en el teléfono, dejando el dedo un
+          momento sobre él y jalándolo. Ese es el orden que ve el cliente cuando deja &ldquo;Recomendado&rdquo;.
         </p>
 
         <!-- Orden y agrupacion: con el catalogo creciendo, encontrar un
@@ -417,6 +418,8 @@
 
           <div class="ped-modal__acciones">
             <button class="btn btn--accent btn--block" id="pm-entregada">✓ Marcar entregada</button>
+            <!-- Corregir los datos del pedido: abre el mismo formulario de Finanzas. -->
+            <button class="btn btn--ghost btn--block btn--sm" id="pm-editar">✎ Editar datos del pedido</button>
             <button class="btn btn--ghost btn--block btn--sm" id="pm-guardar-nota">Guardar nota</button>
             <button class="btn btn--danger btn--block btn--sm" id="pm-cancelar">✕ Cancelar pedido</button>
             <button class="btn btn--ghost btn--block btn--sm" id="pm-reabrir" hidden>↩ Volver a "nueva"</button>
@@ -747,15 +750,15 @@
     </div>
   </div>
 
-  <script src="assets/vendor/supabase.js?v=98"></script>
-  <script src="js/supabase-config.js?v=98"></script>
-  <script src="js/data.js?v=98"></script>
-  <script src="js/confirm.js?v=98"></script>
-  <script src="js/iconos.js?v=98"></script>
-  <script src="js/admintabs.js?v=98"></script>
-  <script src="js/adminpanel.js?v=98"></script>
-  <script src="js/adminpedidos.js?v=98"></script>
-  <script src="js/adminclientes.js?v=98"></script>
-  <script src="js/adminfinanzas.js?v=98"></script>
+  <script src="assets/vendor/supabase.js?v=99"></script>
+  <script src="js/supabase-config.js?v=99"></script>
+  <script src="js/data.js?v=99"></script>
+  <script src="js/confirm.js?v=99"></script>
+  <script src="js/iconos.js?v=99"></script>
+  <script src="js/admintabs.js?v=99"></script>
+  <script src="js/adminpanel.js?v=99"></script>
+  <script src="js/adminpedidos.js?v=99"></script>
+  <script src="js/adminclientes.js?v=99"></script>
+  <script src="js/adminfinanzas.js?v=99"></script>
 </body>
 </html>

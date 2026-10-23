@@ -83,7 +83,7 @@ const Admin = (() => {
     // "marcas" es opcional: si aún no creaste la tabla, el panel sigue funcionando.
     marcas = (m.error) ? [] : (m.data || []);
     if (m.error) toast("Marcas no disponibles: crea la tabla en Supabase (revisa las instrucciones).");
-    pintarFiltroCategorias();
+    pintarChipsCategorias();
     pintarTabla();
     pintarTablaCategorias();
     pintarTablaMarcas();
@@ -406,7 +406,7 @@ const Admin = (() => {
     const min = vista.min === "" ? null : Number(vista.min);
     const max = vista.max === "" ? null : Number(vista.max);
     return lista.filter(p => {
-      if (vista.cat && p.categoria_id !== vista.cat) return false;
+      if (vista.cat && vista.cat !== "__todas" && p.categoria_id !== vista.cat) return false;
       // El precio que se compara es el que paga el cliente (el de promo
       // cuando la hay), que es el que ella ve en la lista.
       if (min !== null && Number(p.precio) < min) return false;
@@ -506,13 +506,19 @@ const Admin = (() => {
     const lista = ordenar(filtrar(productos));
 
     if (conteo) {
-      conteo.textContent = lista.length === productos.length
-        ? `${productos.length} producto${productos.length !== 1 ? "s" : ""}`
-        : `${lista.length} de ${productos.length}`;
+      const enPestana = productos.filter(p =>
+        !vista.cat || vista.cat === "__todas" || p.categoria_id === vista.cat).length;
+      conteo.textContent = lista.length === enPestana
+        ? `${lista.length} producto${lista.length !== 1 ? "s" : ""}`
+        : `${lista.length} de ${enPestana}`;
     }
 
     if (!lista.length) {
-      body.innerHTML = `<tr><td colspan="7" class="muted">Ningún producto coincide con la búsqueda.</td></tr>`;
+      // Vacío por el filtro o vacío de verdad: no es lo mismo para quien mira.
+      const filtrando = vista.buscar.trim() || vista.min !== "" || vista.max !== "";
+      body.innerHTML = `<tr><td colspan="7" class="muted">${filtrando
+        ? "Ningún producto coincide con la búsqueda."
+        : "Esta categoría todavía no tiene productos."}</td></tr>`;
       return;
     }
 
@@ -551,16 +557,36 @@ const Admin = (() => {
       b.addEventListener("click", () => mover(b.dataset.baja, 1)));
   };
 
-  /* La lista de categorías del filtro se rellena con las que existen. */
-  const pintarFiltroCategorias = () => {
-    const sel = document.getElementById("prod-filtro-cat");
-    if (!sel) return;
-    const elegida = vista.cat;
-    sel.innerHTML = `<option value="">Todas</option>` +
-      categorias.map(c => `<option value="${c.id}">${c.nombre}</option>`).join("");
-    // Si la categoría elegida se borró, el filtro vuelve a "Todas".
-    sel.value = categorias.some(c => c.id === elegida) ? elegida : "";
-    vista.cat = sel.value;
+  /* Una pestaña por categoría, más "Todas" al final. La lista completa era
+     demasiado larga para encontrar nada: ahora se entra por categoría.
+     Se arma con las categorías que existan, así las nuevas salen solas. */
+  const pintarChipsCategorias = () => {
+    const cont = document.getElementById("prod-cats");
+    if (!cont) return;
+
+    // Si la categoría elegida ya no existe (o es la primera visita), se
+    // abre en la primera: es lo que ella quiere ver de entrada.
+    if (!categorias.some(c => c.id === vista.cat) && vista.cat !== "__todas") {
+      vista.cat = categorias.length ? categorias[0].id : "__todas";
+    }
+
+    const cuenta = (id) => productos.filter(p => p.categoria_id === id).length;
+
+    cont.innerHTML =
+      categorias.map(c => `
+        <button class="admin-chip${vista.cat === c.id ? " is-active" : ""}" data-cat-chip="${c.id}">
+          ${c.nombre} <span class="admin-chip__n">${cuenta(c.id)}</span>
+        </button>`).join("") +
+      `<button class="admin-chip${vista.cat === "__todas" ? " is-active" : ""}" data-cat-chip="__todas">
+        Todas <span class="admin-chip__n">${productos.length}</span>
+      </button>`;
+
+    cont.querySelectorAll("[data-cat-chip]").forEach(b =>
+      b.addEventListener("click", () => {
+        vista.cat = b.dataset.catChip;
+        pintarChipsCategorias();
+        pintarTabla();
+      }));
   };
 
   /* Los controles de la barra sólo redibujan: no tocan la base. */
@@ -572,7 +598,6 @@ const Admin = (() => {
     enlazar("prod-orden", "change", v => vista.orden = v);
     enlazar("prod-agrupar", "change", v => vista.agrupar = v);
     enlazar("prod-buscar", "input", v => vista.buscar = v);
-    enlazar("prod-filtro-cat", "change", v => vista.cat = v);
     enlazar("prod-min", "input", v => vista.min = v);
     enlazar("prod-max", "input", v => vista.max = v);
 

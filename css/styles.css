@@ -1940,3 +1940,24 @@ img, video { max-width: 100%; }
     margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);
   }
 }
+
+/* ---- Pestañas de categoria dentro de Productos ----
+   Con el catalogo creciendo, una sola lista obligaba a desplazar de mas.
+   Se entra por categoria; "Todas" queda al final para el caso raro. */
+.admin-filtros--cats { margin: 16px 0 4px; gap: 8px; flex-wrap: wrap; }
+.admin-chip__n {
+  display: inline-block; margin-left: 5px; font-size: .74rem;
+  color: var(--text-dim); background: var(--surface-2);
+  border-radius: 999px; padding: 1px 7px;
+}
+.admin-chip.is-active .admin-chip__n { background: rgba(255,255,255,.22); color: var(--accent-ink); }
+
+@media (max-width: 640px) {
+  /* En celular se deslizan de lado en vez de apilarse en cuatro renglones. */
+  .admin-filtros--cats {
+    flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none;
+    padding-bottom: 4px; -webkit-overflow-scrolling: touch;
+  }
+  .admin-filtros--cats::-webkit-scrollbar { display: none; }
+  .admin-filtros--cats .admin-chip { flex: 0 0 auto; }
+}

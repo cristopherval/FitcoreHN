@@ -119,6 +119,11 @@ const Finanzas = (() => {
 
   let costosListos = true;
 
+  /* Lo que de verdad costó una venta: el costo de lista de sus productos
+     menos el descuento que el proveedor le hizo en esa compra. */
+  const costoLista = (v) => ((costoPorVenta[v.id] || {}).costo || 0);
+  const costoReal = (v) => costoLista(v) * (1 - Number(v.descuento_costo || 0) / 100);
+
   /* ---------- Lista y resumen ---------- */
   const filtradas = () => {
     const [desde, hasta] = rango();
@@ -139,7 +144,9 @@ const Finanzas = (() => {
 
     const total = lista.reduce((a, v) => a + Number(v.total || 0), 0);
     const envios = lista.reduce((a, v) => a + Number(v.envio || 0), 0);
-    const costo = lista.reduce((a, v) => a + ((costoPorVenta[v.id] || {}).costo || 0), 0);
+    const lista_ = lista.reduce((a, v) => a + costoLista(v), 0);
+    const costo = lista.reduce((a, v) => a + costoReal(v), 0);
+    const ahorro = lista_ - costo;
     const enProducto = lista.reduce((a, v) => a + ((costoPorVenta[v.id] || {}).venta || 0), 0);
     const utilidad = enProducto - costo;
     const margen = enProducto ? Math.round((utilidad / enProducto) * 100) : 0;
@@ -150,7 +157,7 @@ const Finanzas = (() => {
     cont.innerHTML = `
       <div class="fin-card fin-card--fuerte">
         <span class="fin-card__label">Utilidad</span>
-        <strong class="fin-card__valor">${hayCostos ? fmt(utilidad) : "—"}</strong>
+        <strong class="fin-card__valor">${hayCostos ? fmt(Math.round(utilidad)) : "—"}</strong>
         <span class="fin-card__pie">${hayCostos
           ? `${margen}% de lo vendido · + ${fmt(envios)} de envíos`
           : "Pon el costo de tus productos para verla"}</span>
@@ -162,8 +169,10 @@ const Finanzas = (() => {
       </div>
       <div class="fin-card">
         <span class="fin-card__label">Te costó</span>
-        <strong class="fin-card__valor">${hayCostos ? fmt(costo) : "—"}</strong>
-        <span class="fin-card__pie">la mercadería</span>
+        <strong class="fin-card__valor">${hayCostos ? fmt(Math.round(costo)) : "—"}</strong>
+        <span class="fin-card__pie">${hayCostos && ahorro > 0
+          ? `ya con ${fmt(Math.round(ahorro))} de descuento`
+          : "la mercadería"}</span>
       </div>
       <div class="fin-card">
         <span class="fin-card__label">Promedio por venta</span>
@@ -196,7 +205,7 @@ const Finanzas = (() => {
 
       const g = grupos.get(clave) || { etiqueta, total: 0, costo: 0, producto: 0, n: 0 };
       g.total += Number(v.total || 0);
-      g.costo += ((costoPorVenta[v.id] || {}).costo || 0);
+      g.costo += costoReal(v);
       g.producto += ((costoPorVenta[v.id] || {}).venta || 0);
       g.n++;
       grupos.set(clave, g);
@@ -209,7 +218,7 @@ const Finanzas = (() => {
       <h3 class="fin-desglose__titulo">${hayCostos ? "Utilidad" : "Vendido"} por ${porMes ? "mes" : "día"}</h3>
       <div class="fin-desglose__filas">
         ${filas.map(([, g]) => {
-          const valor = hayCostos ? (g.producto - g.costo) : g.total;
+          const valor = Math.round(hayCostos ? (g.producto - g.costo) : g.total);
           const pct = Math.max(2, Math.round((valor / tope) * 100));
           return `
             <div class="fin-barra">
@@ -324,18 +333,37 @@ const Finanzas = (() => {
 
   const completas = () => lineas.filter(l => l.producto_id && l.cantidad > 0);
 
+  /* Porcentaje que el proveedor rebajó, 0 si la casilla está apagada. */
+  const dtoActual = () => {
+    const on = document.getElementById("v-dto-on");
+    if (!on || !on.checked) return 0;
+    const v = Number(document.getElementById("v-dto").value) || 0;
+    return Math.min(100, Math.max(0, v));
+  };
+
   const recalcular = () => {
     const l = completas();
     const sub = l.reduce((a, x) => a + x.precio * x.cantidad, 0);
-    const costo = l.reduce((a, x) => a + (x.costo || 0) * x.cantidad, 0);
+    const lista = l.reduce((a, x) => a + (x.costo || 0) * x.cantidad, 0);
     const envio = Number(document.getElementById("v-envio").value) || 0;
+
+    const dto = dtoActual();
+    const rebaja = lista * dto / 100;
+    const costo = lista - rebaja;
 
     document.getElementById("v-subtotal").textContent = fmt(sub);
     document.getElementById("v-envio-txt").textContent = fmt(envio);
     document.getElementById("v-total").textContent = fmt(sub + envio);
-    document.getElementById("v-costo").textContent = fmt(costo);
-    document.getElementById("v-utilidad").textContent = fmt(sub - costo);
-    return { sub, envio, total: sub + envio, costo };
+    document.getElementById("v-costo").textContent = fmt(lista);
+    document.getElementById("v-costo-real").textContent = fmt(Math.round(costo));
+    document.getElementById("v-utilidad").textContent = fmt(Math.round(sub - costo));
+
+    const fila = document.getElementById("v-dto-fila");
+    fila.hidden = !dto;
+    document.getElementById("v-dto-txt").textContent = "− " + fmt(Math.round(rebaja));
+    document.getElementById("v-dto-campo").hidden = !document.getElementById("v-dto-on").checked;
+
+    return { sub, envio, total: sub + envio, costo: lista, dto };
   };
 
   /* ---------- Sugerencias de cliente ----------
@@ -486,6 +514,11 @@ const Finanzas = (() => {
     document.getElementById("v-envio").value = v ? Number(v.envio || 0) : 0;
     document.getElementById("v-dir").value = v ? (v.cliente_direccion || "") : "";
     document.getElementById("v-nota").value = v ? (v.nota_admin || "") : "";
+
+    const dto = v ? Number(v.descuento_costo || 0) : 0;
+    document.getElementById("v-dto-on").checked = dto > 0;
+    document.getElementById("v-dto").value = dto > 0 ? dto : 5;
+    document.getElementById("v-dto-campo").hidden = !(dto > 0);
     pintarZonas(v ? v.zona_id : "");
 
     // Las líneas de una venta ya existente se traen de la base; una nueva
@@ -516,7 +549,7 @@ const Finanzas = (() => {
     const validas = completas();
     if (!validas.length) { toast("Agrega al menos un producto a la venta."); return; }
 
-    const { sub, envio, total } = recalcular();
+    const { sub, envio, total, dto } = recalcular();
     const zonaSel = document.getElementById("v-zona");
     const zonaId = zonaSel.value || null;
     const zonaNombre = zonaId
@@ -534,6 +567,7 @@ const Finanzas = (() => {
       subtotal: sub, envio, total,
       estado: document.getElementById("v-estado").value,
       nota_admin: document.getElementById("v-nota").value.trim() || null,
+      descuento_costo: dto,
       creado_at: fecha.toISOString(),
       entregada_at: fecha.toISOString()
     };
@@ -582,6 +616,8 @@ const Finanzas = (() => {
   /* Mensaje claro cuando falta correr el SQL de esta sección. */
   const aviso = (error) => {
     const m = error.message || "";
+    if (/descuento_costo/i.test(m))
+      return "Falta correr el SQL del descuento del proveedor en Supabase (descuento-proveedor.sql).";
     if (/origen/i.test(m) || /metodo_pago/i.test(m))
       return "Falta correr el SQL de Finanzas en Supabase (finanzas.sql).";
     return "No se pudo guardar: " + m;
@@ -617,6 +653,8 @@ const Finanzas = (() => {
     document.getElementById("venta-close").addEventListener("click", cerrar);
     document.getElementById("btn-cancel-venta").addEventListener("click", cerrar);
     document.getElementById("v-envio").addEventListener("input", recalcular);
+    document.getElementById("v-dto-on").addEventListener("change", recalcular);
+    document.getElementById("v-dto").addEventListener("input", recalcular);
 
     const nombre = document.getElementById("v-nombre");
     nombre.addEventListener("input", () => { clienteId = null; sugerir(); });

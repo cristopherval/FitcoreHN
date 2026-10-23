@@ -1961,3 +1961,13 @@ img, video { max-width: 100%; }
   .admin-filtros--cats::-webkit-scrollbar { display: none; }
   .admin-filtros--cats .admin-chip { flex: 0 0 auto; }
 }
+
+/* ---- Descuento del proveedor en una venta ---- */
+.venta-dto { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: .9rem; }
+.venta-dto input { accent-color: var(--accent); width: 17px; height: 17px; cursor: pointer; flex: 0 0 auto; }
+.venta-dto__campo { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.venta-dto__campo input {
+  width: 90px; padding: 8px 10px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--surface);
+  font: inherit; font-size: .9rem; color: var(--text);
+}

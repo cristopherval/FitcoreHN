@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=97">
+  <link rel="stylesheet" href="css/styles.css?v=98">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -651,12 +651,27 @@
           <button type="button" class="btn btn--ghost btn--sm" id="v-add-linea">+ Elegir productos</button>
         </div>
 
+        <!-- Descuento que el proveedor le hizo en esta compra. Va aparte del
+             costo de cada línea: ese sigue siendo el de lista. -->
+        <div class="form__row form__row--full">
+          <label class="venta-dto">
+            <input type="checkbox" id="v-dto-on">
+            <span>El proveedor me hizo descuento en la compra</span>
+          </label>
+          <div class="venta-dto__campo" id="v-dto-campo" hidden>
+            <input type="number" id="v-dto" min="0" max="100" step="0.5" value="5" aria-label="Porcentaje de descuento">
+            <span class="muted">% sobre el costo</span>
+          </div>
+        </div>
+
         <div class="form__row form__row--full">
           <div class="venta-totales">
             <div><span>Subtotal</span><strong id="v-subtotal">L. 0</strong></div>
             <div><span>Envío</span><strong id="v-envio-txt">L. 0</strong></div>
             <div class="venta-totales__total"><span>Total que cobras</span><strong id="v-total">L. 0</strong></div>
-            <div><span>Lo que te costó</span><strong id="v-costo">L. 0</strong></div>
+            <div><span>Costo de lista</span><strong id="v-costo">L. 0</strong></div>
+            <div id="v-dto-fila" hidden><span>Descuento del proveedor</span><strong id="v-dto-txt">− L. 0</strong></div>
+            <div><span>Lo que te costó</span><strong id="v-costo-real">L. 0</strong></div>
             <div class="venta-totales__util"><span>Tu utilidad</span><strong id="v-utilidad">L. 0</strong></div>
           </div>
         </div>
@@ -732,15 +747,15 @@
     </div>
   </div>
 
-  <script src="assets/vendor/supabase.js?v=97"></script>
-  <script src="js/supabase-config.js?v=97"></script>
-  <script src="js/data.js?v=97"></script>
-  <script src="js/confirm.js?v=97"></script>
-  <script src="js/iconos.js?v=97"></script>
-  <script src="js/admintabs.js?v=97"></script>
-  <script src="js/adminpanel.js?v=97"></script>
-  <script src="js/adminpedidos.js?v=97"></script>
-  <script src="js/adminclientes.js?v=97"></script>
-  <script src="js/adminfinanzas.js?v=97"></script>
+  <script src="assets/vendor/supabase.js?v=98"></script>
+  <script src="js/supabase-config.js?v=98"></script>
+  <script src="js/data.js?v=98"></script>
+  <script src="js/confirm.js?v=98"></script>
+  <script src="js/iconos.js?v=98"></script>
+  <script src="js/admintabs.js?v=98"></script>
+  <script src="js/adminpanel.js?v=98"></script>
+  <script src="js/adminpedidos.js?v=98"></script>
+  <script src="js/adminclientes.js?v=98"></script>
+  <script src="js/adminfinanzas.js?v=98"></script>
 </body>
 </html>

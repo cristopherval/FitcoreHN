@@ -273,5 +273,9 @@ const UI = (() => {
     injectProductsJsonLd(Store.getProductos(), "Catálogo FITCORE HN");
   };
 
-  return { initHome, initCommon, renderProductos, tarjetaProducto, urlProducto, injectProductsJsonLd };
+  // revelarVisibles se comparte para cuando una lista se vuelve a pintar
+  // (ordenar una categoría, por ejemplo): las tarjetas nuevas nacen con la
+  // clase .reveal, invisibles, y hay que ponerlas a la vista otra vez.
+  return { initHome, initCommon, renderProductos, tarjetaProducto, urlProducto,
+           injectProductsJsonLd, revelar: revelarVisibles };
 })();

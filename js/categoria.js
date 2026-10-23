@@ -46,10 +46,44 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const productos = Store.getProductos().filter(p => p.categoria === cat.id);
   if (countEl) countEl.textContent = `${productos.length} producto${productos.length !== 1 ? "s" : ""}`;
-  if (gridEl) {
-    gridEl.innerHTML = productos.length
-      ? productos.map((p, i) => UI.tarjetaProducto(p, i)).join("")
+
+  /* Orden elegido por quien mira. "Recomendado" es el orden que le diste a
+     los productos en el panel, que es el que vale por defecto. */
+  const ordenar = (lista, modo) => {
+    const l = [...lista];
+    const porNombre = (a, b) => a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" });
+    switch (modo) {
+      case "precio-asc":  return l.sort((a, b) => a.precio - b.precio || porNombre(a, b));
+      case "precio-desc": return l.sort((a, b) => b.precio - a.precio || porNombre(a, b));
+      case "nombre-asc":  return l.sort(porNombre);
+      // Primero lo rebajado, y dentro de eso el descuento más grande.
+      case "oferta":      return l.sort((a, b) => dcto(b) - dcto(a) || porNombre(a, b));
+      default:            return l;
+    }
+  };
+
+  const dcto = (p) => (p.precioAnterior && p.precioAnterior > p.precio)
+    ? (1 - p.precio / p.precioAnterior) : 0;
+
+  const pintar = (modo) => {
+    if (!gridEl) return;
+    const lista = ordenar(productos, modo);
+    gridEl.innerHTML = lista.length
+      ? lista.map((p, i) => UI.tarjetaProducto(p, i)).join("")
       : `<p class="muted">Aún no hay productos en esta categoría. ¡Pronto agregaremos más!</p>`;
+    // Las tarjetas nuevas nacen con la animación de aparición: hay que
+    // volver a observarlas o se quedarían invisibles.
+    if (typeof UI !== "undefined" && UI.revelar) UI.revelar();
+  };
+
+  pintar("");
+
+  // La barra solo aparece si hay de dónde elegir.
+  const barra = document.getElementById("cat-orden");
+  const sel = document.getElementById("cat-orden-sel");
+  if (barra && sel && productos.length > 1) {
+    barra.hidden = false;
+    sel.addEventListener("change", () => pintar(sel.value));
   }
   // Datos estructurados de los productos de esta categoría (SEO).
   if (typeof UI !== "undefined" && UI.injectProductsJsonLd) {

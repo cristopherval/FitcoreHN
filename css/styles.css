@@ -1884,3 +1884,29 @@ img, video { max-width: 100%; }
 .footer__autor { margin-top: 4px; font-size: .78rem; }
 .footer__autor a { color: #a9adb4; border-bottom: 1px solid rgba(255,255,255,.18); }
 .footer__autor a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ---- Ordenar los productos de una categoria ----
+   Va sobre la cuadricula y alineada a la derecha: es un control secundario,
+   no debe competir con los productos. */
+.cat-orden {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: 10px; margin-bottom: 18px; flex-wrap: wrap;
+}
+.cat-orden label {
+  font-family: var(--ff-display); text-transform: uppercase;
+  letter-spacing: 1px; font-size: .74rem; color: var(--text-dim);
+}
+.cat-orden select {
+  padding: 9px 12px; border: 1px solid var(--border);
+  border-radius: var(--radius-sm); background: var(--surface);
+  font: inherit; font-size: .88rem; color: var(--text); cursor: pointer;
+  max-width: 100%;
+}
+.cat-orden select:hover { border-color: var(--accent); }
+.cat-orden select:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+
+@media (max-width: 560px) {
+  /* A lo ancho: en movil el select apretado a la derecha queda minusculo. */
+  .cat-orden { justify-content: space-between; gap: 8px; }
+  .cat-orden select { flex: 1 1 auto; min-width: 0; }
+}

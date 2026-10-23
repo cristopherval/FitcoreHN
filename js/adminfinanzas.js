@@ -59,15 +59,29 @@ const Finanzas = (() => {
     return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
   };
 
-  /* ---------- Carga ---------- */
-  const cargar = async () => {
-    const [ped, prod, zon, cli] = await Promise.all([
-      sb.from("pedidos").select("*").eq("estado", "entregada").order("creado_at", { ascending: false }),
+  /* ---------- Carga ----------
+     El catálogo, las zonas y los clientes van aparte de las ventas: el
+     formulario también se abre desde Pedidos ("+ Registrar pedido"), sin
+     haber pasado nunca por Finanzas. Si estos datos colgaran de la lista de
+     ventas, ahí el selector de productos saldría vacío. */
+  const cargarApoyo = async () => {
+    const [prod, zon, cli] = await Promise.all([
       sb.from("productos").select("id,nombre,precio,costo,imagen_url").order("nombre", { ascending: true }),
       sb.from("zonas_envio").select("*").order("orden", { ascending: true }),
       // Para sugerir clientes al armar una venta. Si todavía no se corrió
       // clientes.sql, simplemente no hay sugerencias.
       sb.from("clientes").select("id,nombre,telefono,direccion,identidad")
+    ]);
+    catalogo = prod.error ? [] : (prod.data || []);
+    zonas = zon.error ? [] : (zon.data || []);
+    registro = cli.error ? [] : (cli.data || []);
+    if (prod.error) console.error("No se pudo leer el catálogo:", prod.error.message);
+  };
+
+  const cargar = async () => {
+    const [ped] = await Promise.all([
+      sb.from("pedidos").select("*").eq("estado", "entregada").order("creado_at", { ascending: false }),
+      cargarApoyo()
     ]);
 
     if (ped.error) {
@@ -76,9 +90,6 @@ const Finanzas = (() => {
       return;
     }
     ventas = ped.data || [];
-    catalogo = prod.data || [];
-    zonas = zon.data || [];
-    registro = cli.error ? [] : (cli.data || []);
     await cargarCostos();
     pintar();
   };
@@ -452,6 +463,9 @@ const Finanzas = (() => {
   };
 
   const abrir = async (id, estadoNuevo = "entregada") => {
+    // Abierto desde Pedidos, puede que nada haya pedido el catálogo todavía.
+    if (!catalogo.length) await cargarApoyo();
+
     // Al editar, `id` puede venir de Finanzas (ya está en memoria) o de
     // Pedidos, que trabaja con otra lista.
     const v = id ? (ventas.find(x => x.id === id) || await traer(id)) : null;

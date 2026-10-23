@@ -389,7 +389,7 @@ const Admin = (() => {
      Con el catálogo creciendo, una lista en el orden interno de la base no
      sirve para encontrar nada. Aquí se filtra, se ordena y se agrupa antes
      de pintar; todo en memoria, sin volver a consultar la nube. */
-  const vista = { orden: "nombre-asc", agrupar: "", buscar: "", cat: "", min: "", max: "" };
+  const vista = { orden: "orden", agrupar: "", buscar: "", cat: "", min: "", max: "" };
 
   const porNombre = (a, b) =>
     a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" });
@@ -427,11 +427,28 @@ const Admin = (() => {
       case "categoria-asc": return l.sort((a, b) => clave(a, "categoria").localeCompare(clave(b, "categoria"), "es") || porNombre(a, b));
       case "marca-asc":     return l.sort((a, b) => clave(a, "marca").localeCompare(clave(b, "marca"), "es") || porNombre(a, b));
       case "reciente":      return l.sort((a, b) => new Date(b.creado_at || 0) - new Date(a.creado_at || 0));
-      default:              return l.sort(porNombre);
+      case "nombre-asc":    return l.sort(porNombre);
+      // "orden" es el de la tienda: el que ella acomoda con las flechas.
+      default:              return l.sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
     }
   };
 
-  const filaProducto = (p) => {
+  // Mover de puesto solo significa algo cuando la lista está en el orden de
+  // la tienda. Agrupada, lo que se ve no es la secuencia real.
+  const sePuedeMover = () => vista.orden === "orden" && !vista.agrupar;
+
+  const flechas = (p, i, total) => {
+    if (!sePuedeMover()) return "";
+    return `
+      <span class="mover">
+        <button class="btn-mover" data-sube="${p.id}" ${i === 0 ? "disabled" : ""}
+                title="Subir" aria-label="Subir ${p.nombre}">▲</button>
+        <button class="btn-mover" data-baja="${p.id}" ${i === total - 1 ? "disabled" : ""}
+                title="Bajar" aria-label="Bajar ${p.nombre}">▼</button>
+      </span>`;
+  };
+
+  const filaProducto = (p, i = 0, total = 0) => {
     const secciones = [];
     secciones.push(`<span class="pill">${nombreCat(p.categoria_id)}</span>`);
     if (p.destacado) secciones.push(`<span class="pill pill--ok">Más vendidos</span>`);
@@ -453,6 +470,7 @@ const Admin = (() => {
         <td data-label="Promo">${p.precio_anterior ? `<span class="promo-tag">${fmt(p.precio)}</span>` : "—"}</td>
         <td data-label="Dónde aparece" class="celda-secciones">${secciones.join(" ")}</td>
         <td data-label="Acciones" class="acciones">
+          ${flechas(p, i, total)}
           <button class="btn btn--ghost btn--xs" data-edit="${p.id}">Editar</button>
           <button class="btn-ojo${p.visible === false ? " is-off" : ""}" data-ver="${p.id}"
                   title="${p.visible === false ? "Mostrar en la tienda" : "Ocultar de la tienda"}"
@@ -480,6 +498,11 @@ const Admin = (() => {
       return;
     }
 
+    // Con las flechas puestas, en celular la fila necesita dos renglones:
+    // cuatro controles dejan el nombre en tres letras.
+    const tabla = body.closest("table");
+    if (tabla) tabla.classList.toggle("is-ordenando", sePuedeMover());
+
     const lista = ordenar(filtrar(productos));
 
     if (conteo) {
@@ -494,7 +517,7 @@ const Admin = (() => {
     }
 
     if (!vista.agrupar) {
-      body.innerHTML = lista.map(filaProducto).join("");
+      body.innerHTML = lista.map((p, i) => filaProducto(p, i, lista.length)).join("");
     } else {
       // Ya vienen ordenados por ese campo, así que basta con recorrer
       // y abrir una cabecera cada vez que cambia el grupo.
@@ -522,6 +545,10 @@ const Admin = (() => {
       b.addEventListener("click", () => abrirForm(b.dataset.edit)));
     body.querySelectorAll("[data-ver]").forEach(b =>
       b.addEventListener("click", () => alternarVisible(b.dataset.ver)));
+    body.querySelectorAll("[data-sube]").forEach(b =>
+      b.addEventListener("click", () => mover(b.dataset.sube, -1)));
+    body.querySelectorAll("[data-baja]").forEach(b =>
+      b.addEventListener("click", () => mover(b.dataset.baja, 1)));
   };
 
   /* La lista de categorías del filtro se rellena con las que existen. */
@@ -555,6 +582,38 @@ const Admin = (() => {
     if (filtrador && window.innerWidth > 900) filtrador.open = true;
   };
 
+
+  /* Sube o baja un producto de puesto. Se intercambia el valor de `orden`
+     con el vecino que se ve en pantalla: así, filtrando por categoría, se
+     acomoda esa categoría sin tocar el orden relativo de las demás.
+
+     El cambio se pinta antes de guardarlo —la lista responde al toque— y se
+     revierte si la nube lo rechaza. */
+  const mover = async (id, dir) => {
+    const lista = ordenar(filtrar(productos));
+    const i = lista.findIndex(p => String(p.id) === String(id));
+    const j = i + dir;
+    if (i < 0 || j < 0 || j >= lista.length) return;
+
+    const a = lista[i], b = lista[j];
+    const ordenA = a.orden ?? 0, ordenB = b.orden ?? 0;
+    if (ordenA === ordenB) { toast("Esos dos están en el mismo puesto; edítalos para separarlos."); return; }
+
+    a.orden = ordenB; b.orden = ordenA;
+    pintarTabla();
+
+    const [r1, r2] = await Promise.all([
+      sb.from("productos").update({ orden: ordenB }).eq("id", a.id),
+      sb.from("productos").update({ orden: ordenA }).eq("id", b.id)
+    ]);
+
+    const err = r1.error || r2.error;
+    if (err) {
+      a.orden = ordenA; b.orden = ordenB;
+      pintarTabla();
+      toast("No se pudo mover: " + err.message);
+    }
+  };
 
   /* Enciende o apaga un producto en la tienda. Es un solo campo, así que se
      actualiza directo y se refleja al instante sin recargar todo. */

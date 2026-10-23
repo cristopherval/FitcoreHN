@@ -1910,3 +1910,33 @@ img, video { max-width: 100%; }
   .cat-orden { justify-content: space-between; gap: 8px; }
   .cat-orden select { flex: 1 1 auto; min-width: 0; }
 }
+
+/* ---- Mover un producto de puesto ----
+   Flechas pegadas entre si: son un solo control de dos mitades, no dos
+   botones sueltos. */
+.mover { display: inline-flex; flex-direction: column; gap: 2px; vertical-align: middle; }
+.btn-mover {
+  width: 26px; height: 16px; padding: 0; cursor: pointer;
+  display: grid; place-items: center; font-size: .6rem; line-height: 1;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface); color: var(--text-dim);
+  transition: color .15s, border-color .15s, background .15s;
+}
+.btn-mover:hover:not(:disabled) { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+.btn-mover:disabled { opacity: .35; cursor: default; }
+
+@media (max-width: 900px) {
+  /* En la fila compacta las flechas van juntas con el resto de acciones. */
+  .mover { flex-direction: row; gap: 3px; }
+  .btn-mover { width: 28px; height: 28px; font-size: .68rem; }
+}
+
+@media (max-width: 900px) {
+  /* Reordenando, las acciones bajan a su propio renglon: asi el nombre se
+     lee completo en vez de cortarse a tres letras. */
+  .table--compacta.is-ordenando tr { flex-wrap: wrap; }
+  .table--compacta.is-ordenando td.acciones {
+    flex: 1 1 100%; justify-content: flex-end; gap: 8px;
+    margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border);
+  }
+}

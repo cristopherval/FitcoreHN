@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=95">
+  <link rel="stylesheet" href="css/styles.css?v=96">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -220,6 +220,8 @@
         </div>
         <p class="muted admin-wrap__hint">
           Los cambios se guardan en la nube y <strong>se ven al instante</strong> en la tienda. No hace falta publicar nada.
+          Con <strong>&ldquo;Mi orden en la tienda&rdquo;</strong> las flechas ▲▼ mueven cada producto: ese es el orden
+          que ve el cliente cuando deja &ldquo;Recomendado&rdquo;. Filtra por categoría para acomodar una sola.
         </p>
 
         <!-- Orden y agrupacion: con el catalogo creciendo, encontrar un
@@ -236,6 +238,7 @@
             <label class="admin-orden__campo">
               <span>Ordenar por</span>
               <select id="prod-orden">
+                <option value="orden" selected>Mi orden en la tienda</option>
                 <option value="nombre-asc">Nombre (A → Z)</option>
                 <option value="nombre-desc">Nombre (Z → A)</option>
                 <option value="precio-asc">Precio (menor a mayor)</option>
@@ -731,15 +734,15 @@
     </div>
   </div>
 
-  <script src="assets/vendor/supabase.js?v=95"></script>
-  <script src="js/supabase-config.js?v=95"></script>
-  <script src="js/data.js?v=95"></script>
-  <script src="js/confirm.js?v=95"></script>
-  <script src="js/iconos.js?v=95"></script>
-  <script src="js/admintabs.js?v=95"></script>
-  <script src="js/adminpanel.js?v=95"></script>
-  <script src="js/adminpedidos.js?v=95"></script>
-  <script src="js/adminclientes.js?v=95"></script>
-  <script src="js/adminfinanzas.js?v=95"></script>
+  <script src="assets/vendor/supabase.js?v=96"></script>
+  <script src="js/supabase-config.js?v=96"></script>
+  <script src="js/data.js?v=96"></script>
+  <script src="js/confirm.js?v=96"></script>
+  <script src="js/iconos.js?v=96"></script>
+  <script src="js/admintabs.js?v=96"></script>
+  <script src="js/adminpanel.js?v=96"></script>
+  <script src="js/adminpedidos.js?v=96"></script>
+  <script src="js/adminclientes.js?v=96"></script>
+  <script src="js/adminfinanzas.js?v=96"></script>
 </body>
 </html>

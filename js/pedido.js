@@ -107,7 +107,7 @@ const Pedido = (() => {
     document.getElementById("pd-lineas").innerHTML = (pedido.items || []).map(l => `
       <div class="co-linea">
         <div class="co-linea__info">
-          <span class="co-linea__nombre">${l.nombre}</span>
+          <span class="co-linea__nombre">${escHTML(l.nombre)}</span>
           <span class="co-linea__cant">${l.cantidad} × ${fmt(l.precio)}</span>
         </div>
         <span class="co-linea__sub">${fmt(l.subtotal)}</span>

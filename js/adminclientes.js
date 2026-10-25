@@ -98,8 +98,8 @@ const Clientes = (() => {
       const d = datos(c);
       return `
         <tr data-id="${c.id}">
-          <td data-label="Cliente"><strong>${c.nombre}</strong></td>
-          <td data-label="Teléfono"><small class="muted">${c.telefono || "—"}</small></td>
+          <td data-label="Cliente"><strong>${escHTML(c.nombre)}</strong></td>
+          <td data-label="Teléfono"><small class="muted">${escHTML(c.telefono || "—")}</small></td>
           <td data-label="Compras">${d.compras}</td>
           <td data-label="Total"><strong>${fmt(d.gastado)}</strong></td>
           <td data-label="Última" class="muted"><small>${fechaCorta(d.ultima)}</small></td>

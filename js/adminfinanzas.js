@@ -262,8 +262,8 @@ const Finanzas = (() => {
           <td data-label="Venta"><strong>#${v.numero}</strong></td>
           <td data-label="Fecha" class="muted">${fechaCorta(v.creado_at)}</td>
           <td data-label="Cliente">
-            ${v.cliente_nombre}
-            <br><small class="muted">${v.cliente_telefono || ""}</small>
+            ${escHTML(v.cliente_nombre)}
+            <br><small class="muted">${escHTML(v.cliente_telefono)}</small>
           </td>
           <td data-label="Origen">
             <span class="pd-badge ${mostrador ? "" : "is-ok"}">${mostrador ? "Mostrador" : "Tienda"}</span>
@@ -304,7 +304,7 @@ const Finanzas = (() => {
       <div class="venta-linea" data-i="${i}">
         <span class="venta-linea__prod">
           ${foto ? `<img class="thumb" src="${foto}" alt="">` : `<span class="thumb"></span>`}
-          <span class="venta-linea__nombre">${l.nombre || "(sin nombre)"}</span>
+          <span class="venta-linea__nombre">${escHTML(l.nombre || "(sin nombre)")}</span>
         </span>
         <input type="number" data-campo="cantidad" min="1" step="1" value="${l.cantidad}" aria-label="Cantidad">
         <input type="number" data-campo="precio" min="0" step="1" value="${l.precio}" aria-label="Precio de venta">
@@ -408,8 +408,8 @@ const Finanzas = (() => {
 
     caja.innerHTML = hits.map(c => `
       <button type="button" class="v-sugiere__item" data-cli="${c.id}">
-        <span>${c.nombre}</span>
-        <small class="muted">${c.telefono || "sin teléfono"}</small>
+        <span>${escHTML(c.nombre)}</span>
+        <small class="muted">${escHTML(c.telefono || "sin teléfono")}</small>
       </button>`).join("");
     caja.hidden = false;
 
@@ -444,7 +444,7 @@ const Finanzas = (() => {
       ? lista.map(p => `
           <button type="button" class="pp-item${seleccion.has(p.id) ? " is-sel" : ""}" data-pick="${p.id}">
             ${p.imagen_url ? `<img class="thumb" src="${p.imagen_url}" alt="">` : `<span class="thumb"></span>`}
-            <span class="pp-item__nombre">${p.nombre}</span>
+            <span class="pp-item__nombre">${escHTML(p.nombre)}</span>
             <span class="pp-item__precio">${fmt(p.precio)}</span>
             <span class="pp-item__check" aria-hidden="true">✓</span>
           </button>`).join("")

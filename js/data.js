@@ -10,6 +10,14 @@
    datos para que la tienda nunca se vea vacía. Mantenerlos al día es opcional.
    ========================================================================= */
 
+/* Convierte texto en HTML inofensivo. OBLIGATORIO para todo lo que escribe
+   un cliente (nombre, teléfono, dirección, notas…) antes de meterlo en un
+   innerHTML: si no, alguien podría poner código en su nombre al comprar y
+   se ejecutaría en el panel con tu sesión de admin. */
+const escHTML = (s) => String(s == null ? "" : s)
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
 /* Configuración del negocio: punto único de verdad para datos de contacto. */
 const CONFIG = {
   marca: "FITCORE HN",

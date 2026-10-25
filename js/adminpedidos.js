@@ -91,10 +91,10 @@ const AdminPedidos = (() => {
           <td data-label="Pedido"><strong>#${p.numero}</strong></td>
           <td data-label="Fecha" class="muted">${fecha(p.creado_at)}</td>
           <td data-label="Cliente">
-            ${p.cliente_nombre}
-            <br><small class="muted">${p.cliente_telefono}</small>
+            ${escHTML(p.cliente_nombre)}
+            <br><small class="muted">${escHTML(p.cliente_telefono)}</small>
           </td>
-          <td data-label="Entrega"><small>${p.zona_nombre || "—"}</small></td>
+          <td data-label="Entrega"><small>${escHTML(p.zona_nombre || "—")}</small></td>
           <td data-label="Total"><strong>${fmt(p.total)}</strong></td>
           <td data-label="Estado">
             <span class="pd-badge ${e.clase}">${e.txt}</span>
@@ -177,7 +177,7 @@ const AdminPedidos = (() => {
     document.getElementById("pm-lineas").innerHTML = (items || []).map(i => `
       <div class="co-linea">
         <div class="co-linea__info">
-          <span class="co-linea__nombre">${i.nombre}</span>
+          <span class="co-linea__nombre">${escHTML(i.nombre)}</span>
           <span class="co-linea__cant">${i.cantidad} × ${fmt(i.precio)}</span>
         </div>
         <span class="co-linea__sub">${fmt(i.subtotal)}</span>

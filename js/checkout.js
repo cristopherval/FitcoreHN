@@ -32,7 +32,11 @@ const Checkout = (() => {
     CANTIDAD_INVALIDA:   "Hay una cantidad inválida en el carrito.",
     PRODUCTO_NO_EXISTE:  "Uno de los productos ya no está disponible. Vacía el carrito y vuelve a armarlo.",
     DEMASIADOS_ITEMS:    "El pedido tiene demasiados productos distintos. Escríbenos por WhatsApp.",
-    METODO_INVALIDO:     "Forma de pago no válida."
+    METODO_INVALIDO:     "Forma de pago no válida.",
+    // Límites anti-spam (ver limite-pedidos.sql).
+    DEMASIADOS_PEDIDOS_PENDIENTES: `Ya tienes 3 pedidos sin entregar con este número. Escríbenos por WhatsApp al ${CONFIG.whatsappVisible} y lo resolvemos.`,
+    DEMASIADOS_PEDIDOS_HORA:       `Hiciste varios pedidos en poco tiempo. Escríbenos por WhatsApp al ${CONFIG.whatsappVisible} para completar tu compra.`,
+    DEMASIADOS_PEDIDOS_TIENDA:     `Estamos recibiendo muchos pedidos en este momento. Escríbenos por WhatsApp al ${CONFIG.whatsappVisible} y te atendemos de inmediato.`
   };
 
   const traducirError = (msg) => {

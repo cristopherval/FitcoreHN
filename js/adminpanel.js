@@ -71,15 +71,16 @@ const Admin = (() => {
 
   /* ---------- Cargar datos desde Supabase ---------- */
   const cargarDatos = async () => {
-    const [c, p, m] = await Promise.all([
+    const [c, p, m, k] = await Promise.all([
       sb.from("categorias").select("*").order("orden", { ascending: true }),
       sb.from("productos").select("*").order("orden", { ascending: true }),
-      sb.from("marcas").select("*").order("orden", { ascending: true })
+      sb.from("marcas").select("*").order("orden", { ascending: true }),
+      leerCostos()
     ]);
     if (c.error) { toast("Error cargando categorías: " + c.error.message); return; }
     if (p.error) { toast("Error cargando productos: " + p.error.message); return; }
     categorias = c.data || [];
-    productos = p.data || [];
+    productos = unirCostos(p.data || [], k);
     // "marcas" es opcional: si aún no creaste la tabla, el panel sigue funcionando.
     marcas = (m.error) ? [] : (m.data || []);
     if (m.error) toast("Marcas no disponibles: crea la tabla en Supabase (revisa las instrucciones).");
@@ -438,10 +439,7 @@ const Admin = (() => {
   const sePuedeMover = () => vista.orden === "orden" && !vista.agrupar;
 
   const filaProducto = (p, i = 0, total = 0) => {
-    const secciones = [];
-    secciones.push(`<span class="pill">${nombreCat(p.categoria_id)}</span>`);
-    if (p.destacado) secciones.push(`<span class="pill pill--ok">Más vendidos</span>`);
-    if (p.en_ofertas) secciones.push(`<span class="pill pill--ok">Ofertas</span>`);
+    const dto = Number(p.descuento_costo) || 0;
     return `
       <tr data-id="${p.id}" class="${p.visible === false ? "fila-oculta" : ""}${sePuedeMover() ? " fila-movible" : ""}">
         <td data-label="Foto"><img class="thumb" src="${p.imagen_url || ""}" alt="${p.nombre}"></td>
@@ -457,7 +455,12 @@ const Admin = (() => {
         <td data-label="Categoría">${nombreCat(p.categoria_id)}${p.marca_id ? ` · ${nombreMarca(p.marca_id)}` : ""}</td>
         <td data-label="Normal">${fmt(p.precio_anterior || p.precio)}</td>
         <td data-label="Promo">${p.precio_anterior ? `<span class="promo-tag">${fmt(p.precio)}</span>` : "—"}</td>
-        <td data-label="Dónde aparece" class="celda-secciones">${secciones.join(" ")}</td>
+        <td data-label="Desc. proveedor">
+          <label class="dto-check" title="El proveedor me da descuento en este producto">
+            <input type="checkbox" data-dto="${p.id}"${dto ? " checked" : ""}>
+            <span>${dto ? `${dto}%` : "No"}</span>
+          </label>
+        </td>
         <td data-label="Acciones" class="acciones">
           <button class="btn btn--ghost btn--xs" data-edit="${p.id}">Editar</button>
           <button class="btn-ojo${p.visible === false ? " is-off" : ""}" data-ver="${p.id}"
@@ -537,6 +540,12 @@ const Admin = (() => {
       b.addEventListener("click", () => abrirForm(b.dataset.edit)));
     body.querySelectorAll("[data-ver]").forEach(b =>
       b.addEventListener("click", () => alternarVisible(b.dataset.ver)));
+    body.querySelectorAll("[data-dto]").forEach(c =>
+      c.addEventListener("change", async () => {
+        const p = productos.find(x => String(x.id) === String(c.dataset.dto));
+        const ok = await cambiarDtoProducto(c.dataset.dto, c.checked ? dtoAlActivar(p) : 0);
+        if (!ok) c.checked = !c.checked;
+      }));
 
   };
 
@@ -699,6 +708,58 @@ const Admin = (() => {
 
   /* Enciende o apaga un producto en la tienda. Es un solo campo, así que se
      actualiza directo y se refleja al instante sin recargar todo. */
+  /* ---------- Costos privados ----------
+     El costo y el descuento del proveedor NO están en "productos" (que lee
+     cualquiera con la clave pública de la tienda) sino en
+     "productos_costos", que sólo deja leer y escribir a los correos de la
+     tabla "admins" (ver costos-privados.sql). Aquí se leen aparte y se
+     pegan a cada producto, así el resto del panel sigue usando p.costo. */
+  const leerCostos = () => sb.from("productos_costos").select("*");
+
+  const unirCostos = (lista, res) => {
+    if (res && res.error) toast(avisoCostos(res.error, "No se pudieron leer los costos: "));
+    const porId = new Map(((res && res.data) || []).map(k => [String(k.producto_id), k]));
+    return lista.map(p => {
+      const k = porId.get(String(p.id));
+      return { ...p, costo: k ? Number(k.costo) : 0, descuento_costo: k ? Number(k.descuento_costo) : 0 };
+    });
+  };
+
+  /* Guarda sólo los campos que vengan (costo y/o descuento_costo). */
+  const guardarCostos = (id, campos) =>
+    sb.from("productos_costos").upsert({ producto_id: id, ...campos }, { onConflict: "producto_id" });
+
+  const avisoCostos = (error, prefijo) => {
+    const m = error.message || String(error);
+    if (/productos_costos/i.test(m) && /exist|schema cache/i.test(m))
+      return "Falta correr costos-privados.sql en Supabase.";
+    if (/row-level security|permission/i.test(m))
+      return "Tu cuenta no está en la lista de admins: no puede ver ni cambiar costos.";
+    return prefijo + m;
+  };
+
+  /* ---------- Descuento del proveedor ----------
+     Es UNA sola marca por producto (descuento_costo; 0 = sin descuento) y se
+     cambia desde tres lugares: la casilla de la tabla, el menú Editar y cada
+     producto dentro de un pedido o venta. Todos pasan por aquí, así que
+     apagarla en uno la apaga en los demás. */
+  const DTO_DEF = 5;
+
+  /* Al encender la casilla: el % que ya tenía el producto, o 5%. */
+  const dtoAlActivar = (p) => (p && Number(p.descuento_costo) > 0) ? Number(p.descuento_costo) : DTO_DEF;
+
+  const cambiarDtoProducto = async (id, pct) => {
+    const { error } = await guardarCostos(id, { descuento_costo: pct });
+    if (error) { toast(avisoCostos(error, "No se pudo cambiar el descuento: ")); return false; }
+    const p = productos.find(x => String(x.id) === String(id));
+    if (p) p.descuento_costo = pct;
+    pintarTabla();
+    // Finanzas/Pedidos escuchan esto para poner al día su copia del catálogo.
+    document.dispatchEvent(new CustomEvent("admin:dto-producto", { detail: { id, pct } }));
+    toast(pct ? `Descuento del proveedor activado (${pct}%).` : "Descuento del proveedor quitado.");
+    return true;
+  };
+
   const alternarVisible = async (id) => {
     const p = productos.find(x => String(x.id) === String(id));
     if (!p) return;
@@ -729,6 +790,10 @@ const Admin = (() => {
     document.getElementById("f-normal").value = p ? (p.precio_anterior || p.precio) : "";
     document.getElementById("f-promo").value = (p && p.precio_anterior) ? p.precio : "";
     document.getElementById("f-costo").value = p ? (Number(p.costo) || "") : "";
+    const dto = p ? (Number(p.descuento_costo) || 0) : 0;
+    document.getElementById("f-dto-on").checked = dto > 0;
+    document.getElementById("f-dto-costo").value = dto || DTO_DEF;
+    document.getElementById("f-dto-costo").disabled = !dto;
     pintarMargen();
     document.getElementById("f-cat").value = p ? p.categoria_id : (categorias[0] && categorias[0].id) || "";
     const selMarca = document.getElementById("f-marca");
@@ -755,20 +820,29 @@ const Admin = (() => {
     modal().classList.add("is-open");
   };
 
-  /* Muestra la ganancia por unidad mientras se escriben precio y costo. */
+  /* Porcentaje de descuento del proveedor en el formulario (0 si la casilla
+     está apagada). */
+  const dtoCostoForm = () => !document.getElementById("f-dto-on").checked ? 0
+    : Math.min(100, Math.max(0, Number(document.getElementById("f-dto-costo").value) || 0));
+
+  /* Muestra la ganancia por unidad mientras se escriben precio, costo y
+     descuento. La ganancia se calcula sobre el costo ya rebajado. */
   const pintarMargen = () => {
     const el = document.getElementById("f-margen");
     if (!el) return;
-    const costo = Number(document.getElementById("f-costo").value) || 0;
+    const lista = Number(document.getElementById("f-costo").value) || 0;
+    const dto = dtoCostoForm();
+    const costo = Math.round(lista * (1 - dto / 100));
     const promo = Number(document.getElementById("f-promo").value) || 0;
     const normal = Number(document.getElementById("f-normal").value) || 0;
     const venta = promo || normal;
-    if (!costo || !venta) { el.textContent = ""; return; }
+    if (!lista || !venta) { el.textContent = ""; return; }
     const gana = venta - costo;
     const pct = Math.round((gana / venta) * 100);
-    el.textContent = gana >= 0
+    const neto = dto ? `Con el ${dto}% te cuesta ${fmt(costo)}. ` : "";
+    el.textContent = neto + (gana >= 0
       ? `Ganas ${fmt(gana)} por unidad (${pct}% del precio de venta).`
-      : `Cuidado: lo estarías vendiendo ${fmt(Math.abs(gana))} por debajo del costo.`;
+      : `Cuidado: lo estarías vendiendo ${fmt(Math.abs(gana))} por debajo del costo.`);
   };
 
   const cerrarForm = () => modal().classList.remove("is-open");
@@ -940,6 +1014,7 @@ const Admin = (() => {
       const promoRaw = document.getElementById("f-promo").value;
       const promo = promoRaw ? Number(promoRaw) : null;
       const costo = Number(document.getElementById("f-costo").value) || 0;
+      const descuento_costo = dtoCostoForm();
       const categoria_id = document.getElementById("f-cat").value;
       const marca_sel = document.getElementById("f-marca");
       const marca_id = (marca_sel && marca_sel.value) ? marca_sel.value : null;
@@ -960,22 +1035,28 @@ const Admin = (() => {
         let imagen_url;
         if (file) imagen_url = await subirFoto(file);
 
+        // El costo y el descuento NO van en "productos" (es pública): se
+        // guardan aparte en la tabla privada.
+        let prodId = id;
         if (id) {
-          const patch = { nombre, descripcion, precio, precio_anterior, costo, categoria_id, marca_id, destacado, en_ofertas };
+          const patch = { nombre, descripcion, precio, precio_anterior, categoria_id, marca_id, destacado, en_ofertas };
           if (imagen_url) patch.imagen_url = imagen_url;
           const { error } = await sb.from("productos").update(patch).eq("id", id);
           if (error) throw error;
-          toast("Producto actualizado.");
         } else {
-          const { error } = await sb.from("productos").insert({
-            nombre, descripcion, precio, precio_anterior, costo, categoria_id, marca_id,
+          const { data, error } = await sb.from("productos").insert({
+            nombre, descripcion, precio, precio_anterior, categoria_id, marca_id,
             destacado, en_ofertas,
             imagen_url: imagen_url || "assets/atleta-espalda.png",
             orden: productos.length
-          });
+          }).select("id").single();
           if (error) throw error;
-          toast("Producto agregado. Ya está en la tienda.");
+          prodId = data.id;
         }
+        const { error: errCosto } = await guardarCostos(prodId, { costo, descuento_costo });
+        toast(errCosto
+          ? avisoCostos(errCosto, "El producto se guardó, pero su costo no: ")
+          : (id ? "Producto actualizado." : "Producto agregado. Ya está en la tienda."));
         cerrarForm();
         await cargarDatos();
       } catch (err) {
@@ -1015,8 +1096,17 @@ const Admin = (() => {
 
     // Botones "✕" para cerrar cada modal.
     document.getElementById("prod-close").addEventListener("click", cerrarForm);
-    ["f-costo", "f-normal", "f-promo"].forEach(id =>
+    ["f-costo", "f-dto-costo", "f-normal", "f-promo"].forEach(id =>
       document.getElementById(id)?.addEventListener("input", pintarMargen));
+    document.getElementById("f-dto-on").addEventListener("change", (e) => {
+      document.getElementById("f-dto-costo").disabled = !e.target.checked;
+      pintarMargen();
+    });
+    // Si el descuento se cambia desde un pedido o venta, la tabla lo refleja.
+    document.addEventListener("admin:dto-producto", (e) => {
+      const p = productos.find(x => String(x.id) === String(e.detail.id));
+      if (p && Number(p.descuento_costo || 0) !== e.detail.pct) { p.descuento_costo = e.detail.pct; pintarTabla(); }
+    });
     document.getElementById("cat-close").addEventListener("click", cerrarFormCat);
     document.getElementById("marca-close").addEventListener("click", cerrarFormMarca);
 
@@ -1026,7 +1116,7 @@ const Admin = (() => {
   };
 
   // `toast` se comparte con las otras secciones del panel (finanzas).
-  return { init, toast };
+  return { init, toast, cambiarDtoProducto, dtoAlActivar, leerCostos, unirCostos };
 })();
 
 document.addEventListener("DOMContentLoaded", Admin.init);

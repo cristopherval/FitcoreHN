@@ -1590,6 +1590,8 @@ img, video { max-width: 100%; }
   .table--compacta td[data-label="Normal"],
   .table--compacta td[data-label="Promo"],
   .table--compacta td[data-label="Dónde aparece"] { display: none; }
+  /* La casilla del descuento sí se queda: se cambia seguido desde el celular. */
+  .table--compacta td[data-label="Desc. proveedor"] { flex: 0 0 auto; }
 
   .table--compacta td[data-label="Foto"] { flex: 0 0 auto; padding: 0; }
   .table--compacta .thumb { width: 52px; height: 52px; }
@@ -1673,7 +1675,7 @@ img, video { max-width: 100%; }
 .venta-lineas { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
 .venta-linea {
   display: grid; align-items: center; gap: 8px;
-  grid-template-columns: minmax(0, 1fr) 64px 86px 86px auto 34px;
+  grid-template-columns: minmax(0, 1fr) 64px 86px 86px auto auto 34px;
 }
 .venta-linea select,
 .venta-linea input {
@@ -1696,7 +1698,7 @@ img, video { max-width: 100%; }
      sin dejar los campos ilegibles. */
   .venta-linea {
     grid-template-columns: 1fr 1fr auto;
-    grid-template-areas: "prod prod quitar" "cant precio costo" "sub sub sub";
+    grid-template-areas: "prod prod quitar" "cant precio costo" "dto sub sub";
     padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm);
   }
   .venta-linea select { grid-area: prod; }
@@ -1704,6 +1706,7 @@ img, video { max-width: 100%; }
   .venta-linea [data-campo="precio"] { grid-area: precio; }
   .venta-linea [data-campo="costo"] { grid-area: costo; }
   .venta-linea__sub { grid-area: sub; text-align: right; }
+  .venta-linea__dto { grid-area: dto; }
   .venta-linea [data-quitar] { grid-area: quitar; justify-self: end; }
   .fin-card__valor { font-size: 1.25rem; }
 }
@@ -1933,15 +1936,16 @@ img, video { max-width: 100%; }
   .admin-filtros--cats .admin-chip { flex: 0 0 auto; }
 }
 
-/* ---- Descuento del proveedor en una venta ---- */
-.venta-dto { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: .9rem; }
-.venta-dto input { accent-color: var(--accent); width: 17px; height: 17px; cursor: pointer; flex: 0 0 auto; }
-.venta-dto__campo { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-.venta-dto__campo input {
-  width: 90px; padding: 8px 10px; border: 1px solid var(--border);
-  border-radius: var(--radius-sm); background: var(--surface);
-  font: inherit; font-size: .9rem; color: var(--text);
-}
+/* ---- Descuento del proveedor ----
+   Una sola casilla por producto, repetida en la tabla, en Editar y en cada
+   línea de una venta. Al lado va el % (o "No" si está apagada). */
+.dto-check { display: inline-flex; align-items: center; gap: 7px; cursor: pointer; font-size: .85rem; white-space: nowrap; }
+.dto-check input { accent-color: var(--accent); width: 17px; height: 17px; cursor: pointer; flex: 0 0 auto; margin: 0; padding: 0; }
+.dto-check input:checked + span { color: var(--accent); font-weight: 600; }
+.dto-campo { display: flex; align-items: center; gap: 8px; }
+.dto-campo input[type="checkbox"] { accent-color: var(--accent); width: 18px; height: 18px; cursor: pointer; flex: 0 0 auto; }
+.dto-campo input[type="number"] { width: 90px; }
+.dto-campo input[type="number"]:disabled { opacity: .45; }
 
 /* ---- Reordenar arrastrando ----
    Las flechas pedian un toque por puesto. Ahora la fila se agarra y se

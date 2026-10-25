@@ -13,7 +13,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css?v=99">
+  <link rel="stylesheet" href="css/styles.css?v=100">
   <link rel="icon" type="image/png" href="assets/favicon.png">
   <link rel="apple-touch-icon" href="assets/favicon.png">
 </head>
@@ -277,7 +277,7 @@
             <thead>
               <tr>
                 <th>Foto</th><th>Nombre</th><th>Categoría</th>
-                <th>Normal</th><th>Promo</th><th>Dónde aparece</th><th>Acciones</th>
+                <th>Normal</th><th>Promo</th><th>Desc. proveedor</th><th>Acciones</th>
               </tr>
             </thead>
             <tbody id="tabla-body">
@@ -460,9 +460,22 @@
           <input id="f-promo" type="number" min="0" step="1" placeholder="1297">
         </div>
 
-        <div class="form__row form__row--full">
-          <label for="f-costo">Costo de compra (L.) <small class="muted">— lo que te cuesta a ti; no se muestra en la tienda</small></label>
+        <div class="form__row">
+          <label for="f-costo">Costo de compra (L.)</label>
           <input id="f-costo" type="number" min="0" step="1" placeholder="0">
+        </div>
+        <!-- Rebaja fija que el proveedor le hace en este producto. El costo
+             de arriba sigue siendo el de lista. -->
+        <div class="form__row">
+          <label for="f-dto-on">Descuento proveedor</label>
+          <div class="dto-campo">
+            <input type="checkbox" id="f-dto-on" aria-label="El proveedor me da descuento en este producto">
+            <input id="f-dto-costo" type="number" min="0" max="100" step="0.5" value="5" aria-label="Porcentaje de descuento">
+            <span class="muted">%</span>
+          </div>
+        </div>
+        <div class="form__row form__row--full">
+          <small class="muted">Lo que te cuesta a ti; no se muestra en la tienda.</small>
           <small class="muted" id="f-margen"></small>
         </div>
 
@@ -654,19 +667,6 @@
           <button type="button" class="btn btn--ghost btn--sm" id="v-add-linea">+ Elegir productos</button>
         </div>
 
-        <!-- Descuento que el proveedor le hizo en esta compra. Va aparte del
-             costo de cada línea: ese sigue siendo el de lista. -->
-        <div class="form__row form__row--full">
-          <label class="venta-dto">
-            <input type="checkbox" id="v-dto-on">
-            <span>El proveedor me hizo descuento en la compra</span>
-          </label>
-          <div class="venta-dto__campo" id="v-dto-campo" hidden>
-            <input type="number" id="v-dto" min="0" max="100" step="0.5" value="5" aria-label="Porcentaje de descuento">
-            <span class="muted">% sobre el costo</span>
-          </div>
-        </div>
-
         <div class="form__row form__row--full">
           <div class="venta-totales">
             <div><span>Subtotal</span><strong id="v-subtotal">L. 0</strong></div>
@@ -750,15 +750,15 @@
     </div>
   </div>
 
-  <script src="assets/vendor/supabase.js?v=99"></script>
-  <script src="js/supabase-config.js?v=99"></script>
-  <script src="js/data.js?v=99"></script>
-  <script src="js/confirm.js?v=99"></script>
-  <script src="js/iconos.js?v=99"></script>
-  <script src="js/admintabs.js?v=99"></script>
-  <script src="js/adminpanel.js?v=99"></script>
-  <script src="js/adminpedidos.js?v=99"></script>
-  <script src="js/adminclientes.js?v=99"></script>
-  <script src="js/adminfinanzas.js?v=99"></script>
+  <script src="assets/vendor/supabase.js?v=100"></script>
+  <script src="js/supabase-config.js?v=100"></script>
+  <script src="js/data.js?v=100"></script>
+  <script src="js/confirm.js?v=100"></script>
+  <script src="js/iconos.js?v=100"></script>
+  <script src="js/admintabs.js?v=100"></script>
+  <script src="js/adminpanel.js?v=100"></script>
+  <script src="js/adminpedidos.js?v=100"></script>
+  <script src="js/adminclientes.js?v=100"></script>
+  <script src="js/adminfinanzas.js?v=100"></script>
 </body>
 </html>

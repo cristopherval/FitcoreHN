@@ -65,14 +65,16 @@ const Finanzas = (() => {
      haber pasado nunca por Finanzas. Si estos datos colgaran de la lista de
      ventas, ahí el selector de productos saldría vacío. */
   const cargarApoyo = async () => {
-    const [prod, zon, cli] = await Promise.all([
-      sb.from("productos").select("id,nombre,precio,costo,imagen_url").order("nombre", { ascending: true }),
+    const [prod, zon, cli, costos] = await Promise.all([
+      sb.from("productos").select("id,nombre,precio,imagen_url").order("nombre", { ascending: true }),
       sb.from("zonas_envio").select("*").order("orden", { ascending: true }),
       // Para sugerir clientes al armar una venta. Si todavía no se corrió
       // clientes.sql, simplemente no hay sugerencias.
-      sb.from("clientes").select("id,nombre,telefono,direccion,identidad")
+      sb.from("clientes").select("id,nombre,telefono,direccion,identidad"),
+      // Costo y descuento del proveedor: tabla privada, sólo para admins.
+      Admin.leerCostos()
     ]);
-    catalogo = prod.error ? [] : (prod.data || []);
+    catalogo = prod.error ? [] : Admin.unirCostos(prod.data || [], costos);
     zonas = zon.error ? [] : (zon.data || []);
     registro = cli.error ? [] : (cli.data || []);
     if (prod.error) console.error("No se pudo leer el catálogo:", prod.error.message);
@@ -103,26 +105,31 @@ const Finanzas = (() => {
     const ids = ventas.map(v => v.id);
     if (!ids.length) return;
 
+    // "*" para no fallar si todavía no existe pedido_items.descuento_costo.
     const { data, error } = await sb.from("pedido_items")
-      .select("pedido_id,precio,costo,cantidad").in("pedido_id", ids);
+      .select("*").in("pedido_id", ids);
 
-    // Si falta la columna (no se corrió costos.sql) se sigue sin utilidades.
     if (error) { costosListos = false; return; }
-    costosListos = true;
+    // Si falta la columna costo (no se corrió costos.sql) se sigue sin utilidades.
+    costosListos = !(data || []).length || "costo" in data[0];
 
     (data || []).forEach(i => {
-      const r = costoPorVenta[i.pedido_id] || (costoPorVenta[i.pedido_id] = { venta: 0, costo: 0 });
+      const r = costoPorVenta[i.pedido_id] || (costoPorVenta[i.pedido_id] = { venta: 0, costo: 0, real: 0 });
+      const costo = Number(i.costo || 0) * Number(i.cantidad);
       r.venta += Number(i.precio) * Number(i.cantidad);
-      r.costo += Number(i.costo || 0) * Number(i.cantidad);
+      r.costo += costo;
+      r.real += costo * (1 - Number(i.descuento_costo || 0) / 100);
     });
   };
 
   let costosListos = true;
 
   /* Lo que de verdad costó una venta: el costo de lista de sus productos
-     menos el descuento que el proveedor le hizo en esa compra. */
+     menos el descuento del proveedor de cada uno. Las ventas viejas tenían
+     un solo descuento para toda la venta (pedidos.descuento_costo); se sigue
+     aplicando para que su utilidad no cambie. */
   const costoLista = (v) => ((costoPorVenta[v.id] || {}).costo || 0);
-  const costoReal = (v) => costoLista(v) * (1 - Number(v.descuento_costo || 0) / 100);
+  const costoReal = (v) => ((costoPorVenta[v.id] || {}).real || 0) * (1 - Number(v.descuento_costo || 0) / 100);
 
   /* ---------- Lista y resumen ---------- */
   const filtradas = () => {
@@ -287,7 +294,7 @@ const Finanzas = (() => {
     // Tres casillas de números seguidas no se distinguen solas.
     const cabecera = `
       <div class="venta-linea venta-linea--cab" aria-hidden="true">
-        <span></span><span>Cant.</span><span>Precio</span><span>Costo</span><span></span><span></span>
+        <span></span><span>Cant.</span><span>Precio</span><span>Costo</span><span>Desc.</span><span></span><span></span>
       </div>`;
 
     cont.innerHTML = cabecera + lineas.map((l, i) => {
@@ -302,6 +309,10 @@ const Finanzas = (() => {
         <input type="number" data-campo="cantidad" min="1" step="1" value="${l.cantidad}" aria-label="Cantidad">
         <input type="number" data-campo="precio" min="0" step="1" value="${l.precio}" aria-label="Precio de venta">
         <input type="number" data-campo="costo" min="0" step="1" value="${l.costo || 0}" aria-label="Costo de compra" class="venta-linea__costo">
+        <label class="dto-check venta-linea__dto" title="El proveedor me da descuento en este producto">
+          <input type="checkbox" data-dto-linea${l.dto ? " checked" : ""}>
+          <span>${l.dto ? `${l.dto}%` : "Desc."}</span>
+        </label>
         <span class="venta-linea__sub">${fmt(l.precio * l.cantidad)}</span>
         <button type="button" class="btn-ojo" data-quitar="${i}" title="Quitar" aria-label="Quitar producto">✕</button>
       </div>`;
@@ -322,6 +333,20 @@ const Finanzas = (() => {
       });
     });
 
+    // La casilla de descuento es la MISMA del producto: cambiarla aquí la
+    // cambia en la tabla de Productos y en su menú Editar.
+    cont.querySelectorAll("[data-dto-linea]").forEach(c =>
+      c.addEventListener("change", async () => {
+        const l = lineas[Number(c.closest(".venta-linea").dataset.i)];
+        const p = catalogo.find(x => x.id === l.producto_id);
+        const pct = !c.checked ? 0
+          : (typeof Admin !== "undefined" ? Admin.dtoAlActivar(p) : 5);
+        c.disabled = true;
+        const ok = typeof Admin !== "undefined" && await Admin.cambiarDtoProducto(l.producto_id, pct);
+        if (!ok) { c.checked = !c.checked; c.disabled = false; }
+        // Si salió bien, el aviso "admin:dto-producto" vuelve a pintar las líneas.
+      }));
+
     cont.querySelectorAll("[data-quitar]").forEach(b =>
       b.addEventListener("click", () => {
         lineas.splice(Number(b.dataset.quitar), 1);
@@ -333,23 +358,14 @@ const Finanzas = (() => {
 
   const completas = () => lineas.filter(l => l.producto_id && l.cantidad > 0);
 
-  /* Porcentaje que el proveedor rebajó, 0 si la casilla está apagada. */
-  const dtoActual = () => {
-    const on = document.getElementById("v-dto-on");
-    if (!on || !on.checked) return 0;
-    const v = Number(document.getElementById("v-dto").value) || 0;
-    return Math.min(100, Math.max(0, v));
-  };
-
   const recalcular = () => {
     const l = completas();
     const sub = l.reduce((a, x) => a + x.precio * x.cantidad, 0);
     const lista = l.reduce((a, x) => a + (x.costo || 0) * x.cantidad, 0);
     const envio = Number(document.getElementById("v-envio").value) || 0;
 
-    const dto = dtoActual();
-    const rebaja = lista * dto / 100;
-    const costo = lista - rebaja;
+    const costo = l.reduce((a, x) => a + (x.costo || 0) * x.cantidad * (1 - (x.dto || 0) / 100), 0);
+    const rebaja = lista - costo;
 
     document.getElementById("v-subtotal").textContent = fmt(sub);
     document.getElementById("v-envio-txt").textContent = fmt(envio);
@@ -358,12 +374,10 @@ const Finanzas = (() => {
     document.getElementById("v-costo-real").textContent = fmt(Math.round(costo));
     document.getElementById("v-utilidad").textContent = fmt(Math.round(sub - costo));
 
-    const fila = document.getElementById("v-dto-fila");
-    fila.hidden = !dto;
+    document.getElementById("v-dto-fila").hidden = !(rebaja > 0);
     document.getElementById("v-dto-txt").textContent = "− " + fmt(Math.round(rebaja));
-    document.getElementById("v-dto-campo").hidden = !document.getElementById("v-dto-on").checked;
 
-    return { sub, envio, total: sub + envio, costo: lista, dto };
+    return { sub, envio, total: sub + envio, costo: lista };
   };
 
   /* ---------- Sugerencias de cliente ----------
@@ -464,8 +478,10 @@ const Finanzas = (() => {
     const yaEstan = new Set(quedan.map(l => l.producto_id));
     const nuevas = [...seleccion].filter(id => !yaEstan.has(id)).map(id => {
       const p = catalogo.find(x => x.id === id);
+      // La línea copia el costo de lista y el descuento del proveedor que el
+      // producto tiene hoy: cambiarlos después no altera lo ya vendido.
       return { producto_id: id, nombre: p.nombre, precio: Number(p.precio),
-               costo: Number(p.costo) || 0, cantidad: 1 };
+               costo: Number(p.costo) || 0, dto: Number(p.descuento_costo) || 0, cantidad: 1 };
     });
     lineas = [...quedan, ...nuevas];
     cerrarPicker();
@@ -491,8 +507,9 @@ const Finanzas = (() => {
   };
 
   const abrir = async (id, estadoNuevo = "entregada") => {
-    // Abierto desde Pedidos, puede que nada haya pedido el catálogo todavía.
-    if (!catalogo.length) await cargarApoyo();
+    // Siempre fresco: abierto desde Pedidos puede que nadie lo haya pedido,
+    // y en Productos pudo cambiar un costo o un descuento del proveedor.
+    await cargarApoyo();
 
     // Al editar, `id` puede venir de Finanzas (ya está en memoria) o de
     // Pedidos, que trabaja con otra lista.
@@ -515,19 +532,19 @@ const Finanzas = (() => {
     document.getElementById("v-dir").value = v ? (v.cliente_direccion || "") : "";
     document.getElementById("v-nota").value = v ? (v.nota_admin || "") : "";
 
-    const dto = v ? Number(v.descuento_costo || 0) : 0;
-    document.getElementById("v-dto-on").checked = dto > 0;
-    document.getElementById("v-dto").value = dto > 0 ? dto : 5;
-    document.getElementById("v-dto-campo").hidden = !(dto > 0);
     pintarZonas(v ? v.zona_id : "");
 
     // Las líneas de una venta ya existente se traen de la base; una nueva
     // empieza con un renglón vacío listo para elegir.
     if (v) {
       const { data } = await sb.from("pedido_items").select("*").eq("pedido_id", v.id);
+      // Una venta vieja guardaba un solo descuento para toda la venta: se
+      // pasa a cada producto para no perderlo al guardarla de nuevo.
+      const dtoVenta = Number(v.descuento_costo || 0);
       lineas = (data || []).map(i => ({
         producto_id: i.producto_id, nombre: i.nombre,
         precio: Number(i.precio), costo: Number(i.costo) || 0,
+        dto: Number(i.descuento_costo) || dtoVenta,
         cantidad: Number(i.cantidad)
       }));
     } else {
@@ -549,7 +566,7 @@ const Finanzas = (() => {
     const validas = completas();
     if (!validas.length) { toast("Agrega al menos un producto a la venta."); return; }
 
-    const { sub, envio, total, dto } = recalcular();
+    const { sub, envio, total } = recalcular();
     const zonaSel = document.getElementById("v-zona");
     const zonaId = zonaSel.value || null;
     const zonaNombre = zonaId
@@ -567,7 +584,9 @@ const Finanzas = (() => {
       subtotal: sub, envio, total,
       estado: document.getElementById("v-estado").value,
       nota_admin: document.getElementById("v-nota").value.trim() || null,
-      descuento_costo: dto,
+      // El descuento ahora va en cada producto (pedido_items); el de la
+      // venta entera queda en 0.
+      descuento_costo: 0,
       creado_at: fecha.toISOString(),
       entregada_at: fecha.toISOString()
     };
@@ -595,20 +614,29 @@ const Finanzas = (() => {
     // Las líneas se reemplazan enteras: es más simple y más fiable que
     // averiguar cuál cambió, y son pocas.
     await sb.from("pedido_items").delete().eq("pedido_id", pedidoId);
-    const { error: errItems } = await sb.from("pedido_items").insert(
-      validas.map(l => ({
-        pedido_id: pedidoId, producto_id: l.producto_id, nombre: l.nombre,
-        precio: l.precio, costo: l.costo || 0,
-        cantidad: l.cantidad, subtotal: l.precio * l.cantidad
-      })));
+    const filas = validas.map(l => ({
+      pedido_id: pedidoId, producto_id: l.producto_id, nombre: l.nombre,
+      precio: l.precio, costo: l.costo || 0, descuento_costo: l.dto || 0,
+      cantidad: l.cantidad, subtotal: l.precio * l.cantidad
+    }));
+    let { error: errItems } = await sb.from("pedido_items").insert(filas);
+    // Sin la columna (falta descuento-producto.sql) se guardan igual los
+    // productos, sólo sin el descuento: ya se borraron las líneas viejas.
+    let sinDto = false;
+    if (errItems && /descuento_costo/i.test(errItems.message)) {
+      sinDto = true;
+      ({ error: errItems } = await sb.from("pedido_items")
+        .insert(filas.map(({ descuento_costo, ...f }) => f)));
+    }
 
     btn.disabled = false;
     if (errItems) { toast("La venta se guardó, pero sus productos no: " + errItems.message); return; }
-
     const esPedido = datos.estado === "nueva";
-    toast(editando
-      ? (esPedido ? "Pedido actualizado." : "Venta actualizada.")
-      : (esPedido ? "Pedido registrado." : "Venta registrada."));
+    toast(sinDto
+      ? "Guardada sin el descuento del proveedor: falta correr descuento-producto.sql en Supabase."
+      : editando
+        ? (esPedido ? "Pedido actualizado." : "Venta actualizada.")
+        : (esPedido ? "Pedido registrado." : "Venta registrada."));
     cerrar();
     await refrescar();
   };
@@ -653,8 +681,16 @@ const Finanzas = (() => {
     document.getElementById("venta-close").addEventListener("click", cerrar);
     document.getElementById("btn-cancel-venta").addEventListener("click", cerrar);
     document.getElementById("v-envio").addEventListener("input", recalcular);
-    document.getElementById("v-dto-on").addEventListener("change", recalcular);
-    document.getElementById("v-dto").addEventListener("input", recalcular);
+    // El descuento del proveedor se cambió (aquí, en la tabla o en Editar):
+    // se pone al día el catálogo y las líneas abiertas de ese producto.
+    document.addEventListener("admin:dto-producto", (e) => {
+      const { id, pct } = e.detail;
+      const p = catalogo.find(x => String(x.id) === String(id));
+      if (p) p.descuento_costo = pct;
+      let toca = false;
+      lineas.forEach(l => { if (String(l.producto_id) === String(id)) { l.dto = pct; toca = true; } });
+      if (toca) pintarLineas();
+    });
 
     const nombre = document.getElementById("v-nombre");
     nombre.addEventListener("input", () => { clienteId = null; sugerir(); });
